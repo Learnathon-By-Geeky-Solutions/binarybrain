@@ -1,6 +1,7 @@
 package com.onlineclassroom.management.mapper;
 
 import com.onlineclassroom.management.dto.UserDto;
+import com.onlineclassroom.management.exception.user.UserAlreadyExistsException;
 import com.onlineclassroom.management.model.User;
 
 /**
@@ -9,8 +10,19 @@ import com.onlineclassroom.management.model.User;
  *
  * @author Md Moinul Islam Sourav
  * @since 2025-02-02
+ * @lastModified 2025-02-04
  */
 public class UserMapper {
+    /**
+     * Private constructor to prevent instantiation of this utility class (only provide static methods).
+     *
+     * <p>This class provides static mapping methods and should not be instantiated.
+     * Attempting to create an instance of this class will result in a {@link RuntimeException}.
+     */
+    private UserMapper()  {
+        throw new RuntimeException("This is a Utility class and can't be instantiated!");
+    }
+
     /**
      * The {@code userToUserDtoMapper} method converts the properties of a {@link User} entity to a{@link UserDto}.
      *

@@ -26,8 +26,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/user")
 public class UserController {
 
+    private final UserService userService;
+
     @Autowired
-    private UserService userService;
+    public  UserController (UserService userService){
+        this.userService = userService;
+    }
 
     /**
      * Registers a new user.
@@ -39,12 +43,13 @@ public class UserController {
      *                If validation fails, it returns {@code List<String>} (error messages).
      */
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody UserDto userDto, BindingResult result){
+    public ResponseEntity<Object> registerUser(@Valid @RequestBody UserDto userDto, BindingResult result){
 
         if(result.hasErrors()){
-            List<String> errorList = result.getAllErrors().stream()
+            List<String> errorList = result.getAllErrors()
+                    .stream()
                     .map(error -> error.getDefaultMessage())
-                    .collect(Collectors.toList());
+                    .toList();
             return ResponseEntity.badRequest().body(errorList);
         }
 
