@@ -2,8 +2,6 @@ package com.onlineclassroom.management.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 /**
  * The {@code Role} entity represents a user role within the system. It is used to
