@@ -32,6 +32,9 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private long expiration;
 
+    @Value("${jwt.refresh.expiration}")
+    private long refreshExpiration;
+
     private Key signingKey;
 
     @PostConstruct
@@ -54,14 +57,18 @@ public class JwtUtil {
         claims.put("roles", userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));
-        return createToken(claims, userDetails.getUsername());
+        return createToken(claims, userDetails.getUsername(), expiration);
     }
-    public String createToken(Map<String, Object> claims, String subject){
+    public String generateRefreshToken(UserDetails userDetails){
+        Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, userDetails.getUsername(), refreshExpiration);
+    }
+    public String createToken(Map<String, Object> claims, String subject, long expire){
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .setExpiration(new Date(System.currentTimeMillis() + expire))
                 .signWith(getSigningKey())
                 .compact();
     }
