@@ -120,7 +120,6 @@ public class UserController {
                 .orElseThrow(() -> new RuntimeException("Refresh token not found!"));
 
         refreshTokenService.verifyExpiration(refreshToken);
-        System.out.println("********** " + requestRefreshToken + "**********");
         UserDetails userDetails = userDetailsService.loadUserByUsername(refreshToken.getUser().getUsername());
         String newAccessToken = jwtUtil.generateToken(userDetails);
 
