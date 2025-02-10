@@ -13,7 +13,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import io.jsonwebtoken.*;
 
@@ -27,19 +26,16 @@ import io.jsonwebtoken.*;
 public class JwtUtil {
 
     @Value("${jwt.secret}")
-    private String secret_key;
+    private String secretKey;
 
     @Value("${jwt.expiration}")
     private long expiration;
-
-    @Value("${jwt.refresh.expiration}")
-    private long refreshExpiration;
 
     private Key signingKey;
 
     @PostConstruct
     public void init() {
-        byte[] keyBytes = Decoders.BASE64.decode(secret_key);
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         signingKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -56,13 +52,10 @@ public class JwtUtil {
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList()));
+                .toList());
         return createToken(claims, userDetails.getUsername(), expiration);
     }
-    public String generateRefreshToken(UserDetails userDetails){
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getUsername(), refreshExpiration);
-    }
+
     public String createToken(Map<String, Object> claims, String subject, long expire){
         return Jwts.builder()
                 .setClaims(claims)
