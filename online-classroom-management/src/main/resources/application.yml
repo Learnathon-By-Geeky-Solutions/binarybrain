@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-  name: OCM User Registration
+    name: OCM User Registration
 
   jpa:
     hibernate:

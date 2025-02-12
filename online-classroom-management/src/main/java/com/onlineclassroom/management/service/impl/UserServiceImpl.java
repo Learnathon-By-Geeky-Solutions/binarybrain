@@ -12,6 +12,7 @@ import com.onlineclassroom.management.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -43,9 +44,9 @@ public class UserServiceImpl implements UserService {
      * @param userDto The UserDTO object containing user registration details.
      * @return The newly created user entity.
      * @throws UserAlreadyExistsException If the username or email already exists.
-     * @throws UserAlreadyExistsException If the username or email already exists.
      * @throws ResourceNotFoundException If a specified role is not found.
      */
+    @Transactional
     @Override
     public User registerUser(UserDto userDto) {
         String username = userDto.getUsername();
