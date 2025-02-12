@@ -15,12 +15,12 @@ import java.util.Set;
 @Data
 public class UserDto {
     @NotBlank(message = "First name is required!")
-    @Size(min = 3, max = 10, message = "First name must be between 3 and 10 characters")
+    @Size(min = 2, max = 10, message = "First name must be between 2 and 10 characters")
     @Pattern(regexp = "^[a-zA-Z ]+$", message = "Name must contain only letters")
     private String firstName;
 
     @NotBlank(message = "Last name is required!")
-    @Size(min = 5, max = 15, message = "Last name must be between 5 and 15 characters")
+    @Size(min = 3, max = 15, message = "Last name must be between 5 and 15 characters")
     @Pattern(regexp = "^[a-zA-Z ]+$", message = "Name must contain only letters")
     private String lastName;
 
@@ -45,6 +45,10 @@ public class UserDto {
     private String email;
 
     @NotBlank(message = "Password is required!")
-    @Size(min = 6, message = "Password must be at least 6 characters")
+    @Pattern(
+            regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",
+            message = "Password must be at least 8 characters long and contain at least one digit, one uppercase letter, one lowercase letter, and one special character"
+    )
+
     private String password;
 }
