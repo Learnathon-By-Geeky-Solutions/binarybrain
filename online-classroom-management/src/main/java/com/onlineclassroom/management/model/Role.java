@@ -2,6 +2,7 @@ package com.onlineclassroom.management.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
 
 /**
  * The {@code Role} entity represents a user role within the system. It is used to
@@ -15,7 +16,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-public class Role {
+public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,5 +29,10 @@ public class Role {
 
     public Role(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String getAuthority() {
+        return name;
     }
 }

@@ -5,6 +5,10 @@ spring:
   application:
   name: OCM User Registration
 
+  config:
+    import: classpath:secret.properties
+
+
   jpa:
     hibernate:
       ddl-auto: update
