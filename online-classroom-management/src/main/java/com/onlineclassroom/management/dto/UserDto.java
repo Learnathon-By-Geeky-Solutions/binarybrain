@@ -14,6 +14,9 @@ import java.util.Set;
  */
 @Data
 public class UserDto {
+
+    private Long id;
+
     @NotBlank(message = "First name is required!")
     @Size(min = 3, max = 10, message = "First name must be between 3 and 10 characters")
     @Pattern(regexp = "^[a-zA-Z ]+$", message = "Name must contain only letters")
