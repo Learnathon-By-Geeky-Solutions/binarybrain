@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
@@ -13,20 +14,17 @@ public class Classroom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
+
     private String description;
     private LocalDate startDate;
-    private LocalDate expireDate;
 
-    private Long teacherId; // Store teacher ID (fetched from JWT)
-
-    @ManyToOne
-    @JoinColumn(name = "course_id", nullable = false)
-    private Course course;
+    @Column(nullable = false)
+    private Long teacherId;
 
     @ElementCollection
-    private List<Long> studentIds; // List of student IDs (fetched from User Microservice)
+    @CollectionTable(name = "classroom_students", joinColumns = @JoinColumn(name = "classroom_id"))
+    private Set<Long> studentIds = new HashSet<>();
 
-    @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Resource> resources;
 }
