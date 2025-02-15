@@ -21,12 +21,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * UserController class handles HTTP request related to user operation(s).
@@ -124,5 +122,15 @@ public class UserController {
         String newAccessToken = jwtUtil.generateToken(userDetails);
 
         return ResponseEntity.ok(new AuthResponse(newAccessToken, refreshToken.getToken()));
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<Optional<User>> getUserProfile(@RequestHeader("Authorization") String jwt){
+//        System.out.println("##############"+jwt);
+        if (jwt.startsWith("Bearer ")) {
+            jwt = jwt.substring(7);
+        }
+        Optional<User> user= userService.getUserProfile(jwt);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }
