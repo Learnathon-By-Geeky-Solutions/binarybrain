@@ -8,12 +8,14 @@ import com.onlineclassroom.management.model.Role;
 import com.onlineclassroom.management.model.User;
 import com.onlineclassroom.management.repository.RoleRepository;
 import com.onlineclassroom.management.repository.UserRepository;
+import com.onlineclassroom.management.security.JwtUtil;
 import com.onlineclassroom.management.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 /**
  * Implementation of the UserService interface for user registration.
@@ -28,12 +30,17 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder){
+    public UserServiceImpl(UserRepository userRepository,
+                           RoleRepository roleRepository,
+                           PasswordEncoder passwordEncoder,
+                           JwtUtil jwtUtil){
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil  = jwtUtil;
     }
 
     /**
@@ -71,5 +78,11 @@ public class UserServiceImpl implements UserService {
             user.setRoles(roles);
         }
         return userRepository.save(user);
+    }
+
+    @Override
+    public Optional<User> getUserProfile(String jwt) {
+        String username = jwtUtil.extractUsername(jwt);
+        return userRepository.findByUsername(username);
     }
 }
