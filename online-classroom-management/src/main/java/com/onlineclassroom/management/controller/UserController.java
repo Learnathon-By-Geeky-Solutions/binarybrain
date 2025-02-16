@@ -126,7 +126,6 @@ public class UserController {
 
     @GetMapping("/profile")
     public ResponseEntity<Optional<User>> getUserProfile(@RequestHeader("Authorization") String jwt){
-//        System.out.println("##############"+jwt);
         if (jwt.startsWith("Bearer ")) {
             jwt = jwt.substring(7);
         }
