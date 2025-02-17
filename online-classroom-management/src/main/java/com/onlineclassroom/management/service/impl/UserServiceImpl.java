@@ -82,7 +82,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> getUserProfile(String jwt) {
+        if (jwtUtil.isTokenExpired(jwt)) {
+            throw new RuntimeException("Token is expired!");
+        }
         String username = jwtUtil.extractUsername(jwt);
         return userRepository.findByUsername(username);
+    }
+
+    @Override
+    public User getUserProfileById(Long id, String jwt) {
+        if (jwtUtil.isTokenExpired(jwt)) {
+            throw new RuntimeException("Token is expired!");
+        }
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
 }

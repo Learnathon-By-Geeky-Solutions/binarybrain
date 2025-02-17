@@ -18,6 +18,7 @@ public class Classroom {
     private String title;
 
     private String description;
+
     private LocalDate startDate;
 
     @Column(nullable = false)
@@ -26,5 +27,4 @@ public class Classroom {
     @ElementCollection
     @CollectionTable(name = "classroom_students", joinColumns = @JoinColumn(name = "classroom_id"))
     private Set<Long> studentIds = new HashSet<>();
-
 }

@@ -132,4 +132,15 @@ public class UserController {
         Optional<User> user= userService.getUserProfile(jwt);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
+
+    @GetMapping("/profile/{id}")
+    public ResponseEntity<User> getUserProfileById(@PathVariable Long id,
+                                                   @RequestHeader("Authorization") String jwt){
+        if (jwt.startsWith("Bearer ")) {
+            jwt = jwt.substring(7);
+        }
+        User user = userService.getUserProfileById(id, jwt);
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
 }
