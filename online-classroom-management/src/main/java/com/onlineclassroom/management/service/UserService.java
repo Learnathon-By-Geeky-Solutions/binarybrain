@@ -13,4 +13,5 @@ import java.util.Optional;
 public interface UserService {
     User registerUser(UserDto userDto);
     Optional<User> getUserProfile(String jwt);
+    User getUserProfileById(Long id, String jwt);
 }
