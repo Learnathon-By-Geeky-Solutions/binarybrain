@@ -18,12 +18,12 @@ public class UserDto {
     private Long id;
 
     @NotBlank(message = "First name is required!")
-    @Size(min = 3, max = 10, message = "First name must be between 3 and 10 characters")
+    @Size(min = 2, max = 10, message = "First name must be between 3 and 10 characters")
     @Pattern(regexp = "^[a-zA-Z ]+$", message = "Name must contain only letters")
     private String firstName;
 
     @NotBlank(message = "Last name is required!")
-    @Size(min = 5, max = 15, message = "Last name must be between 5 and 15 characters")
+    @Size(min = 3, max = 15, message = "Last name must be between 3 and 15 characters")
     @Pattern(regexp = "^[a-zA-Z ]+$", message = "Name must contain only letters")
     private String lastName;
 

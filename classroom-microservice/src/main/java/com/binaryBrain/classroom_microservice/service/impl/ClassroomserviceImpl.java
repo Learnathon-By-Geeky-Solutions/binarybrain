@@ -108,4 +108,37 @@ public class ClassroomserviceImpl implements ClassroomService {
         }
 
     }
+
+    @Override
+    public Classroom removeStudentFromClassroomById(Long classroomId, Long studentId, String jwt) {
+        try {
+            UserDto userDto = userService.getUserProfile(jwt);
+            if (!validateRole(userDto, "TEACHER")) {
+                throw new RuntimeException("Only teacher can manage classroom!");
+            }
+
+            Classroom classroom = classroomRepository.findById(classroomId)
+                    .orElseThrow(() -> new RuntimeException("Classroom not found with id: " + classroomId));
+
+            Long loggedInTeacherId = userDto.getId();
+            Long classroomTeacherId = classroom.getTeacherId();
+            if(!Objects.equals(loggedInTeacherId, classroomTeacherId)) {
+                throw new RuntimeException("You can't remove a student from another teacher's classroom!");
+            }
+
+            if (!classroom.getStudentIds().remove(studentId)) {
+                throw new RuntimeException("Student not found in the classroom!");
+            }
+            return classroomRepository.save(classroom);
+
+        }catch (FeignException.BadRequest e){
+            throw new RuntimeException("Student not found with id: " + studentId);
+        }
+
+    }
+
+    @Override
+    public List<Classroom> getClassroomsByStudentId(Long studentId) {
+        return classroomRepository.findByStudentIdsContaining(studentId);
+    }
 }

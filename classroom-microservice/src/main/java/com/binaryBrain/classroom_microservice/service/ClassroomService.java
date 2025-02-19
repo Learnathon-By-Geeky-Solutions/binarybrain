@@ -14,4 +14,7 @@ public interface ClassroomService {
     List<Classroom> getAllClassroomByTeacherId(Long id, String jwt);
     void deleteClassroom(Long id, String jwt);
     Classroom addStudentInClassroom(Long classroomId, Long studentId, String jwt);
+    Classroom removeStudentFromClassroomById(Long classroomId, Long studentId, String jwt);
+    List<Classroom> getClassroomsByStudentId(Long studentId);
+
 }

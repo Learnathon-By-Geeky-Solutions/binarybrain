@@ -27,4 +27,12 @@ public class Classroom {
     @ElementCollection
     @CollectionTable(name = "classroom_students", joinColumns = @JoinColumn(name = "classroom_id"))
     private Set<Long> studentIds = new HashSet<>();
+
+    @ElementCollection
+    @CollectionTable(name = "classroom_courses", joinColumns = @JoinColumn(name = "classroom_id"))
+    private Set<Long> courseIds = new HashSet<>();
+
+    @ElementCollection
+    @CollectionTable(name = "classroom_resources", joinColumns = @JoinColumn(name = "classroom_id"))
+    private Set<Long> resourceIds = new HashSet<>();
 }
