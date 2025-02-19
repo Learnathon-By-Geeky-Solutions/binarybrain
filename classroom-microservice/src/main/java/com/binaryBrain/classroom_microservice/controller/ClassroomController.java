@@ -49,7 +49,14 @@ public class ClassroomController {
         return new ResponseEntity<>(classroomList, HttpStatus.OK);
     }
 
-    @PostMapping("/{classroomId}/add-student/{studentId}")
+    @GetMapping("/by-student/{studentId}")
+    public ResponseEntity<List<Classroom>> getClassroomsByStudentId(@PathVariable Long studentId,
+                                                                    @RequestHeader("Authorization") String jwt){
+        List<Classroom> classroomList = classroomService.getClassroomsByStudentId(studentId);
+        return new ResponseEntity<>(classroomList, HttpStatus.OK);
+    }
+
+    @PutMapping("/{classroomId}/add-student/{studentId}")
     public ResponseEntity<Classroom> addStudentInClassroom(@PathVariable Long classroomId,
                                                            @PathVariable Long studentId,
                                                            @RequestHeader("Authorization") String jwt){
@@ -57,6 +64,16 @@ public class ClassroomController {
         Classroom classroom = classroomService.addStudentInClassroom(classroomId, studentId, jwt);
         return new ResponseEntity<>(classroom, HttpStatus.OK);
     }
+
+    @DeleteMapping("/{classroomId}/remove-student/{studentId}")
+    ResponseEntity<Classroom> removeStudentFromClassroomById(@PathVariable Long classroomId,
+                                                             @PathVariable Long studentId,
+                                                             @RequestHeader("Authorization") String jwt){
+        Classroom classroom = classroomService.removeStudentFromClassroomById(classroomId, studentId, jwt);
+        return new ResponseEntity<>(classroom, HttpStatus.OK);
+    }
+
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteClassroom(@PathVariable Long id,
                                                 @RequestHeader("Authorization") String jwt){
