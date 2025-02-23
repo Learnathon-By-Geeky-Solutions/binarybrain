@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="69911675-4de8-4e3a-82d7-c934f03bca76" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-    </list>
+    <list default="true" id="69911675-4de8-4e3a-82d7-c934f03bca76" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -31,7 +29,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "Cherry-picking in feat/staging-AB#322-course-service",
+    "git-widget-placeholder": "feat/staging-AB#322-course-service",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/moinulsourav/Desktop/Learnathon/GitHub/binarybrain2",
     "node.js.detected.package.eslint": "true",
@@ -90,7 +88,7 @@
       <updated>1739450254399</updated>
       <workItem from="1739450256060" duration="80000" />
       <workItem from="1739665689032" duration="29000" />
-      <workItem from="1740270723386" duration="331000" />
+      <workItem from="1740270723386" duration="743000" />
     </task>
     <servers />
   </component>
