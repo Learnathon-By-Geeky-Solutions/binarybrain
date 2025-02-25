@@ -1,11 +1,14 @@
 package com.binaryBrain.classroom_microservice.service.impl;
 
+import com.binaryBrain.classroom_microservice.dto.CourseDto;
 import com.binaryBrain.classroom_microservice.dto.RoleDto;
 import com.binaryBrain.classroom_microservice.dto.UserDto;
+import com.binaryBrain.classroom_microservice.exception.ResourseNotFoundException;
 import com.binaryBrain.classroom_microservice.exception.UserHasNotPermissionException;
 import com.binaryBrain.classroom_microservice.model.Classroom;
 import com.binaryBrain.classroom_microservice.repo.ClassroomRepository;
 import com.binaryBrain.classroom_microservice.service.ClassroomService;
+import com.binaryBrain.classroom_microservice.service.CourseService;
 import com.binaryBrain.classroom_microservice.service.UserService;
 import feign.FeignException;
 import org.springframework.stereotype.Service;
@@ -14,14 +17,18 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+
 @Service
 public class ClassroomserviceImpl implements ClassroomService {
     private final ClassroomRepository classroomRepository;
     private final UserService userService;
+    private final CourseService courseService;
 
-    public ClassroomserviceImpl(ClassroomRepository classroomRepository, UserService userService) {
+    public ClassroomserviceImpl(ClassroomRepository classroomRepository, UserService userService, CourseService courseService) {
         this.classroomRepository = classroomRepository;
         this.userService = userService;
+        this.courseService = courseService;
     }
     boolean validateRole(UserDto userDto, List<String> targetRoles){
         return userDto.getRoles()
@@ -85,7 +92,7 @@ public class ClassroomserviceImpl implements ClassroomService {
             return classroomRepository.save(classroom);
 
         }catch (FeignException.BadRequest e){
-            throw new RuntimeException("User not found with id: " + studentId);
+            throw new ResourseNotFoundException("User not found with id: " + studentId);
         }
 
     }
@@ -97,18 +104,40 @@ public class ClassroomserviceImpl implements ClassroomService {
             validateClassroomModificationPermission(classroom, jwt);
 
             if (!classroom.getStudentIds().remove(studentId)) {
-                throw new RuntimeException("Student not found in the classroom!");
+                throw new ResourseNotFoundException("Student not found in the classroom!");
             }
             return classroomRepository.save(classroom);
 
         }catch (FeignException.BadRequest e){
-            throw new RuntimeException("Student not found with id: " + studentId);
+            throw new ResourseNotFoundException("Student not found with id: " + studentId);
         }
     }
 
     @Override
     public List<Classroom> getClassroomsByStudentId(Long studentId) {
         return classroomRepository.findByStudentIdsContaining(studentId);
+    }
+
+    @Override
+    public Classroom addCourseToClassroom(Long classroomId, Long courseId, String jwt) {
+        Classroom classroom = getClassroomById(classroomId, jwt);
+        validateClassroomModificationPermission(classroom, jwt);
+
+        CourseDto courseDto = courseService.getCourseById(courseId, jwt);
+        if (classroom.getCourseIds().contains(courseId)) {
+            throw new RuntimeException("Course is already assigned to this classroom.");
+        }
+        classroom.getCourseIds().add(courseId);
+
+        return classroomRepository.save(classroom);
+    }
+
+    @Override
+    public Set<Long> getAllCourseInClassroom(Long classroomId, String jwt) {
+        Classroom classroom = getClassroomById(classroomId, jwt);
+        validateClassroomModificationPermission(classroom, jwt);
+
+        return getClassroomById(classroomId, jwt).getCourseIds();
     }
 
     private void validateClassroomModificationPermission(Classroom classroom, String jwt) {
