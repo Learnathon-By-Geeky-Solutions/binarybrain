@@ -1,5 +1,6 @@
 package com.binaryBrain.classroom_microservice.controller;
 
+import com.binaryBrain.classroom_microservice.dto.CourseDto;
 import com.binaryBrain.classroom_microservice.model.Classroom;
 import com.binaryBrain.classroom_microservice.service.ClassroomService;
 import org.springframework.http.HttpStatus;
@@ -90,10 +91,10 @@ public class ClassroomController {
     }
 
     @GetMapping("/{classroomId}/courses")
-    public ResponseEntity<Set<Long>> getAllCourseInClassroom(@PathVariable Long classroomId,
-                                                             @RequestHeader("Authorization") String jwt) {
-        Set<Long> courseIds = classroomService.getAllCourseInClassroom(classroomId,jwt);
-        return new ResponseEntity<>(courseIds, HttpStatus.OK);
+    public ResponseEntity<List<CourseDto>> getAllCourseInClassroom(@PathVariable Long classroomId,
+                                                                   @RequestHeader("Authorization") String jwt) {
+        List<CourseDto> courseDtoList = classroomService.getAllCourseInClassroom(classroomId,jwt);
+        return new ResponseEntity<>(courseDtoList, HttpStatus.OK);
     }
 
 }

@@ -17,7 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ClassroomserviceImpl implements ClassroomService {
@@ -133,11 +133,14 @@ public class ClassroomserviceImpl implements ClassroomService {
     }
 
     @Override
-    public Set<Long> getAllCourseInClassroom(Long classroomId, String jwt) {
+    public List<CourseDto> getAllCourseInClassroom(Long classroomId, String jwt) {
         Classroom classroom = getClassroomById(classroomId, jwt);
         validateClassroomModificationPermission(classroom, jwt);
 
-        return getClassroomById(classroomId, jwt).getCourseIds();
+        return classroom.getCourseIds()
+                .stream()
+                .map(courseId -> courseService.getCourseById(courseId, jwt))
+                .collect(Collectors.toList());
     }
 
     private void validateClassroomModificationPermission(Classroom classroom, String jwt) {
