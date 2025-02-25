@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/private/classroom")
@@ -50,8 +51,7 @@ public class ClassroomController {
     }
 
     @GetMapping("/by-student/{studentId}")
-    public ResponseEntity<List<Classroom>> getClassroomsByStudentId(@PathVariable Long studentId,
-                                                                    @RequestHeader("Authorization") String jwt){
+    public ResponseEntity<List<Classroom>> getClassroomsByStudentId(@PathVariable Long studentId){
         List<Classroom> classroomList = classroomService.getClassroomsByStudentId(studentId);
         return new ResponseEntity<>(classroomList, HttpStatus.OK);
     }
@@ -81,5 +81,19 @@ public class ClassroomController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PutMapping("/{classroomId}/add-course/{courseId}")
+    public ResponseEntity<Classroom> addCourseToClassroom(@PathVariable Long classroomId,
+                                                       @PathVariable Long courseId,
+                                                       @RequestHeader("Authorization") String jwt) {
+        Classroom classroom = classroomService.addCourseToClassroom(classroomId, courseId, jwt);
+        return new ResponseEntity<>(classroom, HttpStatus.OK);
+    }
+
+    @GetMapping("/{classroomId}/courses")
+    public ResponseEntity<Set<Long>> getAllCourseInClassroom(@PathVariable Long classroomId,
+                                                             @RequestHeader("Authorization") String jwt) {
+        Set<Long> courseIds = classroomService.getAllCourseInClassroom(classroomId,jwt);
+        return new ResponseEntity<>(courseIds, HttpStatus.OK);
+    }
 
 }
