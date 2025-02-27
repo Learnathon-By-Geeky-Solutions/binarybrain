@@ -37,6 +37,13 @@ public class CourseController {
         return ResponseEntity.ok(courseDto);
     }
 
+    @GetMapping("/by-ids")
+    public ResponseEntity<List<Course>> getCoursesByIds(@RequestParam List<Long> courseIds,
+                                                        @RequestHeader("Authorization") String jwt){
+        List<Course> courseList = courseService.getCoursesbyIds(courseIds, jwt);
+        return ResponseEntity.ok(courseList);
+    }
+
     @GetMapping("/author/{authorId}")
     public ResponseEntity<List<Course>> getAllCoursesByAuthorId(@PathVariable Long authorId,
                                                                 @RequestHeader("Authorization") String jwt) {

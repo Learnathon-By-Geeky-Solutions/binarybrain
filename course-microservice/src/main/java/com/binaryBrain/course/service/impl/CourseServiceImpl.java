@@ -53,6 +53,15 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public List<Course> getCoursesbyIds(List<Long> courseIds, String jwt) {
+        UserDto userDto = userService.getUserProfile(jwt);
+        if (!validateRole(userDto, Arrays.asList("TEACHER", "ADMIN"))){
+            throw new UserHasNotPermissionException("Only ADMIN & TEACHER can manage course!");
+        }
+        return courseRepository.findByIdIn(courseIds);
+    }
+
+    @Override
     public List<Course> getAllCourseByAuthorId(Long id, String jwt) {
         UserDto userDto = userService.getUserProfile(jwt);
         if (!validateRole(userDto, Arrays.asList("TEACHER", "ADMIN"))){
