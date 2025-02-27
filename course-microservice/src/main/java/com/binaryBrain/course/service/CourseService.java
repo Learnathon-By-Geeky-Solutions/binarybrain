@@ -9,7 +9,7 @@ public interface CourseService {
 
     Course createCourse(Course course, String jwt);
     Course getCourseByCourseId(Long id, String jwt);
-
+    List<Course> getCoursesbyIds(List<Long> courseIds, String jwt);
     List<Course> getAllCourseByAuthorId(Long id, String jwt);
 
     List<Course> getAllCourse(String jwt);

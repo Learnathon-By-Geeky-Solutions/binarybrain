@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ClassroomserviceImpl implements ClassroomService {
@@ -137,10 +137,9 @@ public class ClassroomserviceImpl implements ClassroomService {
         Classroom classroom = getClassroomById(classroomId, jwt);
         validateClassroomModificationPermission(classroom, jwt);
 
-        return classroom.getCourseIds()
-                .stream()
-                .map(courseId -> courseService.getCourseById(courseId, jwt))
-                .collect(Collectors.toList());
+        List<Long> courseIds = new ArrayList<>(classroom.getCourseIds());
+
+        return courseService.getCoursesByIds(courseIds, jwt);
     }
 
     private void validateClassroomModificationPermission(Classroom classroom, String jwt) {
