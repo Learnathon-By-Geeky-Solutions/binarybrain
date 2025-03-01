@@ -24,7 +24,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('binarybrain/online-classroom-management/pom.xml') }}
+          key: ${{ runner.os }}-m2-${{ hashFiles('online-classroom-management/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
       - name: Build and Test with Maven
