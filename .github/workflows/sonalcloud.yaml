@@ -1,0 +1,42 @@
+name: SonarCloud Analysis
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('binarybrain/online-classroom-management/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build and Test with Maven
+        run: mvn -B clean verify jacoco:report
+        working-directory: binarybrain/online-classroom-management
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Analyze with SonarCloud
+        uses: SonarSource/sonarcloud-github-action@v2.2.0
+        with:
+          projectBaseDir: binarybrain/online-classroom-management
+        env:
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
