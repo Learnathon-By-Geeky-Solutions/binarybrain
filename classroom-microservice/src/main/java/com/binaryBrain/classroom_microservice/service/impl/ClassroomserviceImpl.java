@@ -37,9 +37,9 @@ public class ClassroomserviceImpl implements ClassroomService {
                 .anyMatch(targetRoles::contains);
     }
     @Override
-    public Classroom createClassroom(Classroom classroom, String jwt) {
+    public Classroom createClassroom(Classroom classroom, String username) {
 
-        UserDto userDto = userService.getUserProfile(jwt);
+        UserDto userDto = userService.getUserProfile(username);
         if (!validateRole(userDto, Arrays.asList("TEACHER", "ADMIN"))){
             throw new UserHasNotPermissionException("Only teacher or admin can create classroom!");
         }
@@ -50,8 +50,8 @@ public class ClassroomserviceImpl implements ClassroomService {
     }
 
     @Override
-    public Classroom getClassroomById(Long id, String jwt) {
-        UserDto userDto = userService.getUserProfile(jwt);
+    public Classroom getClassroomById(Long id, String username) {
+        UserDto userDto = userService.getUserProfile(username);
         if (!validateRole(userDto, Arrays.asList("TEACHER", "ADMIN"))){
             throw new UserHasNotPermissionException("Only teacher or admin can manage classroom!");
         }
@@ -59,8 +59,8 @@ public class ClassroomserviceImpl implements ClassroomService {
     }
 
     @Override
-    public List<Classroom> getAllClassroomByTeacherId(Long id, String jwt) {
-        UserDto userDto = userService.getUserProfile(jwt);
+    public List<Classroom> getAllClassroomByTeacherId(Long id, String username) {
+        UserDto userDto = userService.getUserProfile(username);
         if (!validateRole(userDto, Arrays.asList("TEACHER", "ADMIN"))){
             throw new UserHasNotPermissionException("Only teacher or admin can manage classroom!");
         }
@@ -68,20 +68,20 @@ public class ClassroomserviceImpl implements ClassroomService {
     }
 
     @Override
-    public void deleteClassroom(Long id, String jwt) {
-        Classroom existingClassroom = getClassroomById(id, jwt);
-        validateClassroomModificationPermission(existingClassroom, jwt);
+    public void deleteClassroom(Long id, String username) {
+        Classroom existingClassroom = getClassroomById(id, username);
+        validateClassroomModificationPermission(existingClassroom, username);
 
         classroomRepository.deleteById(id);
     }
 
     @Override
-    public Classroom addStudentInClassroom(Long classroomId, Long studentId, String jwt) {
+    public Classroom addStudentInClassroom(Long classroomId, Long studentId, String username) {
 
         try {
-            Classroom classroom = getClassroomById(classroomId, jwt);
-            validateClassroomModificationPermission(classroom, jwt);
-            UserDto student = userService.getUserProfileById(studentId, jwt);
+            Classroom classroom = getClassroomById(classroomId, username);
+            validateClassroomModificationPermission(classroom, username);
+            UserDto student = userService.getUserProfileById(studentId, username);
 
             if (!validateRole(student, List.of("STUDENT"))) {
                 throw new UserHasNotPermissionException("Only students can be added to the classroom!");
@@ -98,10 +98,10 @@ public class ClassroomserviceImpl implements ClassroomService {
     }
 
     @Override
-    public Classroom removeStudentFromClassroomById(Long classroomId, Long studentId, String jwt) {
+    public Classroom removeStudentFromClassroomById(Long classroomId, Long studentId, String username) {
         try {
-            Classroom classroom = getClassroomById(classroomId, jwt);
-            validateClassroomModificationPermission(classroom, jwt);
+            Classroom classroom = getClassroomById(classroomId, username);
+            validateClassroomModificationPermission(classroom, username);
 
             if (!classroom.getStudentIds().remove(studentId)) {
                 throw new ResourseNotFoundException("Student not found in the classroom!");
@@ -119,11 +119,11 @@ public class ClassroomserviceImpl implements ClassroomService {
     }
 
     @Override
-    public Classroom addCourseToClassroom(Long classroomId, Long courseId, String jwt) {
-        Classroom classroom = getClassroomById(classroomId, jwt);
-        validateClassroomModificationPermission(classroom, jwt);
+    public Classroom addCourseToClassroom(Long classroomId, Long courseId, String username) {
+        Classroom classroom = getClassroomById(classroomId, username);
+        validateClassroomModificationPermission(classroom, username);
 
-        CourseDto courseDto = courseService.getCourseById(courseId, jwt);
+        CourseDto courseDto = courseService.getCourseById(courseId, username);
         if (classroom.getCourseIds().contains(courseId)) {
             throw new RuntimeException("Course is already assigned to this classroom.");
         }
@@ -133,13 +133,13 @@ public class ClassroomserviceImpl implements ClassroomService {
     }
 
     @Override
-    public List<CourseDto> getAllCourseInClassroom(Long classroomId, String jwt) {
-        Classroom classroom = getClassroomById(classroomId, jwt);
-        validateClassroomModificationPermission(classroom, jwt);
+    public List<CourseDto> getAllCourseInClassroom(Long classroomId, String username) {
+        Classroom classroom = getClassroomById(classroomId, username);
+        validateClassroomModificationPermission(classroom, username);
 
         List<Long> courseIds = new ArrayList<>(classroom.getCourseIds());
 
-        return courseService.getCoursesByIds(courseIds, jwt);
+        return courseService.getCoursesByIds(courseIds, username);
     }
 
     private void validateClassroomModificationPermission(Classroom classroom, String jwt) {

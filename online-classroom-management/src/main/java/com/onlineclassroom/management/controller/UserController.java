@@ -125,21 +125,15 @@ public class UserController {
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<Optional<User>> getUserProfile(@RequestHeader("Authorization") String jwt){
-        if (jwt.startsWith("Bearer ")) {
-            jwt = jwt.substring(7);
-        }
-        Optional<User> user= userService.getUserProfile(jwt);
+    public ResponseEntity<Optional<User>> getUserProfile(@RequestHeader("X-User-Username") String username){
+        Optional<User> user= userService.getUserProfile(username);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @GetMapping("/profile/{id}")
     public ResponseEntity<User> getUserProfileById(@PathVariable Long id,
-                                                   @RequestHeader("Authorization") String jwt){
-        if (jwt.startsWith("Bearer ")) {
-            jwt = jwt.substring(7);
-        }
-        User user = userService.getUserProfileById(id, jwt);
+                                                   @RequestHeader("X-User-Username") String username){
+        User user = userService.getUserProfileById(id, username);
 
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
