@@ -10,6 +10,7 @@ import com.binaryBrain.course.repo.CourseRepository;
 import com.binaryBrain.course.service.CourseService;
 import com.binaryBrain.course.service.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,8 +33,8 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Course createCourse(Course course, String jwt) {
-        UserDto userDto = userService.getUserProfile(jwt);
+    public Course createCourse(Course course, String username) {
+        UserDto userDto = userService.getUserProfile(username);
         if (!validateRole(userDto, Arrays.asList("TEACHER", "ADMIN"))){
             throw new UserHasNotPermissionException("Only ADMIN & TEACHER can create course!");
         }
@@ -44,8 +45,8 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Course getCourseByCourseId(Long id, String jwt) {
-        UserDto userDto = userService.getUserProfile(jwt);
+    public Course getCourseByCourseId(Long id,  String username) {
+        UserDto userDto = userService.getUserProfile(username);
         if (!validateRole(userDto, Arrays.asList("TEACHER", "ADMIN"))){
             throw new UserHasNotPermissionException("Only ADMIN & TEACHER can manage course!");
         }
@@ -53,8 +54,8 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<Course> getCoursesbyIds(List<Long> courseIds, String jwt) {
-        UserDto userDto = userService.getUserProfile(jwt);
+    public List<Course> getCoursesbyIds(List<Long> courseIds, String username) {
+        UserDto userDto = userService.getUserProfile(username);
         if (!validateRole(userDto, Arrays.asList("TEACHER", "ADMIN"))){
             throw new UserHasNotPermissionException("Only ADMIN & TEACHER can manage course!");
         }
@@ -62,8 +63,8 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<Course> getAllCourseByAuthorId(Long id, String jwt) {
-        UserDto userDto = userService.getUserProfile(jwt);
+    public List<Course> getAllCourseByAuthorId(Long id, String username) {
+        UserDto userDto = userService.getUserProfile(username);
         if (!validateRole(userDto, Arrays.asList("TEACHER", "ADMIN"))){
             throw new UserHasNotPermissionException("Only ADMIN & TEACHER can manage course!");
         }
@@ -71,18 +72,18 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<Course> getAllCourse(String jwt) {
-        UserDto userDto = userService.getUserProfile(jwt);
-        if (!validateRole(userDto, List.of("ADMIN"))){
+    public List<Course> getAllCourse(String username) {
+        UserDto userDto = userService.getUserProfile(username);
+        if (!validateRole(userDto, List.of("ADMIN", "TEACHER"))){
             throw new UserHasNotPermissionException("Only ADMIN can get all course list!");
         }
         return courseRepository.findAll();
     }
 
     @Override
-    public Course updateCourse(Long courseId, Course updatedCourse, String jwt) {
-        Course existingCourse = getCourseByCourseId(courseId, jwt);
-        validateCourseModificationPermission(existingCourse, jwt);
+    public Course updateCourse(Long courseId, Course updatedCourse, String username) {
+        Course existingCourse = getCourseByCourseId(courseId, username);
+        validateCourseModificationPermission(existingCourse, username);
 
         if (updatedCourse.getTitle() != null)
             existingCourse.setTitle(updatedCourse.getTitle());
@@ -97,15 +98,15 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public void deleteCourse(Long courseId, String jwt) {
-        Course existingCourse = getCourseByCourseId(courseId, jwt);
-        validateCourseModificationPermission(existingCourse, jwt);
+    public void deleteCourse(Long courseId, String username) {
+        Course existingCourse = getCourseByCourseId(courseId, username);
+        validateCourseModificationPermission(existingCourse, username);
 
         courseRepository.deleteById(courseId);
     }
 
-    private void validateCourseModificationPermission(Course course, String jwt) {
-        UserDto userDto = userService.getUserProfile(jwt);
+    private void validateCourseModificationPermission(Course course, String username) {
+        UserDto userDto = userService.getUserProfile(username);
         boolean isAdmin = validateRole(userDto, List.of("ADMIN"));
         boolean isTeacher = validateRole(userDto, List.of("TEACHER"));
 

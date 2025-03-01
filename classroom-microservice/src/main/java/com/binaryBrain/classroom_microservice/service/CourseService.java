@@ -10,10 +10,10 @@ import java.util.List;
 public interface CourseService {
     @GetMapping("/api/v1/private/course/{id}")
     CourseDto getCourseById(@PathVariable Long id,
-                            @RequestHeader("Authorization") String jwt);
+                            @RequestHeader("X-User-Username") String username);
 
     @GetMapping("/api/v1/private/course/by-ids")
     List<CourseDto> getCoursesByIds(@RequestParam List<Long> courseIds,
-                                    @RequestHeader("Authorization") String jwt);
+                                    @RequestHeader("X-User-Username") String username);
 
 }
