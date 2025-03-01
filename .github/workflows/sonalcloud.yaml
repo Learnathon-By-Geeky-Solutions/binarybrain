@@ -29,14 +29,14 @@ jobs:
 
       - name: Build and Test with Maven
         run: mvn -B clean verify jacoco:report
-        working-directory: binarybrain/online-classroom-management
+        working-directory: online-classroom-management
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Analyze with SonarCloud
         uses: SonarSource/sonarcloud-github-action@v2.2.0
         with:
-          projectBaseDir: binarybrain/online-classroom-management
+          projectBaseDir: online-classroom-management
         env:
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
