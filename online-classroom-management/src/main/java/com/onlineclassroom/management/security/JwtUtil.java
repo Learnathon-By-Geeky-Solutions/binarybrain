@@ -100,7 +100,13 @@ public class JwtUtil {
         }
     }
 
-    private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    public Boolean isTokenExpired(String token) {
+        try {
+            return extractExpiration(token).before(new Date());
+        } catch (ExpiredJwtException e) {
+            return true;
+        } catch (JwtException e) {
+            throw new RuntimeException("Invalid JWT token!", e);
+        }
     }
 }

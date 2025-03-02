@@ -26,7 +26,10 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public RefreshToken createRefreshToken(User user) {
+        refreshTokenRepository.deleteByUser(user);
+
         long expiration = (refreshTokenExp != null) ? refreshTokenExp : 604800000L;
+
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setUser(user);
         refreshToken.setToken(UUID.randomUUID().toString());
