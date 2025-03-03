@@ -14,6 +14,11 @@ An advanced platform to streamline online classroom and course management for te
 
 ---
 
+### Work Breakdown Structure (WBS)**
+For a detailed breakdown of project tasks and responsibilities, refer to our **[WBS Document](<https://docs.google.com/spreadsheets/d/1bgchJjNJaJP7OYBhqBkN5EjsBL5wpQkKD4xSSDxRZ_Q/edit?gid=1200157808#gid=1200157808>)**.
+
+---
+
 ## Key Features
 
 ### **1. User Roles**
