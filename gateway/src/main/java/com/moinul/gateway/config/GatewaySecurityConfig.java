@@ -1,4 +1,5 @@
 package com.moinul.gateway.config;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moinul.gateway.security.JwtAuthFilter;
 import com.moinul.gateway.security.JwtUtil;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +19,8 @@ public class GatewaySecurityConfig {
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/api/user/**",
                                 "/api/v1/private/course/**",
-                                "/api/v1/private/classroom/**")
+                                "/api/v1/private/classroom/**",
+                                "/api/v1/private/task/**")
                         .permitAll()
                         .anyExchange().authenticated()
                 )
@@ -29,4 +31,5 @@ public class GatewaySecurityConfig {
     public JwtAuthFilter jwtAuthFilter(JwtUtil jwtUtil) {
         return new JwtAuthFilter(jwtUtil);
     }
+
 }
