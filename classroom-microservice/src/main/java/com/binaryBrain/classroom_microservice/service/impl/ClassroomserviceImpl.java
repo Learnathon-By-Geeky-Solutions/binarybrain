@@ -3,13 +3,13 @@ package com.binaryBrain.classroom_microservice.service.impl;
 import com.binaryBrain.classroom_microservice.dto.CourseDto;
 import com.binaryBrain.classroom_microservice.dto.RoleDto;
 import com.binaryBrain.classroom_microservice.dto.UserDto;
-import com.binaryBrain.classroom_microservice.exception.ResourseNotFoundException;
-import com.binaryBrain.classroom_microservice.exception.UserHasNotPermissionException;
 import com.binaryBrain.classroom_microservice.model.Classroom;
 import com.binaryBrain.classroom_microservice.repo.ClassroomRepository;
 import com.binaryBrain.classroom_microservice.service.ClassroomService;
 import com.binaryBrain.classroom_microservice.service.CourseService;
 import com.binaryBrain.classroom_microservice.service.UserService;
+import com.binaryBrain.exception.ResourseNotFoundException;
+import com.binaryBrain.exception.UserHasNotPermissionException;
 import feign.FeignException;
 import org.springframework.stereotype.Service;
 

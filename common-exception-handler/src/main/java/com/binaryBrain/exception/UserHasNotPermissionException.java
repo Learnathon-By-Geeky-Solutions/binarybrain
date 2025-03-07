@@ -1,4 +1,4 @@
-package com.binaryBrain.course.exception;
+package com.binaryBrain.exception;
 
 public class UserHasNotPermissionException extends RuntimeException{
     public UserHasNotPermissionException(String message){
