@@ -3,14 +3,13 @@ package com.binaryBrain.course.service.impl;
 import com.binaryBrain.course.dto.CourseStatus;
 import com.binaryBrain.course.dto.RoleDto;
 import com.binaryBrain.course.dto.UserDto;
-import com.binaryBrain.course.exception.ResourseNotFoundException;
-import com.binaryBrain.course.exception.UserHasNotPermissionException;
 import com.binaryBrain.course.model.Course;
 import com.binaryBrain.course.repo.CourseRepository;
 import com.binaryBrain.course.service.CourseService;
 import com.binaryBrain.course.service.UserService;
+import com.binaryBrain.exception.ResourseNotFoundException;
+import com.binaryBrain.exception.UserHasNotPermissionException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.Arrays;
 import java.util.List;

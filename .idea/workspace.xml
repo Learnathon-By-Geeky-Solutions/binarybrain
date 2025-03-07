@@ -4,7 +4,29 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="69911675-4de8-4e3a-82d7-c934f03bca76" name="Changes" comment="" />
+    <list default="true" id="69911675-4de8-4e3a-82d7-c934f03bca76" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-exception-handler/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/classroom-microservice/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/classroom-microservice/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/classroom-microservice/src/main/java/com/binaryBrain/classroom_microservice/dto/ErrorDetails.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/classroom-microservice/src/main/java/com/binaryBrain/classroom_microservice/exception/ResourseNotFoundException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/classroom-microservice/src/main/java/com/binaryBrain/classroom_microservice/exception/UserHasNotPermissionException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/classroom-microservice/src/main/java/com/binaryBrain/classroom_microservice/exception/global/GlobalExceptionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/classroom-microservice/src/main/java/com/binaryBrain/classroom_microservice/service/impl/ClassroomserviceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/classroom-microservice/src/main/java/com/binaryBrain/classroom_microservice/service/impl/ClassroomserviceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-microservice/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/course-microservice/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/controller/CourseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/controller/CourseController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/dto/ErrorDetails.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/exception/ResourseNotFoundException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/exception/UserHasNotPermissionException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/exception/global/GlobalExceptionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/service/impl/CourseServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/service/impl/CourseServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-microservice/target/classes/com/binaryBrain/course/controller/CourseController.class" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -24,24 +46,50 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feat/staging-AB#322-course-service&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/moinulsourav/Desktop/Learnathon/GitHub/binarybrain2&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.ClassroomMicroserviceApplication.executor": "Run",
+    "Spring Boot.CourseMicroserviceApplication.executor": "Run",
+    "Spring Boot.EurekaServerApplication.executor": "Run",
+    "Spring Boot.GatewayApplication.executor": "Run",
+    "Spring Boot.OnlineClassroomManagementSystemApplication.executor": "Run",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "feat/staging-AB#322-course-microservice",
+    "jdk.selected.JAVA_MODULE": "21",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/moinulsourav/Desktop/Learnathon/GitHub/binarybrain3/common-exception-handler/src/main/java/com/binaryBrain",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "run.configurations.included.in.services": "true",
+    "show.migrate.to.gradle.popup": "false",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
-  <component name="RunManager">
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/common-exception-handler/src/main/java/com/binaryBrain" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.binaryBrain.exception" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="MicronautRunConfigurationType" />
+        <option value="QuarkusRunConfigurationType" />
+        <option value="SpringBootApplicationConfigurationType" />
+      </set>
+    </option>
+  </component>
+  <component name="RunManager" selected="Spring Boot.ClassroomMicroserviceApplication">
     <configuration default="true" type="MavenRunConfiguration" factoryName="Maven">
       <MavenSettings>
         <option name="myGeneralSettings" />
@@ -70,6 +118,51 @@
       </MavenSettings>
       <method v="2" />
     </configuration>
+    <configuration name="ClassroomMicroserviceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="classroom-microservice" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.binaryBrain.classroom_microservice.ClassroomMicroserviceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CourseMicroserviceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="course-microservice" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.binaryBrain.course.CourseMicroserviceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="EurekaServerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="eureka-server" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.moinul.EurekaServerApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GatewayApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="gateway" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.moinul.gateway.GatewayApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="OnlineClassroomManagementSystemApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="online-classroom-management" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.onlineclassroom.management.OnlineClassroomManagementSystemApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Spring Boot.ClassroomMicroserviceApplication" />
+      <item itemvalue="Spring Boot.CourseMicroserviceApplication" />
+      <item itemvalue="Spring Boot.EurekaServerApplication" />
+      <item itemvalue="Spring Boot.GatewayApplication" />
+      <item itemvalue="Spring Boot.OnlineClassroomManagementSystemApplication" />
+    </list>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -89,6 +182,7 @@
       <workItem from="1739450256060" duration="80000" />
       <workItem from="1739665689032" duration="29000" />
       <workItem from="1740270723386" duration="743000" />
+      <workItem from="1741338865588" duration="1866000" />
     </task>
     <servers />
   </component>
