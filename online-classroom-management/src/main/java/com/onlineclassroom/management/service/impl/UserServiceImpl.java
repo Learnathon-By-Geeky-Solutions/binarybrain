@@ -8,6 +8,7 @@ import com.onlineclassroom.management.model.Role;
 import com.onlineclassroom.management.model.User;
 import com.onlineclassroom.management.repository.RoleRepository;
 import com.onlineclassroom.management.repository.UserRepository;
+import com.onlineclassroom.management.security.JwtUtil;
 import com.onlineclassroom.management.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 /**
  * Implementation of the UserService interface for user registration.
@@ -31,7 +33,9 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder){
+    public UserServiceImpl(UserRepository userRepository,
+                           RoleRepository roleRepository,
+                           PasswordEncoder passwordEncoder){
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -72,5 +76,16 @@ public class UserServiceImpl implements UserService {
             user.setRoles(roles);
         }
         return userRepository.save(user);
+    }
+
+    @Override
+    public Optional<User> getUserProfile(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    @Override
+    public User getUserProfileById(Long id, String username) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
 }

@@ -3,7 +3,11 @@ server:
 
 spring:
   application:
-    name: OCM User Registration
+    name: OCM-USER-REGISTRATION
+
+  config:
+    import: classpath:secret.properties
+
 
   jpa:
     hibernate:
@@ -19,3 +23,11 @@ spring:
     password:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8070/eureka/

@@ -9,7 +9,7 @@ import com.onlineclassroom.management.model.User;
  *
  * @author Md Moinul Islam Sourav
  * @since 2025-02-02
- * lastModified 2025-02-04
+ * lastModified: 2025-02-04
  */
 public class UserMapper {
     /**
