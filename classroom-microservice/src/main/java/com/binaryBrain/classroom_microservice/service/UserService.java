@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 @FeignClient(name = "OCM-USER-REGISTRATION", url="http://localhost:5001/")
 public interface UserService {
     @GetMapping("/api/user/profile")
-    public UserDto getUserProfile(@RequestHeader("Authorization") String jwt);
+    public UserDto getUserProfile(@RequestHeader("X-User-Username") String username);
 
     @GetMapping("/api/user/profile/{id}")
     public UserDto getUserProfileById(@PathVariable Long id,
-                                  @RequestHeader("Authorization") String jwt);
+                                      @RequestHeader("X-User-Username") String username);
 }
