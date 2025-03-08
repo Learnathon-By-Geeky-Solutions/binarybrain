@@ -1,4 +1,4 @@
-package com.binaryBrain.task_microservice.exception;
+package com.binaryBrain.exception;
 
 public class UserHasNotPermissionException extends RuntimeException{
     public UserHasNotPermissionException(String message){

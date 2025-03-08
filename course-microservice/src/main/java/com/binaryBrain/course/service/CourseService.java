@@ -1,8 +1,6 @@
 package com.binaryBrain.course.service;
 
-import com.binaryBrain.course.dto.UserDto;
 import com.binaryBrain.course.model.Course;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 

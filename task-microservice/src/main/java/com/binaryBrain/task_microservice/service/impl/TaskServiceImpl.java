@@ -1,10 +1,10 @@
 package com.binaryBrain.task_microservice.service.impl;
 
+import com.binaryBrain.exception.ResourseNotFoundException;
+import com.binaryBrain.exception.UserHasNotPermissionException;
 import com.binaryBrain.task_microservice.dto.RoleDto;
 import com.binaryBrain.task_microservice.dto.TaskDto;
 import com.binaryBrain.task_microservice.dto.UserDto;
-import com.binaryBrain.task_microservice.exception.ResourseNotFoundException;
-import com.binaryBrain.task_microservice.exception.UserHasNotPermissionException;
 import com.binaryBrain.task_microservice.mapper.TaskMapper;
 import com.binaryBrain.task_microservice.model.Task;
 import com.binaryBrain.task_microservice.model.TaskStatus;
@@ -53,23 +53,32 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.save(task);
         return TaskMapper.toTaskDto(task);
     }
-
     @Override
     public TaskDto getTaskById(Long id, String username) {
         userService.getUserProfile(username);
         Task task = taskRepository.findById(id).orElseThrow(() -> new ResourseNotFoundException("Classroom not found with id: " + id));
         return TaskMapper.toTaskDto(task);
     }
+    @Override
+    public List<TaskDto> getAllTask(TaskStatus status, String username) {
+        List<Task> taskList;
+        if(status == null)
+            taskList = taskRepository.findAll();
+        else
+            taskList = taskRepository.findByStatus(status);
 
+        return taskList.stream()
+                .map(TaskMapper::toTaskDto)
+                .collect(Collectors.toList());
+    }
     @Override
     public List<TaskDto> getAllTaskByTeacherId(Long id, String username) {
         userService.getUserProfile(username);
         List<Task> taskList = taskRepository.findByTeacherId(id);
-        return taskList.stream().
-                map(TaskMapper::toTaskDto)
+        return taskList.stream()
+                .map(TaskMapper::toTaskDto)
                 .collect(Collectors.toList());
     }
-
     @Override
     public List<TaskDto> getTasksbyIds(List<Long> taskIds, String username) {
         userService.getUserProfile(username);
@@ -79,17 +88,16 @@ public class TaskServiceImpl implements TaskService {
                 .map(TaskMapper::toTaskDto)
                 .collect(Collectors.toList());
     }
-
     @Override
     public TaskDto closeTask(Long taskId, String username) {
         TaskDto taskDto = getTaskById(taskId, username);
         validateTaskModificationPermission(taskDto, username);
 
-        Task task = taskRepository.findById(taskId).orElseThrow(() -> new ResourseNotFoundException("Classroom not found with id: " + taskId));
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new ResourseNotFoundException("Task not found with id: " + taskId));
+        task.setStatus(TaskStatus.CLOSED);
         taskRepository.save(task);
         return TaskMapper.toTaskDto(task);
     }
-
     @Override
     public TaskDto updateTask(Long taskId, TaskDto updatedTaskDto, String username) {
         TaskDto existingTaskDto = getTaskById(taskId, username);
@@ -99,8 +107,12 @@ public class TaskServiceImpl implements TaskService {
             existingTaskDto.setTitle(updatedTaskDto.getTitle());
         if (updatedTaskDto.getDescription() != null)
             existingTaskDto.setDescription(updatedTaskDto.getDescription());
-        if (updatedTaskDto.getDeadline() != null)
+        if (updatedTaskDto.getDeadline() != null) {
+            if (updatedTaskDto.getDeadline().isBefore(LocalDateTime.now())) {
+                throw new IllegalArgumentException("Deadline must be in the future");
+            }
             existingTaskDto.setDeadline(updatedTaskDto.getDeadline());
+        }
         if (updatedTaskDto.getStatus() != null)
             existingTaskDto.setStatus(updatedTaskDto.getStatus());
         if (updatedTaskDto.getAttachmentUrl() != null)
@@ -117,7 +129,6 @@ public class TaskServiceImpl implements TaskService {
 
         taskRepository.deleteById(id);
     }
-
     private void validateTaskModificationPermission(TaskDto taskDto, String username) {
         UserDto userDto = userService.getUserProfile(username);
         boolean isTeacher = validateRole(userDto, List.of("TEACHER"));

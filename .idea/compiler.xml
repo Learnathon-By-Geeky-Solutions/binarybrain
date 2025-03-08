@@ -2,15 +2,17 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="task-microservice" />
         <module name="classroom-microservice" />
+        <module name="online-classroom-management" />
+        <module name="task-microservice" />
+        <module name="common-exception-handler" />
         <module name="eureka-server" />
         <module name="gateway" />
-        <module name="online-classroom-management" />
         <module name="course-microservice" />
       </profile>
     </annotationProcessing>

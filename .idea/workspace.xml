@@ -5,16 +5,42 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="69911675-4de8-4e3a-82d7-c934f03bca76" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-exception-handler/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-exception-handler/src/main/java/com/binaryBrain/Main.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-exception-handler/target/classes/com/binaryBrain/Main.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-exception-handler/target/classes/com/binaryBrain/exception/ErrorDetails.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-exception-handler/target/classes/com/binaryBrain/exception/ResourseNotFoundException.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-exception-handler/target/classes/com/binaryBrain/exception/UserHasNotPermissionException.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-exception-handler/target/classes/com/binaryBrain/exception/global/GlobalExceptionHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway/src/main/java/com/moinul/gateway/config/GatewaySecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/src/main/java/com/moinul/gateway/config/GatewaySecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway/src/main/java/com/moinul/gateway/security/JwtAuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/src/main/java/com/moinul/gateway/security/JwtAuthFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway/src/main/java/com/moinul/gateway/security/JwtUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/src/main/java/com/moinul/gateway/security/JwtUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.sonarcloud.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/classroom-microservice/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/classroom-microservice/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/classroom-microservice/src/main/java/com/binaryBrain/classroom_microservice/dto/ErrorDetails.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/classroom-microservice/src/main/java/com/binaryBrain/classroom_microservice/exception/ResourseNotFoundException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/classroom-microservice/src/main/java/com/binaryBrain/classroom_microservice/exception/UserHasNotPermissionException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/classroom-microservice/src/main/java/com/binaryBrain/classroom_microservice/exception/global/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-exception-handler/src/main/java/com/binaryBrain/exception/global/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/classroom-microservice/src/main/java/com/binaryBrain/classroom_microservice/service/impl/ClassroomserviceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/classroom-microservice/src/main/java/com/binaryBrain/classroom_microservice/service/impl/ClassroomserviceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-microservice/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/course-microservice/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/controller/CourseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/controller/CourseController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/dto/ErrorDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-exception-handler/src/main/java/com/binaryBrain/exception/ErrorDetails.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/exception/ResourseNotFoundException.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-exception-handler/src/main/java/com/binaryBrain/exception/ResourseNotFoundException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/exception/UserHasNotPermissionException.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-exception-handler/src/main/java/com/binaryBrain/exception/UserHasNotPermissionException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/exception/global/GlobalExceptionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/service/CourseService.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/service/CourseService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/service/impl/CourseServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/service/impl/CourseServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/task-microservice/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/task-microservice/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/task-microservice/src/main/java/com/binaryBrain/task_microservice/controller/TaskController.java" beforeDir="false" afterPath="$PROJECT_DIR$/task-microservice/src/main/java/com/binaryBrain/task_microservice/controller/TaskController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/task-microservice/src/main/java/com/binaryBrain/task_microservice/dto/ErrorDetails.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/task-microservice/src/main/java/com/binaryBrain/task_microservice/exception/ResourseNotFoundException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/task-microservice/src/main/java/com/binaryBrain/task_microservice/exception/UserHasNotPermissionException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/task-microservice/src/main/java/com/binaryBrain/task_microservice/exception/global/GlobalExceptionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/task-microservice/src/main/java/com/binaryBrain/task_microservice/repository/TaskRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/task-microservice/src/main/java/com/binaryBrain/task_microservice/repository/TaskRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/task-microservice/src/main/java/com/binaryBrain/task_microservice/service/TaskService.java" beforeDir="false" afterPath="$PROJECT_DIR$/task-microservice/src/main/java/com/binaryBrain/task_microservice/service/TaskService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/task-microservice/src/main/java/com/binaryBrain/task_microservice/service/impl/TaskServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/task-microservice/src/main/java/com/binaryBrain/task_microservice/service/impl/TaskServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,6 +60,13 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="Use Maven wrapper" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
 }</component>
@@ -42,37 +75,38 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Spring Boot.ClassroomMicroserviceApplication.executor": "Run",
-    "Spring Boot.CourseMicroserviceApplication.executor": "Run",
-    "Spring Boot.EurekaServerApplication.executor": "Run",
-    "Spring Boot.GatewayApplication.executor": "Run",
-    "Spring Boot.OnlineClassroomManagementSystemApplication.executor": "Run",
-    "Spring Boot.TaskMicroserviceApplication.executor": "Run",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "feat/staging-AB#331-task-service",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/moinulsourav/Desktop/Learnathon/GitHub/binarybrain3/gateway/src/main/resources",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "run.configurations.included.in.services": "true",
-    "show.migrate.to.gradle.popup": "false",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Spring Boot.ClassroomMicroserviceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.CourseMicroserviceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.EurekaServerApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.GatewayApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.OnlineClassroomManagementSystemApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.TaskMicroserviceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feat/staging-AB#331-task-service&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/moinulsourav/Desktop/Learnathon/GitHub/binarybrain3&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/gateway/src/main/resources" />
       <recent name="$PROJECT_DIR$/online-classroom-management/src/main/resources" />
     </key>
@@ -190,6 +224,12 @@
       <workItem from="1740270723386" duration="743000" />
       <workItem from="1741143108302" duration="17000" />
       <workItem from="1741234923597" duration="8724000" />
+      <workItem from="1741414539180" duration="398000" />
+      <workItem from="1741415214382" duration="46000" />
+      <workItem from="1741415293466" duration="83000" />
+      <workItem from="1741415431643" duration="25000" />
+      <workItem from="1741416110400" duration="277000" />
+      <workItem from="1741417082807" duration="5491000" />
     </task>
     <servers />
   </component>
