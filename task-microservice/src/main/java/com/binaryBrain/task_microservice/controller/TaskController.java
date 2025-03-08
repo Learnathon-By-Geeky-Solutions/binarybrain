@@ -1,6 +1,7 @@
 package com.binaryBrain.task_microservice.controller;
 
 import com.binaryBrain.task_microservice.dto.TaskDto;
+import com.binaryBrain.task_microservice.model.TaskStatus;
 import com.binaryBrain.task_microservice.service.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskDto> createClassroom(@RequestBody TaskDto taskDto,
+    public ResponseEntity<TaskDto> createTask(@RequestBody TaskDto taskDto,
                                                    @RequestHeader("X-User-Username") String username){
 
 
@@ -34,6 +35,13 @@ public class TaskController {
         TaskDto taskDto = taskService.getTaskById(id,username);
 
         return new ResponseEntity<>(taskDto, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<TaskDto>> getAllTask(@RequestParam(required = false) TaskStatus status,
+                                              @RequestHeader("X-User-Username") String username){
+        List<TaskDto> taskDtoList = taskService.getAllTask(status, username);
+        return new ResponseEntity<>(taskDtoList, HttpStatus.OK);
     }
 
     @GetMapping("/teacher/{teacherId}")
@@ -51,6 +59,12 @@ public class TaskController {
         return new ResponseEntity<>(taskDtoList, HttpStatus.OK);
     }
 
+    @PutMapping("/close/{id}")
+    public ResponseEntity<TaskDto> closeTask(@PathVariable Long id,
+                                             @RequestHeader("X-User-Username") String username){
+        TaskDto taskDto = taskService.closeTask(id, username);
+        return new ResponseEntity<>(taskDto, HttpStatus.OK);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<TaskDto> updateTask(@PathVariable Long id,
@@ -59,10 +73,12 @@ public class TaskController {
         TaskDto updatedTaskDto = taskService.updateTask(id, taskDto, username);
         return new ResponseEntity<>(updatedTaskDto, HttpStatus.OK);
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTaskById(@PathVariable Long id,
                                                @RequestHeader("X-User-Username") String username){
         taskService.deleteTaskById(id,username);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
 }

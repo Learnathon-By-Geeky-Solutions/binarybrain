@@ -1,4 +1,4 @@
-package com.binaryBrain.course.dto;
+package com.binaryBrain.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
