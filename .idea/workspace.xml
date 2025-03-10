@@ -5,42 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="69911675-4de8-4e3a-82d7-c934f03bca76" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/course-microservice/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/.idea/jarRepositories.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/HELP.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/target/classes/application.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/target/classes/com/binaryBrain/course/CourseMicroserviceApplication.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/target/classes/com/binaryBrain/course/controller/CourseController.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/target/classes/com/binaryBrain/course/dto/CourseDto.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/target/classes/com/binaryBrain/course/dto/CourseStatus.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/target/classes/com/binaryBrain/course/dto/RoleDto.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/target/classes/com/binaryBrain/course/dto/UserDto.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/target/classes/com/binaryBrain/course/mapper/CourseMapper.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/target/classes/com/binaryBrain/course/model/Course.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/target/classes/com/binaryBrain/course/repo/CourseRepository.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/target/classes/com/binaryBrain/course/service/CourseService.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/target/classes/com/binaryBrain/course/service/UserService.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/target/classes/com/binaryBrain/course/service/impl/CourseServiceImpl.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/course-microservice/target/test-classes/com/binaryBrain/course/CourseMicroserviceApplicationTests.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/service/impl/CourseServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/service/impl/CourseServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/online-classroom-management/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/online-classroom-management/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/online-classroom-management/src/main/java/com/onlineclassroom/management/dto/ErrorDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/online-classroom-management/src/main/java/com/onlineclassroom/management/dto/ErrorDetails.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/online-classroom-management/src/main/java/com/onlineclassroom/management/dto/UserDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/online-classroom-management/src/main/java/com/onlineclassroom/management/dto/UserDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/online-classroom-management/src/main/java/com/onlineclassroom/management/exception/user/UserAlreadyExistsException.java" beforeDir="false" afterPath="$PROJECT_DIR$/online-classroom-management/src/main/java/com/onlineclassroom/management/exception/user/UserAlreadyExistsException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/online-classroom-management/src/main/java/com/onlineclassroom/management/mapper/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/online-classroom-management/src/main/java/com/onlineclassroom/management/mapper/UserMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/online-classroom-management/src/main/java/com/onlineclassroom/management/service/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/online-classroom-management/src/main/java/com/onlineclassroom/management/service/impl/UserServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/online-classroom-management/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/online-classroom-management/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/online-classroom-management/src/main/resources/secret.properties.example" beforeDir="false" afterPath="$PROJECT_DIR$/online-classroom-management/src/main/resources/secret.properties.example" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/dto/TaskDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-microservice/src/main/java/com/binaryBrain/course/dto/TaskDto.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,7 +57,7 @@
     "Spring Boot.OnlineClassroomManagementSystemApplication.executor": "Run",
     "Spring Boot.TaskMicroserviceApplication.executor": "Run",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "Merging feat/staging-AB#331-task-service",
+    "git-widget-placeholder": "feat/staging-AB#331-task-service",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/moinulsourav/Desktop/Learnathon/GitHub/binarybrain3/gateway/src/main/resources",
     "node.js.detected.package.eslint": "true",

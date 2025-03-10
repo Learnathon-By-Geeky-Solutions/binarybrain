@@ -12,12 +12,8 @@ public class TaskDto {
     private String title;
     private String description;
     private LocalDateTime createdAt;
-
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime deadline;
-
     private String attachmentUrl;
     private Long teacherId;
     private TaskStatus status;
-
 }
