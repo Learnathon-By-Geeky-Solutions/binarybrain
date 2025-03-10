@@ -1,9 +1,16 @@
 package com.moinul.gateway.security;
+import io.jsonwebtoken.JwtException;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
+import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Config> {
@@ -22,23 +29,25 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
             String path = request.getPath().toString();
             if(path.equals("/api/user/login") ||
                     path.equals("/api/user/register") ||
-                            path.equals("/api/user/refresh")){
+                    path.equals("/api/user/refresh")){
                 return chain.filter(exchange);
             }
 
             String token = extractToken(exchange.getRequest());
+            try {
+                if (token == null || !jwtUtil.validateToken(token)) {
+                    throw new JwtException("Invalid or expired token!");
+                }
 
-            if (token == null || !jwtUtil.validateToken(token)) {
-                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-                return exchange.getResponse().setComplete();
+                String username = jwtUtil.extractUsername(token);
+                ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
+                        .header("X-User-Username", username)
+                        .build();
+
+                return chain.filter(exchange.mutate().request(modifiedRequest).build());
+            } catch (JwtException | IllegalArgumentException e) {
+                return handleUnauthorizedResponse(exchange, e.getMessage());
             }
-
-            String username = jwtUtil.extractUsername(token);
-            ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
-                    .header("X-User-Username", username)
-                    .build();
-
-            return chain.filter(exchange.mutate().request(modifiedRequest).build());
         };
     }
 
@@ -48,6 +57,14 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
             return authHeader.substring(7);
         }
         return null;
+    }
+
+    private Mono<Void> handleUnauthorizedResponse(ServerWebExchange exchange, String message) {
+        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+        exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+        String errorMessage = "{\"error\": \"" + message + "\"}";
+        DataBuffer buffer = exchange.getResponse().bufferFactory().wrap(errorMessage.getBytes(StandardCharsets.UTF_8));
+        return exchange.getResponse().writeWith(Mono.just(buffer));
     }
 
     public static class Config {

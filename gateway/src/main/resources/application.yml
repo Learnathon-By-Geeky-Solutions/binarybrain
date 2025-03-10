@@ -35,6 +35,14 @@ spring:
           filters:
             - JwtAuthFilter
 
+        - id: Task-MICROSERVICE
+          uri:
+            http://localhost:5004
+          predicates:
+            - Path=/api/v1/private/task/**
+          filters:
+            - JwtAuthFilter
+
 eureka:
   instance:
     prefer-ip-address: true

@@ -17,9 +17,6 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    @Value("${jwt.expiration}")
-    private long expiration;
-
     private Key signingKey;
 
     @PostConstruct
@@ -46,18 +43,24 @@ public class JwtUtil {
     }
 
     public Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            throw new JwtException("Token expired", e);
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new JwtException("Invalid token", e);
+        }
     }
 
     public boolean validateToken(String token) {
         try {
             return !isTokenExpired(token);
         } catch (JwtException | IllegalArgumentException e) {
-            return false;
+            throw new JwtException("Invalid Token!");
         }
     }
 
@@ -65,9 +68,9 @@ public class JwtUtil {
         try {
             return extractExpiration(token).before(new Date());
         } catch (ExpiredJwtException e) {
-            return true;
+            throw new JwtException("Token is expired!");
         } catch (JwtException e) {
-            throw new RuntimeException("Invalid JWT token!", e);
+            throw new JwtException("Invalid token!");
         }
     }
 }
