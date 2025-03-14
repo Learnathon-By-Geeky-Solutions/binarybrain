@@ -27,10 +27,15 @@ public class FileHandlerServiceImpl implements FileHandlerService {
                 throw new UnsupportedFileTypeException("Unsupported file type: " + file.getContentType() + "\n (Supported file: PDF, JPG, JPEG, PNG)");
             }
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path path = Paths.get(FILE_DIRECTORY).resolve(fileName);
+            Path targetDirectory = Paths.get(FILE_DIRECTORY).normalize();
+            Path path = targetDirectory.resolve(fileName).normalize();
 
-            if (!Files.exists(Paths.get(FILE_DIRECTORY))) {
-                Files.createDirectories(Paths.get(FILE_DIRECTORY));
+            if (!path.startsWith(targetDirectory)) {
+                throw new IOException("Entry is outside of the target directory");
+            }
+
+            if (!Files.exists(targetDirectory)) {
+                Files.createDirectories(targetDirectory);
             }
 
             Files.write(path, file.getBytes());
