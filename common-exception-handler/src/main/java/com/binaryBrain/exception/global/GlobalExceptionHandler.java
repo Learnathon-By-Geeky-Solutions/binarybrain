@@ -2,6 +2,7 @@ package com.binaryBrain.exception.global;
 
 import com.binaryBrain.exception.ErrorDetails;
 import com.binaryBrain.exception.ResourseNotFoundException;
+import com.binaryBrain.exception.UnsupportedFileTypeException;
 import com.binaryBrain.exception.UserHasNotPermissionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourseNotFoundException.class)
     public ResponseEntity<ErrorDetails> handleResourceNotFoundException(ResourseNotFoundException e, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UnsupportedFileTypeException.class)
+    public ResponseEntity<ErrorDetails> handleUnsupportedFileTypeException(UnsupportedFileTypeException e, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }

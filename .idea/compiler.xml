@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="classroom-microservice" />
+        <module name="task-submission-service" />
         <module name="online-classroom-management" />
         <module name="task-microservice" />
         <module name="common-exception-handler" />
@@ -25,6 +26,7 @@
       <module name="gateway" options="-parameters" />
       <module name="online-classroom-management" options="-parameters" />
       <module name="task-microservice" options="-parameters" />
+      <module name="task-submission-service" options="-parameters" />
     </option>
   </component>
 </project>

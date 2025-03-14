@@ -16,6 +16,7 @@
 		<module>online-classroom-management</module>
 		<module>common-exception-handler</module>
 		<module>task-microservice</module>
+		<module>task-submission-service</module>
 	</modules>
 
 	<dependencyManagement>

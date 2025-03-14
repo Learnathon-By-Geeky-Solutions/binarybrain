@@ -1,4 +1,5 @@
 package com.moinul.gateway.security;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -35,8 +36,11 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
 
             String token = extractToken(exchange.getRequest());
             try {
-                if (token == null || !jwtUtil.validateToken(token)) {
-                    throw new JwtException("Invalid or expired token!");
+                if(token == null){
+                    throw new JwtException("Missing token!");
+                }
+                if (!jwtUtil.validateToken(token)) {
+                    throw new JwtException("Invalid token!");
                 }
 
                 String username = jwtUtil.extractUsername(token);
@@ -45,8 +49,10 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
                         .build();
 
                 return chain.filter(exchange.mutate().request(modifiedRequest).build());
+            } catch (ExpiredJwtException e){
+                return handleUnauthorizedResponse(exchange, "Token expired!");
             } catch (JwtException | IllegalArgumentException e) {
-                return handleUnauthorizedResponse(exchange, e.getMessage());
+                return handleUnauthorizedResponse(exchange, "Invalid token!");
             }
         };
     }

@@ -16,6 +16,7 @@ public class CourseMapper {
         course.setDescription(courseDto.getDescription());
         course.setStatus(courseDto.getStatus());
         course.setCreatedBy(courseDto.getCreatedBy());
+        course.setTaskIds(courseDto.getTaskIds());
         return course;
     }
 
@@ -27,6 +28,7 @@ public class CourseMapper {
         courseDto.setDescription(course.getDescription());
         courseDto.setStatus(course.getStatus());
         courseDto.setCreatedBy(course.getCreatedBy());
+        courseDto.setTaskIds(course.getTaskIds());
         return courseDto;
     }
 }
