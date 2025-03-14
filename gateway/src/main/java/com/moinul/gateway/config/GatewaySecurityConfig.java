@@ -20,7 +20,8 @@ public class GatewaySecurityConfig {
                         .pathMatchers("/api/user/**",
                                 "/api/v1/private/course/**",
                                 "/api/v1/private/classroom/**",
-                                "/api/v1/private/task/**")
+                                "/api/v1/private/task/**",
+                                "/api/v1/public/submission/**")
                         .permitAll()
                         .anyExchange().authenticated()
                 )

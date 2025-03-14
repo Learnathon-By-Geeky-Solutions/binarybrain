@@ -43,34 +43,24 @@ public class JwtUtil {
     }
 
     public Claims extractAllClaims(String token) {
-        try {
             return Jwts.parserBuilder()
                     .setSigningKey(getSigningKey())
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-        } catch (ExpiredJwtException e) {
-            throw new JwtException("Token expired", e);
-        } catch (JwtException | IllegalArgumentException e) {
-            throw new JwtException("Invalid token", e);
-        }
     }
 
     public boolean validateToken(String token) {
         try {
             return !isTokenExpired(token);
+        } catch (ExpiredJwtException e){
+            throw e;
         } catch (JwtException | IllegalArgumentException e) {
             throw new JwtException("Invalid Token!");
         }
     }
 
     public boolean isTokenExpired(String token) {
-        try {
-            return extractExpiration(token).before(new Date());
-        } catch (ExpiredJwtException e) {
-            throw new JwtException("Token is expired!");
-        } catch (JwtException e) {
-            throw new JwtException("Invalid token!");
-        }
+        return extractExpiration(token).before(new Date());
     }
 }
