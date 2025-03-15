@@ -74,7 +74,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
     @Override
     public SubmissionDto getSubmissionById(Long submissionId) {
-        Submission submission = submissionRepo.findById(submissionId).orElseThrow(() -> new ResourseNotFoundException("Classroom not found with id: " + submissionId));
+        Submission submission = submissionRepo.findById(submissionId).orElseThrow(() -> new ResourseNotFoundException("Submission not found with id: " + submissionId));
         return SubmissionMapper.toSubmissionDto(submission);
     }
 
@@ -109,7 +109,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     public SubmissionDto deleteFileByTaskId(Long taskId, String username) {
         Submission submission = SubmissionMapper.toSubmission(getSubmissionByTaskIdAndUsername(taskId, username));
         String fileName = submission.getFileUrl();
-        fileHandlerService.deletefile(fileName);
+        fileHandlerService.deleteFile(fileName);
         submission.setFileUrl(null);
         submissionRepo.save(submission);
         return SubmissionMapper.toSubmissionDto(submission);

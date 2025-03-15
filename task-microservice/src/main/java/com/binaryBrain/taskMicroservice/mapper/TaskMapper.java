@@ -1,7 +1,7 @@
-package com.binaryBrain.task_microservice.mapper;
+package com.binaryBrain.taskMicroservice.mapper;
 
-import com.binaryBrain.task_microservice.dto.TaskDto;
-import com.binaryBrain.task_microservice.model.Task;
+import com.binaryBrain.taskMicroservice.dto.TaskDto;
+import com.binaryBrain.taskMicroservice.model.Task;
 
 public class TaskMapper {
     private TaskMapper(){

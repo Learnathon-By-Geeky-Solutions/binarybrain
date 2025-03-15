@@ -28,6 +28,9 @@ public class SubmissionController {
                                                     @RequestParam("file") MultipartFile file,
                                                     @RequestParam(required = false) String githubLink,
                                                     @RequestHeader("X-User-Username") String username){
+        if (file == null || file.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         SubmissionDto submissionDto = submissionService.submitTask(taskId, file, githubLink, username);
         return new ResponseEntity<>(submissionDto, HttpStatus.CREATED);
     }

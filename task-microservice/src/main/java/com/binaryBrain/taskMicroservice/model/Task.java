@@ -1,4 +1,4 @@
-package com.binaryBrain.task_microservice.model;
+package com.binaryBrain.taskMicroservice.model;
 
 import jakarta.persistence.*;
 import lombok.Data;

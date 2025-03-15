@@ -6,5 +6,5 @@ public interface FileHandlerService {
     String uploadFile(MultipartFile file);
     byte[] downloadFile(String filename);
 
-    void deletefile(String fileName);
+    void deleteFile(String fileName);
 }

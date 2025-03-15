@@ -1,16 +1,16 @@
-package com.binaryBrain.task_microservice.service.impl;
+package com.binaryBrain.taskMicroservice.service.impl;
 
 import com.binaryBrain.exception.ResourseNotFoundException;
 import com.binaryBrain.exception.UserHasNotPermissionException;
-import com.binaryBrain.task_microservice.dto.RoleDto;
-import com.binaryBrain.task_microservice.dto.TaskDto;
-import com.binaryBrain.task_microservice.dto.UserDto;
-import com.binaryBrain.task_microservice.mapper.TaskMapper;
-import com.binaryBrain.task_microservice.model.Task;
-import com.binaryBrain.task_microservice.model.TaskStatus;
-import com.binaryBrain.task_microservice.repository.TaskRepository;
-import com.binaryBrain.task_microservice.service.TaskService;
-import com.binaryBrain.task_microservice.service.UserService;
+import com.binaryBrain.taskMicroservice.dto.RoleDto;
+import com.binaryBrain.taskMicroservice.dto.TaskDto;
+import com.binaryBrain.taskMicroservice.dto.UserDto;
+import com.binaryBrain.taskMicroservice.mapper.TaskMapper;
+import com.binaryBrain.taskMicroservice.model.Task;
+import com.binaryBrain.taskMicroservice.model.TaskStatus;
+import com.binaryBrain.taskMicroservice.repository.TaskRepository;
+import com.binaryBrain.taskMicroservice.service.TaskService;
+import com.binaryBrain.taskMicroservice.service.UserService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -133,7 +133,7 @@ public class TaskServiceImpl implements TaskService {
         boolean isTeacher = validateRole(userDto, List.of("TEACHER"));
 
         if ((!isTeacher || !taskDto.getTeacherId().equals(userDto.getId()))) {
-            throw new UserHasNotPermissionException("You do not have permission to modify this course.");
+            throw new UserHasNotPermissionException("You do not have permission to modify this task.");
         }
     }
 }

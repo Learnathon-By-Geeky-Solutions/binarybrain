@@ -8,7 +8,7 @@ task-service:
 
 spring:
   application:
-    name: Task-Submission-Microservice
+    name: TASK-SUBMISSION-MICROSERVICE
 
   jpa:
     hibernate:
@@ -31,8 +31,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 file:
-  upload-dir: /Users/moinulsourav/SpringImage/OCM/submission/
-
+  upload-dir: ${FILE_UPLOAD_DIR:./uploads/submission/}
 
 eureka:
   instance:
