@@ -1,16 +1,16 @@
 package com.binaryBrain.course.service.impl;
 
-import com.binaryBrain.course.dto.CourseStatus;
-import com.binaryBrain.course.dto.RoleDto;
-import com.binaryBrain.course.dto.UserDto;
+import com.binaryBrain.course.dto.*;
 import com.binaryBrain.course.model.Course;
 import com.binaryBrain.course.repo.CourseRepository;
 import com.binaryBrain.course.service.CourseService;
+import com.binaryBrain.course.service.TaskService;
 import com.binaryBrain.course.service.UserService;
-import com.binaryBrain.exception.ResourseNotFoundException;
+import com.binaryBrain.exception.ResourceNotFoundException;
 import com.binaryBrain.exception.UserHasNotPermissionException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,10 +18,12 @@ import java.util.List;
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final UserService userService;
+    private final TaskService taskService;
 
-    public CourseServiceImpl(CourseRepository courseRepository, UserService userService) {
+    public CourseServiceImpl(CourseRepository courseRepository, UserService userService, TaskService taskService) {
         this.courseRepository = courseRepository;
         this.userService = userService;
+        this.taskService = taskService;
     }
 
     private boolean validateRole(UserDto userDto, List<String> targetRoles) {
@@ -49,7 +51,7 @@ public class CourseServiceImpl implements CourseService {
         if (!validateRole(userDto, Arrays.asList("TEACHER", "ADMIN"))){
             throw new UserHasNotPermissionException("Only ADMIN & TEACHER can manage course!");
         }
-        return courseRepository.findById(id).orElseThrow(() -> new ResourseNotFoundException("Course not found with id: " + id));
+        return courseRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
     }
 
     @Override
@@ -94,6 +96,44 @@ public class CourseServiceImpl implements CourseService {
             existingCourse.setStatus(updatedCourse.getStatus());
 
         return courseRepository.save(existingCourse);
+    }
+
+    @Override
+    public Course assignTaskInCourse(Long courseId, Long taskId, String username) {
+        Course course = getCourseByCourseId(courseId, username);
+        validateCourseModificationPermission(course, username);
+
+        TaskDto taskDto = taskService.getTaskById(taskId, username);
+        if(taskDto.getStatus().equals(TaskStatus.CLOSED)){
+            throw new UserHasNotPermissionException("CLOSED task can't be added! You should OPEN this first.");
+        }
+        if (course.getTaskIds().contains(taskId)) {
+            throw new RuntimeException("Task is already assigned to this course.");
+        }
+        course.getTaskIds().add(taskId);
+
+        return courseRepository.save(course);
+    }
+
+    @Override
+    public Course removeTaskFromCourse(Long courseId, Long taskId, String username) {
+        Course course = getCourseByCourseId(courseId, username);
+        validateCourseModificationPermission(course, username);
+
+        if (!course.getTaskIds().remove(taskId)) {
+            throw new ResourceNotFoundException("Task not found in the course!");
+        }
+        return courseRepository.save(course);
+    }
+
+    @Override
+    public List<TaskDto> getAllTaskFromCourse(Long courseId, String username) {
+        Course course = getCourseByCourseId(courseId, username);
+        validateCourseModificationPermission(course, username);
+
+        List<Long> courseIds = new ArrayList<>(course.getTaskIds());
+
+        return taskService.getTasksByIds(courseIds, username);
     }
 
     @Override

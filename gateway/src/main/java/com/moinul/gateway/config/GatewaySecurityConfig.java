@@ -18,7 +18,9 @@ public class GatewaySecurityConfig {
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/api/user/**",
                                 "/api/v1/private/course/**",
-                                "/api/v1/private/classroom/**")
+                                "/api/v1/private/classroom/**",
+                                "/api/v1/private/task/**",
+                                "/api/v1/public/submission/**")
                         .permitAll()
                         .anyExchange().authenticated()
                 )
@@ -29,4 +31,5 @@ public class GatewaySecurityConfig {
     public JwtAuthFilter jwtAuthFilter(JwtUtil jwtUtil) {
         return new JwtAuthFilter(jwtUtil);
     }
+
 }

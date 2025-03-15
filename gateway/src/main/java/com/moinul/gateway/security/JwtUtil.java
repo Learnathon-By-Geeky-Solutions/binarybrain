@@ -7,7 +7,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -17,10 +17,7 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    @Value("${jwt.expiration}")
-    private long expiration;
-
-    private Key signingKey;
+    private SecretKey signingKey;
 
     @PostConstruct
     public void init() {
@@ -28,7 +25,7 @@ public class JwtUtil {
         signingKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    private Key getSigningKey() {
+    private SecretKey getSigningKey() {
         return signingKey;
     }
 
@@ -46,28 +43,24 @@ public class JwtUtil {
     }
 
     public Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     public boolean validateToken(String token) {
         try {
             return !isTokenExpired(token);
+        } catch (ExpiredJwtException e){
+            throw e;
         } catch (JwtException | IllegalArgumentException e) {
-            return false;
+            throw new JwtException("Invalid Token!");
         }
     }
 
     public boolean isTokenExpired(String token) {
-        try {
-            return extractExpiration(token).before(new Date());
-        } catch (ExpiredJwtException e) {
-            return true;
-        } catch (JwtException e) {
-            throw new RuntimeException("Invalid JWT token!", e);
-        }
+        return extractExpiration(token).before(new Date());
     }
 }

@@ -4,6 +4,9 @@ import com.binaryBrain.course.dto.CourseStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
 @Entity
 public class Course {
@@ -23,4 +26,8 @@ public class Course {
 
     @Column(nullable = false)
     private Long createdBy;
+
+    @ElementCollection
+    @CollectionTable(name = "course_tasks", joinColumns = @JoinColumn(name = "course_id"))
+    private Set<Long> taskIds = new HashSet<>();
 }

@@ -1,6 +1,9 @@
 server:
   port: 5003
 
+task-service:
+  url: http://localhost:5004/
+
 spring:
   application:
     name: Course-Microservice

@@ -1,6 +1,7 @@
 package com.binaryBrain.course.controller;
 
 import com.binaryBrain.course.dto.CourseDto;
+import com.binaryBrain.course.dto.TaskDto;
 import com.binaryBrain.course.dto.UserDto;
 import com.binaryBrain.course.mapper.CourseMapper;
 import com.binaryBrain.course.model.Course;
@@ -60,6 +61,31 @@ public class CourseController {
     public ResponseEntity<List<Course>> getAllCourses(@RequestHeader("X-User-Username") String username) {
         List<Course> courses = courseService.getAllCourse(username);
         return ResponseEntity.ok(courses);
+    }
+
+    @PutMapping("/{courseId}/add-task/{taskId}")
+    public ResponseEntity<Course> assignTaskInCourse(@PathVariable Long courseId,
+                                                         @PathVariable Long taskId,
+                                                         @RequestHeader("X-User-Username") String username){
+
+        Course course = courseService.assignTaskInCourse(courseId, taskId, username);
+        return new ResponseEntity<>(course, HttpStatus.OK);
+    }
+
+    @PutMapping("/{courseId}/remove-task/{taskId}")
+    public ResponseEntity<Course> removeTaskFromCourse(@PathVariable Long courseId,
+                                                     @PathVariable Long taskId,
+                                                     @RequestHeader("X-User-Username") String username){
+
+        Course course = courseService.removeTaskFromCourse(courseId, taskId, username);
+        return new ResponseEntity<>(course, HttpStatus.OK);
+    }
+
+    @GetMapping("/{courseId}/tasks")
+    public ResponseEntity<List<TaskDto>> getAllTasksFromCourse(@PathVariable Long courseId,
+                                                                   @RequestHeader("X-User-Username") String username) {
+        List<TaskDto> taskDtoList = courseService.getAllTaskFromCourse(courseId,username);
+        return new ResponseEntity<>(taskDtoList, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
