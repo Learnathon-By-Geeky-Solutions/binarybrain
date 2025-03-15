@@ -8,7 +8,7 @@ import com.binaryBrain.classroom_microservice.repo.ClassroomRepository;
 import com.binaryBrain.classroom_microservice.service.ClassroomService;
 import com.binaryBrain.classroom_microservice.service.CourseService;
 import com.binaryBrain.classroom_microservice.service.UserService;
-import com.binaryBrain.exception.ResourseNotFoundException;
+import com.binaryBrain.exception.ResourceNotFoundException;
 import com.binaryBrain.exception.UserHasNotPermissionException;
 import feign.FeignException;
 import org.springframework.stereotype.Service;
@@ -92,7 +92,7 @@ public class ClassroomserviceImpl implements ClassroomService {
             return classroomRepository.save(classroom);
 
         }catch (FeignException.BadRequest e){
-            throw new ResourseNotFoundException("User not found with id: " + studentId);
+            throw new ResourceNotFoundException("User not found with id: " + studentId);
         }
 
     }
@@ -104,12 +104,12 @@ public class ClassroomserviceImpl implements ClassroomService {
             validateClassroomModificationPermission(classroom, username);
 
             if (!classroom.getStudentIds().remove(studentId)) {
-                throw new ResourseNotFoundException("Student not found in the classroom!");
+                throw new ResourceNotFoundException("Student not found in the classroom!");
             }
             return classroomRepository.save(classroom);
 
         }catch (FeignException.BadRequest e){
-            throw new ResourseNotFoundException("Student not found with id: " + studentId);
+            throw new ResourceNotFoundException("Student not found with id: " + studentId);
         }
     }
 
