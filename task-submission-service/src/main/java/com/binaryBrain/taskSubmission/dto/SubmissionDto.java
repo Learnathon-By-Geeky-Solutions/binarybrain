@@ -7,6 +7,10 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * DATA TRANSFER OBJECT FOR TASK SUBMISSIONS.
+ * FACILITATES DATA EXCHANGE BETWEEN CLIENT AND SERVER.
+ */
 @Data
 public class SubmissionDto {
     private Long id;

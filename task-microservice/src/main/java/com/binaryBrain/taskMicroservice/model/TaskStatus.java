@@ -1,4 +1,4 @@
-package com.binaryBrain.task_microservice.model;
+package com.binaryBrain.taskMicroservice.model;
 
 public enum TaskStatus {
     OPEN,

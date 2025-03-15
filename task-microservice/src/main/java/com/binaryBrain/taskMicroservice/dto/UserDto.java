@@ -1,4 +1,4 @@
-package com.binaryBrain.task_microservice.dto;
+package com.binaryBrain.taskMicroservice.dto;
 import lombok.*;
 
 import java.util.Set;

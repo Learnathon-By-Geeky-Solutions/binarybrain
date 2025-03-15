@@ -6,7 +6,7 @@ user-service:
 
 spring:
   application:
-    name: Task-Microservice
+    name: TASK-MICROSERVICE
 
   jpa:
     hibernate:

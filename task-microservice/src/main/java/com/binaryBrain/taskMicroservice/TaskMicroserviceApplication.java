@@ -1,4 +1,4 @@
-package com.binaryBrain.task_microservice;
+package com.binaryBrain.taskMicroservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

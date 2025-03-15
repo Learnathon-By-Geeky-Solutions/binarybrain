@@ -1,7 +1,7 @@
-package com.binaryBrain.task_microservice.repository;
+package com.binaryBrain.taskMicroservice.repository;
 
-import com.binaryBrain.task_microservice.model.Task;
-import com.binaryBrain.task_microservice.model.TaskStatus;
+import com.binaryBrain.taskMicroservice.model.Task;
+import com.binaryBrain.taskMicroservice.model.TaskStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,8 +1,8 @@
-package com.binaryBrain.task_microservice.controller;
+package com.binaryBrain.taskMicroservice.controller;
 
-import com.binaryBrain.task_microservice.dto.TaskDto;
-import com.binaryBrain.task_microservice.model.TaskStatus;
-import com.binaryBrain.task_microservice.service.TaskService;
+import com.binaryBrain.taskMicroservice.dto.TaskDto;
+import com.binaryBrain.taskMicroservice.model.TaskStatus;
+import com.binaryBrain.taskMicroservice.service.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +22,6 @@ public class TaskController {
     @PostMapping
     public ResponseEntity<TaskDto> createTask(@RequestBody TaskDto taskDto,
                                                    @RequestHeader("X-User-Username") String username){
-
-
         TaskDto createdTask = taskService.createTask(taskDto, username);
 
         return new ResponseEntity<>(createdTask, HttpStatus.CREATED);

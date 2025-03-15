@@ -1,7 +1,7 @@
-package com.binaryBrain.task_microservice.service;
+package com.binaryBrain.taskMicroservice.service;
 
-import com.binaryBrain.task_microservice.dto.TaskDto;
-import com.binaryBrain.task_microservice.model.TaskStatus;
+import com.binaryBrain.taskMicroservice.dto.TaskDto;
+import com.binaryBrain.taskMicroservice.model.TaskStatus;
 
 import java.util.List;
 

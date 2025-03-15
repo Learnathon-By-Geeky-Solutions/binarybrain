@@ -1,6 +1,6 @@
-package com.binaryBrain.task_microservice.service;
+package com.binaryBrain.taskMicroservice.service;
 
-import com.binaryBrain.task_microservice.dto.UserDto;
+import com.binaryBrain.taskMicroservice.dto.UserDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

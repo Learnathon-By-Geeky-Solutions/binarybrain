@@ -1,5 +1,4 @@
 package com.moinul.gateway.config;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moinul.gateway.security.JwtAuthFilter;
 import com.moinul.gateway.security.JwtUtil;
 import org.springframework.context.annotation.Bean;

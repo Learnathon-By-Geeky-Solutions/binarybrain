@@ -54,12 +54,12 @@ public class FileHandlerServiceImpl implements FileHandlerService {
             }
             return Files.readAllBytes(filePath);
         } catch (IOException ex){
-            throw new RuntimeException("File upload failed: "+ filename, ex);
+            throw new RuntimeException("File download failed: "+ filename, ex);
         }
     }
 
     @Override
-    public void deletefile(String fileName) {
+    public void deleteFile(String fileName) {
         if (fileName==null) {
             return;
         }

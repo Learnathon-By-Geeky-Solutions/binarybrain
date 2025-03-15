@@ -1,5 +1,5 @@
-package com.binaryBrain.task_microservice.dto;
-import com.binaryBrain.task_microservice.model.TaskStatus;
+package com.binaryBrain.taskMicroservice.dto;
+import com.binaryBrain.taskMicroservice.model.TaskStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import java.time.LocalDateTime;
