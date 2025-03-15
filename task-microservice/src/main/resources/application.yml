@@ -1,6 +1,9 @@
 server:
   port: 5004
 
+user-service:
+  url: http://localhost:5001/
+
 spring:
   application:
     name: Task-Microservice

@@ -3,6 +3,8 @@ package com.binaryBrain.course.mapper;
 import com.binaryBrain.course.dto.CourseDto;
 import com.binaryBrain.course.model.Course;
 
+import java.util.HashSet;
+
 public class CourseMapper {
     private CourseMapper()  {
         throw new RuntimeException("This is a Utility class and can't be instantiated!");
@@ -16,7 +18,7 @@ public class CourseMapper {
         course.setDescription(courseDto.getDescription());
         course.setStatus(courseDto.getStatus());
         course.setCreatedBy(courseDto.getCreatedBy());
-        course.setTaskIds(courseDto.getTaskIds());
+        course.setTaskIds(courseDto.getTaskIds() != null ? courseDto.getTaskIds() : new HashSet<>());
         return course;
     }
 
@@ -28,7 +30,7 @@ public class CourseMapper {
         courseDto.setDescription(course.getDescription());
         courseDto.setStatus(course.getStatus());
         courseDto.setCreatedBy(course.getCreatedBy());
-        courseDto.setTaskIds(course.getTaskIds());
+        courseDto.setTaskIds(course.getTaskIds() != null ? course.getTaskIds() : new HashSet<>());
         return courseDto;
     }
 }
