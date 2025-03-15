@@ -60,6 +60,9 @@ public class FileHandlerServiceImpl implements FileHandlerService {
 
     @Override
     public void deletefile(String fileName) {
+        if (fileName==null) {
+            return;
+        }
         Path filePath = Paths.get(FILE_DIRECTORY).resolve(fileName).normalize();
         try {
             if(Files.exists(filePath)){

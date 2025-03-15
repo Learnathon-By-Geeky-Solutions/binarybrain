@@ -1,6 +1,5 @@
 package com.binaryBrain.course.service;
 
-import com.binaryBrain.course.dto.CourseDto;
 import com.binaryBrain.course.dto.TaskDto;
 import com.binaryBrain.course.model.Course;
 
