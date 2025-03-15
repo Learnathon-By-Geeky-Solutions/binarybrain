@@ -1,6 +1,7 @@
 package com.binaryBrain.taskSubmission.controller;
 
 import com.binaryBrain.taskSubmission.dto.SubmissionDto;
+import com.binaryBrain.taskSubmission.model.SubmissionStatus;
 import com.binaryBrain.taskSubmission.service.FileHandlerService;
 import com.binaryBrain.taskSubmission.service.SubmissionService;
 import org.springframework.http.HttpHeaders;
@@ -62,6 +63,14 @@ public class SubmissionController {
         headers.setContentType(determineMediaType(fileName));
         headers.setContentDispositionFormData("attachment", fileName);
         return new ResponseEntity<>(fileData, headers, HttpStatus.OK);
+    }
+
+    @PutMapping("/review/{submissionId}")
+    public ResponseEntity<SubmissionDto> acceptOrRejectSubmission(@PathVariable Long submissionId,
+                                                                  @RequestParam SubmissionStatus status,
+                                                                  @RequestHeader("X-User-Username") String username){
+        SubmissionDto submissionDto = submissionService.acceptOrRejectSubmission(submissionId, status, username);
+        return new ResponseEntity<>(submissionDto, HttpStatus.OK);
     }
 
     @PutMapping("/{taskId}")

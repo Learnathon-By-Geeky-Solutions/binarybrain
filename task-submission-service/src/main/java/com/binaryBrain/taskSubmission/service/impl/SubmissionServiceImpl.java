@@ -94,6 +94,19 @@ public class SubmissionServiceImpl implements SubmissionService {
         return SubmissionMapper.toSubmissionDto(submission);
     }
     @Override
+    public SubmissionDto acceptOrRejectSubmission(Long submissionId, SubmissionStatus status, String username){
+        Submission submission = submissionRepo.findById(submissionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Submission not found with id: " + submissionId));
+        UserDto userDto = userService.getUserProfile(username);
+        if (!validateRole(userDto, List.of("TEACHER")))
+            throw new UserHasNotPermissionException("Only TEACHER can accept/reject submission!");
+
+        submission.setSubmissionStatus(status);
+        submissionRepo.save(submission);
+
+        return SubmissionMapper.toSubmissionDto(submission);
+    }
+    @Override
     public SubmissionDto updateSubmissionByTaskId(Long taskId, MultipartFile file, String githubLink, String username) {
         Submission submission = SubmissionMapper.toSubmission(getSubmissionByTaskIdAndUsername(taskId, username));
         deleteFileByTaskId(taskId, username);
