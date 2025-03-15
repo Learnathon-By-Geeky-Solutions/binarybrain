@@ -82,7 +82,7 @@ public class CourseController {
     }
 
     @GetMapping("/{courseId}/tasks")
-    public ResponseEntity<List<TaskDto>> getAllTaskFromCourse(@PathVariable Long courseId,
+    public ResponseEntity<List<TaskDto>> getAllTasksFromCourse(@PathVariable Long courseId,
                                                                    @RequestHeader("X-User-Username") String username) {
         List<TaskDto> taskDtoList = courseService.getAllTaskFromCourse(courseId,username);
         return new ResponseEntity<>(taskDtoList, HttpStatus.OK);

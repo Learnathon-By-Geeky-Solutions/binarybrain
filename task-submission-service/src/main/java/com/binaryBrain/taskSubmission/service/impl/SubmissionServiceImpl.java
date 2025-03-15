@@ -1,6 +1,6 @@
 package com.binaryBrain.taskSubmission.service.impl;
 
-import com.binaryBrain.exception.ResourseNotFoundException;
+import com.binaryBrain.exception.ResourceNotFoundException;
 import com.binaryBrain.exception.UserHasNotPermissionException;
 import com.binaryBrain.taskSubmission.dto.RoleDto;
 import com.binaryBrain.taskSubmission.dto.SubmissionDto;
@@ -43,7 +43,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     public SubmissionDto submitTask(Long taskId, MultipartFile file, String githubLink, String username) {
         TaskDto taskDto = taskService.getTaskById(taskId,username);
         if("CLOSED".equals(taskDto.getStatus())){
-            throw new ResourseNotFoundException("Task is not OPEN for submission!");
+            throw new ResourceNotFoundException("Task is not OPEN for submission!");
         }
         UserDto userDto = userService.getUserProfile(username);
         if (!validateRole(userDto, List.of("STUDENT")))
@@ -74,7 +74,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
     @Override
     public SubmissionDto getSubmissionById(Long submissionId) {
-        Submission submission = submissionRepo.findById(submissionId).orElseThrow(() -> new ResourseNotFoundException("Submission not found with id: " + submissionId));
+        Submission submission = submissionRepo.findById(submissionId).orElseThrow(() -> new ResourceNotFoundException("Submission not found with id: " + submissionId));
         return SubmissionMapper.toSubmissionDto(submission);
     }
 
@@ -89,7 +89,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public SubmissionDto getSubmissionByTaskIdAndUsername(Long taskId, String username) {
         Submission submission = submissionRepo.findByTaskIdAndSubmittedBy(taskId, username)
-                .orElseThrow( ()-> new ResourseNotFoundException("No submission found for task id "+ taskId + "by student " + username));
+                .orElseThrow( ()-> new ResourceNotFoundException("No submission found for task id "+ taskId + "by student " + username));
 
         return SubmissionMapper.toSubmissionDto(submission);
     }

@@ -1,6 +1,6 @@
 package com.binaryBrain.taskSubmission.service.impl;
 
-import com.binaryBrain.exception.ResourseNotFoundException;
+import com.binaryBrain.exception.ResourceNotFoundException;
 import com.binaryBrain.exception.UnsupportedFileTypeException;
 import com.binaryBrain.taskSubmission.service.FileHandlerService;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,7 +50,7 @@ public class FileHandlerServiceImpl implements FileHandlerService {
         try{
             Path filePath = Paths.get(FILE_DIRECTORY).resolve(filename).normalize();
             if(!Files.exists(filePath)){
-                throw new ResourseNotFoundException("FILE NOT FOUND: " + filename);
+                throw new ResourceNotFoundException("FILE NOT FOUND: " + filename);
             }
             return Files.readAllBytes(filePath);
         } catch (IOException ex){
