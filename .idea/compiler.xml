@@ -2,21 +2,21 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="classroom-microservice" />
+        <module name="task-submission-service" />
+        <module name="online-classroom-management" />
+        <module name="task-microservice" />
         <module name="common-exception-handler" />
         <module name="eureka-server" />
         <module name="gateway" />
-        <module name="online-classroom-management" />
         <module name="course-microservice" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="task-microservice" target="21" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
@@ -25,6 +25,8 @@
       <module name="eureka-server" options="-parameters" />
       <module name="gateway" options="-parameters" />
       <module name="online-classroom-management" options="-parameters" />
+      <module name="task-microservice" options="-parameters" />
+      <module name="task-submission-service" options="-parameters" />
     </option>
   </component>
 </project>

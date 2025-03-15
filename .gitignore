@@ -1,0 +1,11 @@
+.idea/workspace.xml
+.idea.binarybrain2.iml
+
+# IDE specific files
+.idea/
+*.iml
+*.iws
+*.ipr
+.idea_modules/
+
+uploads/
