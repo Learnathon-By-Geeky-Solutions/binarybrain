@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -69,7 +68,7 @@ public class TaskServiceImpl implements TaskService {
 
         return taskList.stream()
                 .map(TaskMapper::toTaskDto)
-                .collect(Collectors.toList());
+                .toList();
     }
     @Override
     public List<TaskDto> getAllTaskByTeacherId(Long id, String username) {
@@ -77,7 +76,7 @@ public class TaskServiceImpl implements TaskService {
         List<Task> taskList = taskRepository.findByTeacherId(id);
         return taskList.stream()
                 .map(TaskMapper::toTaskDto)
-                .collect(Collectors.toList());
+                .toList();
     }
     @Override
     public List<TaskDto> getTasksbyIds(List<Long> taskIds, String username) {
@@ -86,7 +85,7 @@ public class TaskServiceImpl implements TaskService {
 
         return taskList.stream()
                 .map(TaskMapper::toTaskDto)
-                .collect(Collectors.toList());
+                .toList();
     }
     @Override
     public TaskDto closeTask(Long taskId, String username) {

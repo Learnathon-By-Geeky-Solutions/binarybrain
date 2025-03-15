@@ -77,6 +77,15 @@ public class SubmissionServiceImpl implements SubmissionService {
         Submission submission = submissionRepo.findById(submissionId).orElseThrow(() -> new ResourseNotFoundException("Classroom not found with id: " + submissionId));
         return SubmissionMapper.toSubmissionDto(submission);
     }
+
+    @Override
+    public List<SubmissionDto> getAllSubmissionFromTask(Long taskId) {
+        List<Submission> submissionList = submissionRepo.findByTaskId(taskId);
+        return submissionList.stream()
+                .map(SubmissionMapper::toSubmissionDto)
+                .toList();
+    }
+
     @Override
     public SubmissionDto getSubmissionByTaskIdAndUsername(Long taskId, String username) {
         Submission submission = submissionRepo.findByTaskIdAndSubmittedBy(taskId, username)

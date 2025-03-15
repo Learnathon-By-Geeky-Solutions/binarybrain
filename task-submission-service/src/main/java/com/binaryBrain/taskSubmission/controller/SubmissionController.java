@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/public/submission")
 public class SubmissionController {
@@ -34,6 +36,12 @@ public class SubmissionController {
     public ResponseEntity<SubmissionDto> getSubmissionById(@PathVariable Long submissionId){
         SubmissionDto submissionDto = submissionService.getSubmissionById(submissionId);
         return new ResponseEntity<>(submissionDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/{taskId}/from-task")
+    public ResponseEntity<List<SubmissionDto>> getAllSubmissionFromTask(@PathVariable Long taskId){
+        List<SubmissionDto> submissionDtoList = submissionService.getAllSubmissionFromTask(taskId);
+        return new ResponseEntity<>(submissionDtoList, HttpStatus.OK);
     }
 
     @GetMapping("{taskId}/user-submission")
