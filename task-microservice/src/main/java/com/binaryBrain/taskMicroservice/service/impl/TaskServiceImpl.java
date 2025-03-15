@@ -1,6 +1,6 @@
 package com.binaryBrain.taskMicroservice.service.impl;
 
-import com.binaryBrain.exception.ResourseNotFoundException;
+import com.binaryBrain.exception.ResourceNotFoundException;
 import com.binaryBrain.exception.UserHasNotPermissionException;
 import com.binaryBrain.taskMicroservice.dto.RoleDto;
 import com.binaryBrain.taskMicroservice.dto.TaskDto;
@@ -55,7 +55,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskDto getTaskById(Long id, String username) {
         userService.getUserProfile(username);
-        Task task = taskRepository.findById(id).orElseThrow(() -> new ResourseNotFoundException("Classroom not found with id: " + id));
+        Task task = taskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Classroom not found with id: " + id));
         return TaskMapper.toTaskDto(task);
     }
     @Override
@@ -92,7 +92,7 @@ public class TaskServiceImpl implements TaskService {
         TaskDto taskDto = getTaskById(taskId, username);
         validateTaskModificationPermission(taskDto, username);
 
-        Task task = taskRepository.findById(taskId).orElseThrow(() -> new ResourseNotFoundException("Task not found with id: " + taskId));
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + taskId));
         task.setStatus(TaskStatus.CLOSED);
         taskRepository.save(task);
         return TaskMapper.toTaskDto(task);

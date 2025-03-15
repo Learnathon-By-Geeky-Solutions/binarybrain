@@ -6,7 +6,7 @@ import com.binaryBrain.course.repo.CourseRepository;
 import com.binaryBrain.course.service.CourseService;
 import com.binaryBrain.course.service.TaskService;
 import com.binaryBrain.course.service.UserService;
-import com.binaryBrain.exception.ResourseNotFoundException;
+import com.binaryBrain.exception.ResourceNotFoundException;
 import com.binaryBrain.exception.UserHasNotPermissionException;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +51,7 @@ public class CourseServiceImpl implements CourseService {
         if (!validateRole(userDto, Arrays.asList("TEACHER", "ADMIN"))){
             throw new UserHasNotPermissionException("Only ADMIN & TEACHER can manage course!");
         }
-        return courseRepository.findById(id).orElseThrow(() -> new ResourseNotFoundException("Course not found with id: " + id));
+        return courseRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
     }
 
     @Override
@@ -121,7 +121,7 @@ public class CourseServiceImpl implements CourseService {
         validateCourseModificationPermission(course, username);
 
         if (!course.getTaskIds().remove(taskId)) {
-            throw new ResourseNotFoundException("Task not found in the course!");
+            throw new ResourceNotFoundException("Task not found in the course!");
         }
         return courseRepository.save(course);
     }
