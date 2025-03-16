@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/public/submission")
+@RequestMapping("/api/v1/private/submission")
 public class SubmissionController {
     private final SubmissionService submissionService;
     private final FileHandlerService fileHandlerService;

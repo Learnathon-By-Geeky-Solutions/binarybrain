@@ -1,6 +1,11 @@
 server:
   port: 5001
 
+user-service:
+  url: http://localhost:5001/
+course-service:
+  url: http://localhost:5003/
+
 spring:
   application:
     name: OCM-USER-REGISTRATION

@@ -35,7 +35,7 @@ spring:
           filters:
             - JwtAuthFilter
 
-        - id: Task-MICROSERVICE
+        - id: TASK-MICROSERVICE
           uri:
             http://localhost:5004
           predicates:
@@ -43,11 +43,11 @@ spring:
           filters:
             - JwtAuthFilter
 
-        - id: Task-Submission-Microservice
+        - id: TASK-SUBMISSION-MICROSERVICE
           uri:
             http://localhost:5005
           predicates:
-            - Path=/api/v1/public/submission/**
+            - Path=/api/v1/private/submission/**
           filters:
             - JwtAuthFilter
 
