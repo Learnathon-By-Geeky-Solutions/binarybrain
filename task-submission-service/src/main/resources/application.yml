@@ -1,0 +1,43 @@
+server:
+  port: 5005
+
+user-service:
+  url: http://localhost:5001/
+task-service:
+  url: http://localhost:5004/
+
+spring:
+  application:
+    name: TASK-SUBMISSION-MICROSERVICE
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 7MB
+      max-request-size: 7MB
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/OCM_submission
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+file:
+  upload-dir: ${FILE_UPLOAD_DIR:./uploads/submission/}
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8070/eureka/
