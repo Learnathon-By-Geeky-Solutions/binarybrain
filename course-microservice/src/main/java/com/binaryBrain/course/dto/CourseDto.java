@@ -3,6 +3,8 @@ package com.binaryBrain.course.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.util.Set;
+
 @Data
 public class CourseDto {
     private Long id;
@@ -13,5 +15,6 @@ public class CourseDto {
     private String description;
     private CourseStatus status;
     private Long createdBy;
+    private Set<Long> taskIds;
 }
 
