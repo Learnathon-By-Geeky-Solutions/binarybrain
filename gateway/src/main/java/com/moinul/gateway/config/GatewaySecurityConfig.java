@@ -20,7 +20,7 @@ public class GatewaySecurityConfig {
                                 "/api/v1/private/course/**",
                                 "/api/v1/private/classroom/**",
                                 "/api/v1/private/task/**",
-                                "/api/v1/public/submission/**")
+                                "/api/v1/private/submission/**")
                         .permitAll()
                         .anyExchange().authenticated()
                 )

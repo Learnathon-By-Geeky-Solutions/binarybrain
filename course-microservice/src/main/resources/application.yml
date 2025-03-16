@@ -3,10 +3,12 @@ server:
 
 task-service:
   url: http://localhost:5004/
+user-service:
+  url: http://localhost:5001/
 
 spring:
   application:
-    name: Course-Microservice
+    name: COURSE-MICROSERVICE
 
   jpa:
     hibernate:

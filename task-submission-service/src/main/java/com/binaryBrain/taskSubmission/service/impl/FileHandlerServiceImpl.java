@@ -47,8 +47,16 @@ public class FileHandlerServiceImpl implements FileHandlerService {
 
     @Override
     public byte[] downloadFile(String filename) {
+        if (filename.contains("..") || filename.contains("/") || filename.contains("\\")) {
+            throw new IllegalArgumentException("Invalid filename");
+        }
         try{
-            Path filePath = Paths.get(FILE_DIRECTORY).resolve(filename).normalize();
+            Path targetDirectory = Paths.get(FILE_DIRECTORY).normalize();
+            Path filePath = targetDirectory.resolve(filename).normalize();
+
+            if (!filePath.startsWith(targetDirectory)) {
+                throw new IOException("Entry is outside of the target directory");
+            }
             if(!Files.exists(filePath)){
                 throw new ResourceNotFoundException("FILE NOT FOUND: " + filename);
             }
@@ -62,6 +70,9 @@ public class FileHandlerServiceImpl implements FileHandlerService {
     public void deleteFile(String fileName) {
         if (fileName==null) {
             return;
+        }
+        if (fileName.contains("..") || fileName.contains("/") || fileName.contains("\\")) {
+            throw new IllegalArgumentException("Invalid filename");
         }
         Path filePath = Paths.get(FILE_DIRECTORY).resolve(fileName).normalize();
         try {
