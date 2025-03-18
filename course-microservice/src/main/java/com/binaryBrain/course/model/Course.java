@@ -1,6 +1,6 @@
-package com.binaryBrain.course.model;
+package com.binarybrain.course.model;
 
-import com.binaryBrain.course.dto.CourseStatus;
+import com.binarybrain.course.dto.CourseStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 

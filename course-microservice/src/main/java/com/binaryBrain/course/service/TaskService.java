@@ -1,6 +1,6 @@
-package com.binaryBrain.course.service;
+package com.binarybrain.course.service;
 
-import com.binaryBrain.course.dto.TaskDto;
+import com.binarybrain.course.dto.TaskDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

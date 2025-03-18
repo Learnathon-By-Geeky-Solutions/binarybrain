@@ -1,4 +1,4 @@
-package com.binaryBrain.course.dto;
+package com.binarybrain.course.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

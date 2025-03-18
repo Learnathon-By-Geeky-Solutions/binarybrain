@@ -1,7 +1,6 @@
-package com.binaryBrain;
+package com.binarybrain;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
     }
 }

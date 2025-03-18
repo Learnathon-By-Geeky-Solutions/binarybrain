@@ -1,4 +1,4 @@
-package com.binaryBrain.course;
+package com.binarybrain.course;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,12 +1,8 @@
-package com.binaryBrain.course.controller;
+package com.binarybrain.course.controller;
 
-import com.binaryBrain.course.dto.CourseDto;
-import com.binaryBrain.course.dto.TaskDto;
-import com.binaryBrain.course.dto.UserDto;
-import com.binaryBrain.course.mapper.CourseMapper;
-import com.binaryBrain.course.model.Course;
-import com.binaryBrain.course.service.CourseService;
-import com.binaryBrain.course.service.UserService;
+import com.binarybrain.course.dto.CourseDto;
+import com.binarybrain.course.dto.TaskDto;
+import com.binarybrain.course.service.CourseService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,67 +14,61 @@ import java.util.List;
 public class CourseController {
 
     private final CourseService courseService;
-    private final UserService userService;
 
-    public CourseController(CourseService courseService, UserService userService) {
+    public CourseController(CourseService courseService) {
         this.courseService = courseService;
-        this.userService = userService;
     }
 
     @PostMapping
     public ResponseEntity<CourseDto> createCourse(@Valid @RequestBody CourseDto courseDto,
                                                   @RequestHeader("X-User-Username") String username) {
-        Course course = CourseMapper.mapToCourse(courseDto);
-        Course createdCourse = courseService.createCourse(course, username);
-        CourseDto createdCourseDto = CourseMapper.mapToDto(createdCourse);
+        CourseDto createdCourseDto = courseService.createCourse(courseDto, username);
         return new ResponseEntity<>(createdCourseDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CourseDto> getCourseById(@PathVariable Long id,
                                                    @RequestHeader("X-User-Username") String username) {
-        UserDto userDto = userService.getUserProfile(username);
-        Course course = courseService.getCourseByCourseId(id, username);
-        CourseDto courseDto = CourseMapper.mapToDto(course);
-        return ResponseEntity.ok(courseDto);
+        CourseDto courseDto = courseService.getCourseByCourseId(id, username);
+        return new ResponseEntity<>(courseDto, HttpStatus.OK);
     }
 
     @GetMapping("/by-ids")
-    public ResponseEntity<List<Course>> getCoursesByIds(@RequestParam List<Long> courseIds,
+    public ResponseEntity<List<CourseDto>> getCoursesByIds(@RequestParam List<Long> courseIds,
                                                         @RequestHeader("X-User-Username") String username){
-        List<Course> courseList = courseService.getCoursesbyIds(courseIds, username);
-        return ResponseEntity.ok(courseList);
+        List<CourseDto> courseDtoList = courseService.getCoursesbyIds(courseIds, username);
+        return ResponseEntity.ok(courseDtoList);
     }
 
     @GetMapping("/author/{authorId}")
-    public ResponseEntity<List<Course>> getAllCoursesByAuthorId(@PathVariable Long authorId,
+    public ResponseEntity<List<CourseDto>> getAllCoursesByAuthorId(@PathVariable Long authorId,
                                                                 @RequestHeader("X-User-Username") String username) {
-        List<Course> courses = courseService.getAllCourseByAuthorId(authorId, username);
-        return ResponseEntity.ok(courses);
+        List<CourseDto> courseDtoList = courseService.getAllCourseByAuthorId(authorId, username);
+        return ResponseEntity.ok(courseDtoList);
     }
 
     @GetMapping
-    public ResponseEntity<List<Course>> getAllCourses(@RequestHeader("X-User-Username") String username) {
-        List<Course> courses = courseService.getAllCourse(username);
-        return ResponseEntity.ok(courses);
+    public ResponseEntity<List<CourseDto>> getAllCourses(@RequestHeader("X-User-Username") String username) {
+        List<CourseDto> courseDtoList = courseService.getAllCourse(username);
+        return ResponseEntity.ok(courseDtoList);
     }
 
     @PutMapping("/{courseId}/add-task/{taskId}")
-    public ResponseEntity<Course> assignTaskInCourse(@PathVariable Long courseId,
+    public ResponseEntity<CourseDto> assignTaskInCourse(@PathVariable Long courseId,
                                                          @PathVariable Long taskId,
                                                          @RequestHeader("X-User-Username") String username){
 
-        Course course = courseService.assignTaskInCourse(courseId, taskId, username);
-        return new ResponseEntity<>(course, HttpStatus.OK);
+        CourseDto courseDto = courseService.assignTaskInCourse(courseId, taskId, username);
+        return new ResponseEntity<>(courseDto, HttpStatus.OK);
     }
 
     @PutMapping("/{courseId}/remove-task/{taskId}")
-    public ResponseEntity<Course> removeTaskFromCourse(@PathVariable Long courseId,
+    public ResponseEntity<CourseDto> removeTaskFromCourse(@PathVariable Long courseId,
                                                      @PathVariable Long taskId,
                                                      @RequestHeader("X-User-Username") String username){
 
-        Course course = courseService.removeTaskFromCourse(courseId, taskId, username);
-        return new ResponseEntity<>(course, HttpStatus.OK);
+        CourseDto courseDto = courseService.removeTaskFromCourse(courseId, taskId, username);
+        return new ResponseEntity<>(courseDto, HttpStatus.OK);
     }
 
     @GetMapping("/{courseId}/tasks")
@@ -92,9 +82,7 @@ public class CourseController {
     public ResponseEntity<CourseDto> updateCourse(@PathVariable Long id,
                                                   @Valid @RequestBody CourseDto courseDto,
                                                   @RequestHeader("X-User-Username") String username) {
-        Course course = CourseMapper.mapToCourse(courseDto);
-        Course updatedCourse = courseService.updateCourse(id, course, username);
-        CourseDto updatedCourseDto = CourseMapper.mapToDto(updatedCourse);
+        CourseDto updatedCourseDto = courseService.updateCourse(id, courseDto, username);
         return ResponseEntity.ok(updatedCourseDto);
     }
 

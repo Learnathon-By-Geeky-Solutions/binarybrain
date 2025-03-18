@@ -1,4 +1,4 @@
-package com.binaryBrain.course.dto;
+package com.binarybrain.course.dto;
 
 public enum TaskStatus {
     OPEN,

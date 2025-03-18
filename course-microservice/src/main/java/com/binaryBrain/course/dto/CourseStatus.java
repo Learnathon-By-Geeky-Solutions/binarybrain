@@ -1,12 +1,9 @@
-package com.binaryBrain.course.dto;
+package com.binarybrain.course.dto;
 
 public enum CourseStatus {
 
-    OPEN("OPEN"),
+    OPEN,
 
-    CLOSED("CLOSED");
+    CLOSED
 
-    CourseStatus(String done){
-
-    }
 }
