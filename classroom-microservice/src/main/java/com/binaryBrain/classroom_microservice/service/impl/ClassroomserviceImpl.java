@@ -8,6 +8,7 @@ import com.binaryBrain.classroom_microservice.repo.ClassroomRepository;
 import com.binaryBrain.classroom_microservice.service.ClassroomService;
 import com.binaryBrain.classroom_microservice.service.CourseService;
 import com.binaryBrain.classroom_microservice.service.UserService;
+import com.binaryBrain.exception.AlreadyExistsException;
 import com.binaryBrain.exception.ResourceNotFoundException;
 import com.binaryBrain.exception.UserHasNotPermissionException;
 import feign.FeignException;
@@ -89,7 +90,7 @@ public class ClassroomserviceImpl implements ClassroomService {
                 throw new UserHasNotPermissionException("Only students can be added to the classroom!");
             }
             if (!classroom.getStudentIds().add(studentId)) {
-                throw new RuntimeException("Student is already in the classroom!");
+                throw new AlreadyExistsException("Student is already in the classroom!");
             }
             return classroomRepository.save(classroom);
 
@@ -127,7 +128,7 @@ public class ClassroomserviceImpl implements ClassroomService {
 
         CourseDto courseDto = courseService.getCourseById(courseId, username);
         if (classroom.getCourseIds().contains(courseId)) {
-            throw new RuntimeException("Course is already assigned to this classroom.");
+            throw new AlreadyExistsException("Course is already assigned to this classroom.");
         }
         classroom.getCourseIds().add(courseId);
 

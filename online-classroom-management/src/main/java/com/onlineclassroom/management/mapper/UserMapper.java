@@ -1,5 +1,6 @@
 package com.onlineclassroom.management.mapper;
 
+import com.binaryBrain.exception.UserHasNotPermissionException;
 import com.onlineclassroom.management.dto.UserDto;
 import com.onlineclassroom.management.model.User;
 
@@ -19,7 +20,7 @@ public class UserMapper {
      * Attempting to create an instance of this class will result in a {@link RuntimeException}.
      */
     private UserMapper()  {
-        throw new RuntimeException("This is a Utility class and can't be instantiated!");
+        throw new UserHasNotPermissionException("This is a Utility class and can't be instantiated!");
     }
 
     /**

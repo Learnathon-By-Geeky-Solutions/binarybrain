@@ -41,7 +41,7 @@ public class FileHandlerServiceImpl implements FileHandlerService {
             Files.write(path, file.getBytes());
             return fileName;
         }catch (IOException ex){
-            throw new RuntimeException("File upload failed: "+ file.getOriginalFilename(), ex);
+            throw new UnsupportedFileTypeException("File upload failed: "+ file.getOriginalFilename() + "\n" + ex);
         }
     }
 
@@ -62,7 +62,7 @@ public class FileHandlerServiceImpl implements FileHandlerService {
             }
             return Files.readAllBytes(filePath);
         } catch (IOException ex){
-            throw new RuntimeException("File download failed: "+ filename, ex);
+            throw new UnsupportedFileTypeException("File download failed: "+ filename + "\n" + ex);
         }
     }
 
@@ -80,7 +80,7 @@ public class FileHandlerServiceImpl implements FileHandlerService {
                 Files.delete(filePath);
             }
         }catch (IOException ex){
-            throw new RuntimeException("File deletion failed! ", ex);
+            throw new UnsupportedFileTypeException("File deletion failed! " + ex);
         }
     }
 

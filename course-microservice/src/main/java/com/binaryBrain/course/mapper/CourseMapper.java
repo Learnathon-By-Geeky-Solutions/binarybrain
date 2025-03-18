@@ -2,12 +2,13 @@ package com.binaryBrain.course.mapper;
 
 import com.binaryBrain.course.dto.CourseDto;
 import com.binaryBrain.course.model.Course;
+import com.binaryBrain.exception.UserHasNotPermissionException;
 
 import java.util.HashSet;
 
 public class CourseMapper {
     private CourseMapper()  {
-        throw new RuntimeException("This is a Utility class and can't be instantiated!");
+        throw new UserHasNotPermissionException("This is a Utility class and can't be instantiated!");
     }
 
     public static Course mapToCourse(CourseDto courseDto) {
