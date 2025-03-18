@@ -8,7 +8,6 @@ import com.onlineclassroom.management.model.Role;
 import com.onlineclassroom.management.model.User;
 import com.onlineclassroom.management.repository.RoleRepository;
 import com.onlineclassroom.management.repository.UserRepository;
-import com.onlineclassroom.management.security.JwtUtil;
 import com.onlineclassroom.management.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;

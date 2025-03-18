@@ -7,6 +7,7 @@ import com.binaryBrain.course.repo.CourseRepository;
 import com.binaryBrain.course.service.CourseService;
 import com.binaryBrain.course.service.TaskService;
 import com.binaryBrain.course.service.UserService;
+import com.binaryBrain.exception.AlreadyExistsException;
 import com.binaryBrain.exception.ResourceNotFoundException;
 import com.binaryBrain.exception.UserHasNotPermissionException;
 import org.springframework.stereotype.Service;
@@ -119,7 +120,7 @@ public class CourseServiceImpl implements CourseService {
             throw new UserHasNotPermissionException("CLOSED task can't be added! You should OPEN this first.");
         }
         if (course.getTaskIds().contains(taskId)) {
-            throw new RuntimeException("Task is already assigned to this course.");
+            throw new AlreadyExistsException("Task is already assigned to this course.");
         }
         course.getTaskIds().add(taskId);
 

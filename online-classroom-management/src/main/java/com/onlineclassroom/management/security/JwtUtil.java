@@ -1,5 +1,6 @@
 package com.onlineclassroom.management.security;
 
+import com.binaryBrain.exception.InvalidTokenException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -107,7 +108,7 @@ public class JwtUtil {
         } catch (ExpiredJwtException e) {
             return true;
         } catch (JwtException e) {
-            throw new RuntimeException("Invalid JWT token!", e);
+            throw new InvalidTokenException("Invalid JWT token!\n" + e);
         }
     }
 }

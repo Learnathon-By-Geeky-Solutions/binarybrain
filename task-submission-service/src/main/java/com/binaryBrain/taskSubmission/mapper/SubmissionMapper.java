@@ -1,11 +1,12 @@
 package com.binaryBrain.taskSubmission.mapper;
 
+import com.binaryBrain.exception.UserHasNotPermissionException;
 import com.binaryBrain.taskSubmission.dto.SubmissionDto;
 import com.binaryBrain.taskSubmission.model.Submission;
 
 public class SubmissionMapper {
     private SubmissionMapper(){
-        throw new RuntimeException("This is a Utility class and can't be instantiated!");
+        throw new UserHasNotPermissionException("This is a Utility class and can't be instantiated!");
     }
 
     public static SubmissionDto toSubmissionDto(Submission submission){

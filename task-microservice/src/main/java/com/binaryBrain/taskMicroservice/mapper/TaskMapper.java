@@ -1,11 +1,12 @@
 package com.binaryBrain.taskMicroservice.mapper;
 
+import com.binaryBrain.exception.UserHasNotPermissionException;
 import com.binaryBrain.taskMicroservice.dto.TaskDto;
 import com.binaryBrain.taskMicroservice.model.Task;
 
 public class TaskMapper {
     private TaskMapper(){
-        throw new RuntimeException("This is a Utility class and can't be instantiated!");
+        throw new UserHasNotPermissionException("This is a Utility class and can't be instantiated!");
     }
 
     public static TaskDto toTaskDto(Task task){

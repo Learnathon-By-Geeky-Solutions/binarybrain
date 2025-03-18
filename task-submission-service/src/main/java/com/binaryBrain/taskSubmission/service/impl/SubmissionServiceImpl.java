@@ -1,5 +1,6 @@
 package com.binaryBrain.taskSubmission.service.impl;
 
+import com.binaryBrain.exception.AlreadyExistsException;
 import com.binaryBrain.exception.ResourceNotFoundException;
 import com.binaryBrain.exception.UserHasNotPermissionException;
 import com.binaryBrain.taskSubmission.dto.RoleDto;
@@ -50,7 +51,7 @@ public class SubmissionServiceImpl implements SubmissionService {
             throw new UserHasNotPermissionException("Only STUDENT can submit task!");
 
         if(submissionRepo.findByTaskIdAndSubmittedBy(taskId, username).isPresent()){
-            throw new UserHasNotPermissionException("You have already submitted this task. Multiple submissions are not allowed!");
+            throw new AlreadyExistsException("You have already submitted this task. Multiple submissions are not allowed!");
         }
 
         String fileName = fileHandlerService.uploadFile(file);

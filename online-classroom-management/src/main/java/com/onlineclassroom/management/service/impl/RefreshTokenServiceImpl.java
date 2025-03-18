@@ -1,5 +1,6 @@
 package com.onlineclassroom.management.service.impl;
 
+import com.binaryBrain.exception.InvalidTokenException;
 import com.onlineclassroom.management.model.RefreshToken;
 import com.onlineclassroom.management.model.User;
 import com.onlineclassroom.management.repository.RefreshTokenRepository;
@@ -42,7 +43,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public RefreshToken verifyExpiration(RefreshToken token) {
         if (token.getExpiryDate().isBefore(Instant.now())) {
             refreshTokenRepository.delete(token);
-            throw new RuntimeException("Refresh token has expired. Please log in again.");
+            throw new InvalidTokenException("Refresh token has expired. Please log in again.");
         }
         return token;
     }
