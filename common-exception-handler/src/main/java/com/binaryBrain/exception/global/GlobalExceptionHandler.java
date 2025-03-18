@@ -1,9 +1,6 @@
-package com.binaryBrain.exception.global;
+package com.binarybrain.exception.global;
 
-import com.binaryBrain.exception.ErrorDetails;
-import com.binaryBrain.exception.ResourceNotFoundException;
-import com.binaryBrain.exception.UnsupportedFileTypeException;
-import com.binaryBrain.exception.UserHasNotPermissionException;
+import com.binarybrain.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -28,6 +25,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UnsupportedFileTypeException.class)
     public ResponseEntity<ErrorDetails> handleUnsupportedFileTypeException(UnsupportedFileTypeException e, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ResponseEntity<ErrorDetails> handleAlreadyExistsException(AlreadyExistsException e, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ErrorDetails> handleInvalidTokenException(InvalidTokenException e, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
