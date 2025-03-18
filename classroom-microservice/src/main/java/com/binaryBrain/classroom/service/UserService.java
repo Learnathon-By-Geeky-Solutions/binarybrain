@@ -1,6 +1,6 @@
-package com.binaryBrain.classroom_microservice.service;
+package com.binaryBrain.classroom.service;
 
-import com.binaryBrain.classroom_microservice.dto.UserDto;
+import com.binaryBrain.classroom.dto.UserDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

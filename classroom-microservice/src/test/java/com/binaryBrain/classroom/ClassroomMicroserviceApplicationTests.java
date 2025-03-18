@@ -1,4 +1,4 @@
-package com.binaryBrain.classroom_microservice;
+package com.binaryBrain.classroom;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
