@@ -1,8 +1,8 @@
-package com.binaryBrain.course.controller;
+package com.binarybrain.course.controller;
 
-import com.binaryBrain.course.dto.CourseDto;
-import com.binaryBrain.course.dto.TaskDto;
-import com.binaryBrain.course.service.CourseService;
+import com.binarybrain.course.dto.CourseDto;
+import com.binarybrain.course.dto.TaskDto;
+import com.binarybrain.course.service.CourseService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,16 +1,10 @@
-package com.binaryBrain.classroom.service.impl;
+package com.binarybrain.classroom.service.impl;
 
-import com.binaryBrain.classroom.dto.CourseDto;
-import com.binaryBrain.classroom.dto.RoleDto;
-import com.binaryBrain.classroom.dto.UserDto;
-import com.binaryBrain.classroom.model.Classroom;
-import com.binaryBrain.classroom.repo.ClassroomRepository;
-import com.binaryBrain.classroom.service.ClassroomService;
-import com.binaryBrain.classroom.service.CourseService;
-import com.binaryBrain.classroom.service.UserService;
-import com.binaryBrain.exception.AlreadyExistsException;
-import com.binaryBrain.exception.ResourceNotFoundException;
-import com.binaryBrain.exception.UserHasNotPermissionException;
+import com.binarybrain.classroom.dto.*;
+import com.binarybrain.classroom.model.Classroom;
+import com.binarybrain.classroom.repo.ClassroomRepository;
+import com.binarybrain.classroom.service.*;
+import com.binarybrain.exception.*;
 import feign.FeignException;
 import org.springframework.stereotype.Service;
 

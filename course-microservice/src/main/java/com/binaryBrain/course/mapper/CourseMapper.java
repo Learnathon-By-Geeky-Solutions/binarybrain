@@ -1,8 +1,8 @@
-package com.binaryBrain.course.mapper;
+package com.binarybrain.course.mapper;
 
-import com.binaryBrain.course.dto.CourseDto;
-import com.binaryBrain.course.model.Course;
-import com.binaryBrain.exception.UserHasNotPermissionException;
+import com.binarybrain.course.dto.CourseDto;
+import com.binarybrain.course.model.Course;
+import com.binarybrain.exception.UserHasNotPermissionException;
 
 import java.util.HashSet;
 

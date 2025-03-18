@@ -1,4 +1,4 @@
-package com.binaryBrain.exception;
+package com.binarybrain.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

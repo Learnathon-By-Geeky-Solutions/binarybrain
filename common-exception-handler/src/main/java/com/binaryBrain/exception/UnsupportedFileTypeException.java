@@ -1,4 +1,4 @@
-package com.binaryBrain.exception;
+package com.binarybrain.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

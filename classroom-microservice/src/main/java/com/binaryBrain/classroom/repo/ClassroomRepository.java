@@ -1,6 +1,6 @@
-package com.binaryBrain.classroom.repo;
+package com.binarybrain.classroom.repo;
 
-import com.binaryBrain.classroom.model.Classroom;
+import com.binarybrain.classroom.model.Classroom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
