@@ -1,4 +1,4 @@
-package com.binaryBrain.classroom_microservice.model;
+package com.binaryBrain.classroom.model;
 
 import jakarta.persistence.*;
 import lombok.Data;

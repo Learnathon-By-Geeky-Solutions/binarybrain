@@ -1,8 +1,8 @@
-package com.binaryBrain.classroom_microservice.controller;
+package com.binaryBrain.classroom.controller;
 
-import com.binaryBrain.classroom_microservice.dto.CourseDto;
-import com.binaryBrain.classroom_microservice.model.Classroom;
-import com.binaryBrain.classroom_microservice.service.ClassroomService;
+import com.binaryBrain.classroom.dto.CourseDto;
+import com.binaryBrain.classroom.model.Classroom;
+import com.binaryBrain.classroom.service.ClassroomService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

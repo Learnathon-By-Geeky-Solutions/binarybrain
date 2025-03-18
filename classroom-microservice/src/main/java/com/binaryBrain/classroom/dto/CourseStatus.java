@@ -1,4 +1,4 @@
-package com.binaryBrain.classroom_microservice.dto;
+package com.binaryBrain.classroom.dto;
 
 public enum CourseStatus {
 

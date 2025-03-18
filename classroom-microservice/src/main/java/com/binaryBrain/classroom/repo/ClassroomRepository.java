@@ -1,6 +1,6 @@
-package com.binaryBrain.classroom_microservice.repo;
+package com.binaryBrain.classroom.repo;
 
-import com.binaryBrain.classroom_microservice.model.Classroom;
+import com.binaryBrain.classroom.model.Classroom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

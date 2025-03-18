@@ -1,4 +1,4 @@
-package com.binaryBrain.classroom_microservice;
+package com.binaryBrain.classroom;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

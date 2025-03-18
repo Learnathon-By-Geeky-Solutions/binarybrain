@@ -1,7 +1,7 @@
-package com.binaryBrain.classroom_microservice.service;
+package com.binaryBrain.classroom.service;
 
-import com.binaryBrain.classroom_microservice.dto.CourseDto;
-import com.binaryBrain.classroom_microservice.model.Classroom;
+import com.binaryBrain.classroom.dto.CourseDto;
+import com.binaryBrain.classroom.model.Classroom;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
