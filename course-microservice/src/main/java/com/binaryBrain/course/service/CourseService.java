@@ -1,7 +1,7 @@
-package com.binaryBrain.course.service;
+package com.binarybrain.course.service;
 
-import com.binaryBrain.course.dto.CourseDto;
-import com.binaryBrain.course.dto.TaskDto;
+import com.binarybrain.course.dto.CourseDto;
+import com.binarybrain.course.dto.TaskDto;
 
 import java.util.List;
 

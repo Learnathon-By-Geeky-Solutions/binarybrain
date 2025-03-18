@@ -1,4 +1,4 @@
-package com.binaryBrain.classroom.dto;
+package com.binarybrain.classroom.dto;
 
 import lombok.Data;
 

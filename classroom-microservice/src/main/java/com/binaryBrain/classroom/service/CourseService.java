@@ -1,6 +1,6 @@
-package com.binaryBrain.classroom.service;
+package com.binarybrain.classroom.service;
 
-import com.binaryBrain.classroom.dto.CourseDto;
+import com.binarybrain.classroom.dto.CourseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,4 +1,4 @@
-package com.binaryBrain.classroom.model;
+package com.binarybrain.classroom.model;
 
 import jakarta.persistence.*;
 import lombok.Data;

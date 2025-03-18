@@ -1,6 +1,6 @@
-package com.binaryBrain.exception.global;
+package com.binarybrain.exception.global;
 
-import com.binaryBrain.exception.*;
+import com.binarybrain.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

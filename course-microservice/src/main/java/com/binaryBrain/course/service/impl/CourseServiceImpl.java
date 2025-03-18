@@ -1,15 +1,11 @@
-package com.binaryBrain.course.service.impl;
+package com.binarybrain.course.service.impl;
 
-import com.binaryBrain.course.dto.*;
-import com.binaryBrain.course.mapper.CourseMapper;
-import com.binaryBrain.course.model.Course;
-import com.binaryBrain.course.repo.CourseRepository;
-import com.binaryBrain.course.service.CourseService;
-import com.binaryBrain.course.service.TaskService;
-import com.binaryBrain.course.service.UserService;
-import com.binaryBrain.exception.AlreadyExistsException;
-import com.binaryBrain.exception.ResourceNotFoundException;
-import com.binaryBrain.exception.UserHasNotPermissionException;
+import com.binarybrain.course.dto.*;
+import com.binarybrain.course.mapper.CourseMapper;
+import com.binarybrain.course.model.Course;
+import com.binarybrain.course.repo.CourseRepository;
+import com.binarybrain.course.service.*;
+import com.binarybrain.exception.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
