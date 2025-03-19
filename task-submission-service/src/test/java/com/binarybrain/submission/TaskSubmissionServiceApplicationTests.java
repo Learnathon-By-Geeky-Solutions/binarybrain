@@ -1,10 +1,10 @@
-package com.binaryBrain.task;
+package com.binarybrain.submission;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TaskMicroserviceApplicationTests {
+class TaskSubmissionServiceApplicationTests {
 
 	@Test
 	void contextLoads() {
