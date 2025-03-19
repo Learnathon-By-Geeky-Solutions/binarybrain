@@ -16,8 +16,8 @@ import java.util.List;
 
 @Service
 public class ClassroomserviceImpl implements ClassroomService {
-    private static final String admin = "ADMIN";
-    private static final String teacher = "TEACHER";
+    private static final String ADMIN = "ADMIN";
+    private static final String TEACHER = "TEACHER";
     private final ClassroomRepository classroomRepository;
     private final UserService userService;
     private final CourseService courseService;
@@ -37,7 +37,7 @@ public class ClassroomserviceImpl implements ClassroomService {
     public Classroom createClassroom(Classroom classroom, String username) {
 
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, Arrays.asList(teacher, admin))){
+        if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
             throw new UserHasNotPermissionException("Only teacher or admin can create classroom!");
         }
         Long teacherId = userDto.getId();
@@ -49,7 +49,7 @@ public class ClassroomserviceImpl implements ClassroomService {
     @Override
     public Classroom getClassroomById(Long id, String username) {
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, Arrays.asList(teacher, admin))){
+        if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
             throw new UserHasNotPermissionException("Only teacher or admin can manage classroom!");
         }
         return classroomRepository.findById(id).orElseThrow(() -> new RuntimeException("Classroom not found with id: " + id));
@@ -58,7 +58,7 @@ public class ClassroomserviceImpl implements ClassroomService {
     @Override
     public List<Classroom> getAllClassroomByTeacherId(Long id, String username) {
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, Arrays.asList(teacher, admin))){
+        if (!validateRole(userDto, Arrays.asList(TEACHER, TEACHER))){
             throw new UserHasNotPermissionException("Only teacher or admin can manage classroom!");
         }
         return classroomRepository.findByTeacherId(id);
@@ -141,8 +141,8 @@ public class ClassroomserviceImpl implements ClassroomService {
 
     private void validateClassroomModificationPermission(Classroom classroom, String jwt) {
         UserDto userDto = userService.getUserProfile(jwt);
-        boolean isAdmin = validateRole(userDto, List.of(admin));
-        boolean isTeacher = validateRole(userDto, List.of(teacher));
+        boolean isAdmin = validateRole(userDto, List.of(ADMIN));
+        boolean isTeacher = validateRole(userDto, List.of(TEACHER));
 
         if (!isAdmin && (!isTeacher || !classroom.getTeacherId().equals(userDto.getId()))) {
             throw new UserHasNotPermissionException("You do not have permission to modify this course.");
