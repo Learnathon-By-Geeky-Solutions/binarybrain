@@ -58,7 +58,7 @@ public class ClassroomserviceImpl implements ClassroomService {
     @Override
     public List<Classroom> getAllClassroomByTeacherId(Long id, String username) {
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, Arrays.asList(TEACHER, TEACHER))){
+        if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
             throw new UserHasNotPermissionException("Only teacher or admin can manage classroom!");
         }
         return classroomRepository.findByTeacherId(id);
