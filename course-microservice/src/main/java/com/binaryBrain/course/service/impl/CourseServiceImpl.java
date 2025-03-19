@@ -14,8 +14,8 @@ import java.util.List;
 
 @Service
 public class CourseServiceImpl implements CourseService {
-    private static final String admin = "ADMIN";
-    private static final String teacher = "TEACHER";
+    private static final String ADMIN = "ADMIN";
+    private static final String TEACHER = "TEACHER";
     private final CourseRepository courseRepository;
     private final UserService userService;
     private final TaskService taskService;
@@ -36,7 +36,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public CourseDto createCourse(CourseDto courseDto, String username) {
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, Arrays.asList(teacher, admin))){
+        if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
             throw new UserHasNotPermissionException("Only ADMIN & TEACHER can create course!");
         }
         Long teacherId = userDto.getId();
@@ -65,7 +65,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<CourseDto> getAllCourseByAuthorId(Long id, String username) {
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, Arrays.asList(teacher, admin))){
+        if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
             throw new UserHasNotPermissionException("Only ADMIN & TEACHER can get corresponding courses list!");
         }
         List<Course> courseList = courseRepository.findByCreatedBy(id);
@@ -77,7 +77,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<CourseDto> getAllCourse(String username) {
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, List.of(admin))){
+        if (!validateRole(userDto, List.of(ADMIN))){
             throw new UserHasNotPermissionException("Only ADMIN can get all course list!");
         }
         List<Course> courseList = courseRepository.findAll();
@@ -158,8 +158,8 @@ public class CourseServiceImpl implements CourseService {
 
     private void validateCourseModificationPermission(Course course, String username) {
         UserDto userDto = userService.getUserProfile(username);
-        boolean isAdmin = validateRole(userDto, List.of(admin));
-        boolean isTeacher = validateRole(userDto, List.of(teacher));
+        boolean isAdmin = validateRole(userDto, List.of(ADMIN));
+        boolean isTeacher = validateRole(userDto, List.of(TEACHER));
 
         if (!isAdmin && (!isTeacher || !course.getCreatedBy().equals(userDto.getId()))) {
             throw new UserHasNotPermissionException("You do not have permission to modify this course.");
