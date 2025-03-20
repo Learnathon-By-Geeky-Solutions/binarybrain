@@ -19,7 +19,7 @@ import java.util.UUID;
 public class FileHandlerServiceImpl implements FileHandlerService {
 
     @Value("${file.upload-dir}")
-    private String FILE_DIRECTORY;
+    private String fileDirectory;
     @Override
     public String uploadFile(MultipartFile file) {
         try{
@@ -27,7 +27,7 @@ public class FileHandlerServiceImpl implements FileHandlerService {
                 throw new UnsupportedFileTypeException("Unsupported file type: " + file.getContentType() + "\n (Supported file: PDF, JPG, JPEG, PNG)");
             }
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path targetDirectory = Paths.get(FILE_DIRECTORY).normalize();
+            Path targetDirectory = Paths.get(fileDirectory).normalize();
             Path path = targetDirectory.resolve(fileName).normalize();
 
             if (!path.startsWith(targetDirectory)) {
@@ -51,7 +51,7 @@ public class FileHandlerServiceImpl implements FileHandlerService {
             throw new IllegalArgumentException("Invalid filename");
         }
         try{
-            Path targetDirectory = Paths.get(FILE_DIRECTORY).normalize();
+            Path targetDirectory = Paths.get(fileDirectory).normalize();
             Path filePath = targetDirectory.resolve(filename).normalize();
 
             if (!filePath.startsWith(targetDirectory)) {
@@ -74,7 +74,7 @@ public class FileHandlerServiceImpl implements FileHandlerService {
         if (fileName.contains("..") || fileName.contains("/") || fileName.contains("\\")) {
             throw new IllegalArgumentException("Invalid filename");
         }
-        Path filePath = Paths.get(FILE_DIRECTORY).resolve(fileName).normalize();
+        Path filePath = Paths.get(fileDirectory).resolve(fileName).normalize();
         try {
             if(Files.exists(filePath)){
                 Files.delete(filePath);
