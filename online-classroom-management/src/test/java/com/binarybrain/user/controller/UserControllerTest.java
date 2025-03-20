@@ -1,6 +1,7 @@
 package com.binarybrain.user.controller;
 
 import com.binarybrain.exception.AlreadyExistsException;
+import com.binarybrain.exception.global.GlobalExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.binarybrain.user.dto.UserDto;
 import com.binarybrain.user.dto.request.AuthRequest;
@@ -17,8 +18,8 @@ import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -33,6 +34,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Import(GlobalExceptionHandler.class)
 public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -113,13 +115,15 @@ public class UserControllerTest {
     @Test
     void testRegisterUser_DuplicateUsername() throws Exception {
         when(userService.registerUser(any(UserDto.class)))
-                .thenThrow(new AccountExpiredException("Username already exists!"));
+                .thenThrow(new AlreadyExistsException("Error! Username is already exists: moinulislam"));
 
         mockMvc.perform(post("/api/user/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(userDto)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Username already exists!"));
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Error! Username is already exists: moinulislam"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.details").exists());
 
         verify(userService, times(1)).registerUser(any(UserDto.class));
     }
