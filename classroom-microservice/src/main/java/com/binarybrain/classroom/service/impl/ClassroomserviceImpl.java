@@ -120,7 +120,7 @@ public class ClassroomserviceImpl implements ClassroomService {
         Classroom classroom = getClassroomById(classroomId, username);
         validateClassroomModificationPermission(classroom, username);
 
-        CourseDto courseDto = courseService.getCourseById(courseId, username);
+        courseService.getCourseById(courseId, username);
         if (classroom.getCourseIds().contains(courseId)) {
             throw new AlreadyExistsException("Course is already assigned to this classroom.");
         }
