@@ -8,7 +8,7 @@
 		<version>3.4.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.binaryBrain</groupId>
+	<groupId>com.binarybrain</groupId>
 	<artifactId>task-microservice</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Task Microservice</name>
@@ -65,7 +65,7 @@
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.binaryBrain</groupId>
+			<groupId>com.binarybrain</groupId>
 			<artifactId>common-exception-handler</artifactId>
 			<version>1.0.0</version>
 		</dependency>
