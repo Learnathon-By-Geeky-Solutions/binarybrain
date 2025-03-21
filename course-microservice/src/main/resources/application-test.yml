@@ -1,0 +1,10 @@
+spring:
+  config:
+    import: classpath:application.yml
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/TEST_OCM_course?createDatabaseIfNotExist=true
+
