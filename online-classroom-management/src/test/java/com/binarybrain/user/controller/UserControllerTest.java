@@ -2,6 +2,9 @@ package com.binarybrain.user.controller;
 
 import com.binarybrain.exception.AlreadyExistsException;
 import com.binarybrain.exception.global.GlobalExceptionHandler;
+import com.binarybrain.user.repository.RefreshTokenRepository;
+import com.binarybrain.user.repository.UserRepository;
+import com.binarybrain.user.service.RefreshTokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.binarybrain.user.dto.UserDto;
 import com.binarybrain.user.dto.request.AuthRequest;
@@ -11,10 +14,8 @@ import com.binarybrain.user.model.User;
 import com.binarybrain.user.security.JwtUtil;
 import com.binarybrain.user.service.CustomUserDetailsService;
 import com.binarybrain.user.service.UserService;
-import com.binarybrain.user.service.impl.RefreshTokenServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static org.mockito.Mockito.*;
@@ -46,11 +48,16 @@ public class UserControllerTest {
 
     @MockitoBean
     private JwtUtil jwtUtil;
-
+    @MockitoBean
+    private UserRepository userRepository;
     @MockitoBean
     private CustomUserDetailsService userDetailsService;
-    @InjectMocks
-    private RefreshTokenServiceImpl refreshTokenService;
+    @MockitoBean
+    private RefreshTokenService refreshTokenService;
+    @MockitoBean
+    private RefreshTokenRepository refreshTokenRepository;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private UserDto userDto;
     private User createdUser;
@@ -115,13 +122,13 @@ public class UserControllerTest {
     @Test
     void testRegisterUser_DuplicateUsername() throws Exception {
         when(userService.registerUser(any(UserDto.class)))
-                .thenThrow(new AlreadyExistsException("Error! Username is already exists: moinulislam"));
+                .thenThrow(new AlreadyExistsException("Error! Username is already exists: " + userDto.getUsername()));
 
         mockMvc.perform(post("/api/user/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(userDto)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.message").value("Error! Username is already exists: moinulislam"))
+                .andExpect(jsonPath("$.message").value("Error! Username is already exists: " + userDto.getUsername()))
                 .andExpect(jsonPath("$.timestamp").exists())
                 .andExpect(jsonPath("$.details").exists());
 
@@ -131,13 +138,15 @@ public class UserControllerTest {
     @Test
     void testRegisterUser_DuplicateEmail() throws Exception {
         when(userService.registerUser(any(UserDto.class)))
-                .thenThrow(new AlreadyExistsException("Email already exists!"));
+                .thenThrow(new AlreadyExistsException("Error! Email is already exist: " + userDto.getEmail()));
 
         mockMvc.perform(post("/api/user/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(userDto)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Email already exists!"));
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Error! Email is already exist: " + userDto.getEmail()))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.details").exists());
 
         verify(userService, times(1)).registerUser(any(UserDto.class));
     }
@@ -150,11 +159,18 @@ public class UserControllerTest {
                 .roles("STUDENT")
                 .build();
 
+        User user = new User();
+        user.setUsername("moinulislam");
+
+        when(userRepository.findByUsername("moinulislam")).thenReturn(Optional.of(user));
         when(userDetailsService.loadUserByUsername("moinulislam")).thenReturn(userDetails);
         when(jwtUtil.generateToken(userDetails)).thenReturn("jwt-token");
+
         RefreshToken mockRefreshToken = new RefreshToken();
         mockRefreshToken.setToken("refresh-token");
         when(refreshTokenService.createRefreshToken(any())).thenReturn(mockRefreshToken);
+
+        when(authenticationManager.authenticate(any())).thenReturn(null);
 
         mockMvc.perform(post("/api/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -172,7 +188,7 @@ public class UserControllerTest {
     @Test
     void testLoginUser_InvalidCredentials() throws Exception {
         when(authenticationManager.authenticate(any()))
-                .thenThrow(new BadCredentialsException("Invalid credentials"));
+                .thenThrow(new BadCredentialsException("Incorrect username or password!"));
 
         mockMvc.perform(post("/api/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
