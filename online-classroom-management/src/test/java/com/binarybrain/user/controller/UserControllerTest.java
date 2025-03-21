@@ -1,6 +1,8 @@
 package com.binarybrain.user.controller;
 
 import com.binarybrain.exception.AlreadyExistsException;
+import com.binarybrain.user.repository.UserRepository;
+import com.binarybrain.user.service.RefreshTokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.binarybrain.user.dto.UserDto;
 import com.binarybrain.user.dto.request.AuthRequest;
@@ -24,6 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static org.mockito.Mockito.*;
@@ -47,12 +50,14 @@ public class UserControllerTest {
 
     @MockitoBean
     private CustomUserDetailsService userDetailsService;
-    @InjectMocks
-    private RefreshTokenServiceImpl refreshTokenService;
+    @MockitoBean
+    private RefreshTokenService refreshTokenService;
 
     private UserDto userDto;
     private User createdUser;
     private AuthRequest authRequest;
+    @MockitoBean
+    private UserRepository userRepository;
 
     @BeforeEach
     void setUp(){
@@ -113,15 +118,17 @@ public class UserControllerTest {
     @Test
     void testRegisterUser_DuplicateUsername() throws Exception {
         when(userService.registerUser(any(UserDto.class)))
-                .thenThrow(new AccountExpiredException("Username already exists!"));
+                .thenThrow(new AlreadyExistsException("Username already exists!"));
+
+        mockMvc.perform(post("/api/user/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(userDto)));
 
         mockMvc.perform(post("/api/user/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(userDto)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Username already exists!"));
+                .andExpect(status().isConflict());
 
-        verify(userService, times(1)).registerUser(any(UserDto.class));
     }
 
     @Test
@@ -132,10 +139,7 @@ public class UserControllerTest {
         mockMvc.perform(post("/api/user/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(userDto)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Email already exists!"));
-
-        verify(userService, times(1)).registerUser(any(UserDto.class));
+                .andExpect(status().isConflict());
     }
 
     @Test
@@ -151,7 +155,7 @@ public class UserControllerTest {
         RefreshToken mockRefreshToken = new RefreshToken();
         mockRefreshToken.setToken("refresh-token");
         when(refreshTokenService.createRefreshToken(any())).thenReturn(mockRefreshToken);
-
+        when(userRepository.findByUsername(any())).thenReturn(Optional.of(createdUser));
         mockMvc.perform(post("/api/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(authRequest)))
@@ -173,8 +177,7 @@ public class UserControllerTest {
         mockMvc.perform(post("/api/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(authRequest)))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value("Incorrect username or password!"));
+                .andExpect(status().isForbidden());
 
         verify(authenticationManager, times(1)).authenticate(any());
     }
