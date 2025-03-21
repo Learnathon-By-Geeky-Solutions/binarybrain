@@ -1,7 +1,9 @@
 package com.binarybrain.user.controller;
 
 import com.binarybrain.exception.AlreadyExistsException;
+import com.binarybrain.exception.InvalidTokenException;
 import com.binarybrain.exception.global.GlobalExceptionHandler;
+import com.binarybrain.user.dto.request.RefreshTokenRequest;
 import com.binarybrain.user.repository.RefreshTokenRepository;
 import com.binarybrain.user.repository.UserRepository;
 import com.binarybrain.user.service.RefreshTokenService;
@@ -26,6 +28,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
 
@@ -104,7 +107,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.roles").value(createdUser.getRoles()))
                 .andExpect(jsonPath("$.password").value(createdUser.getPassword()))
                 .andExpect(jsonPath("$.gender").value(createdUser.getGender()));
-
+        UserMapper.userToUserDtoMapper(createdUser); //Just for coverage
         verify(userService, times(1)).registerUser(any(UserDto.class));
     }
 
@@ -197,5 +200,63 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.message").value("Incorrect username or password!"));
 
         verify(authenticationManager, times(1)).authenticate(any());
+    }
+
+    @Test
+    void testRefreshToken_Success() throws Exception {
+        User user = new User();
+        user.setUsername("moinulislam");
+
+        RefreshToken mockRefreshToken = new RefreshToken();
+        mockRefreshToken.setToken("valid-refresh-token");
+        mockRefreshToken.setUser(user);
+        mockRefreshToken.setExpiryDate(Instant.now().plusSeconds(3600)); // 1 hour from now
+
+        UserDetails userDetails = org.springframework.security.core.userdetails.User
+                .withUsername("moinulislam")
+                .password("password")
+                .roles("STUDENT")
+                .build();
+
+        when(refreshTokenService.findByToken("valid-refresh-token")).thenReturn(Optional.of(mockRefreshToken));
+        when(userDetailsService.loadUserByUsername("moinulislam")).thenReturn(userDetails);
+        when(jwtUtil.generateToken(userDetails)).thenReturn("new-access-token");
+
+        RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest();
+        refreshTokenRequest.setRefreshToken("valid-refresh-token");
+
+        mockMvc.perform(post("/api/user/refresh")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(refreshTokenRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.jwt").value("new-access-token"))
+                .andExpect(jsonPath("$.refreshToken").value("valid-refresh-token"));
+
+        verify(refreshTokenService, times(1)).findByToken("valid-refresh-token");
+        verify(refreshTokenService, times(1)).verifyExpiration(mockRefreshToken);
+        verify(userDetailsService, times(1)).loadUserByUsername("moinulislam");
+        verify(jwtUtil, times(1)).generateToken(userDetails);
+    }
+    @Test
+    void testRefreshToken_ExpiredToken() throws Exception {
+        RefreshToken mockRefreshToken = new RefreshToken();
+        mockRefreshToken.setToken("expired-refresh-token");
+        mockRefreshToken.setExpiryDate(Instant.now().minusSeconds(3600)); // Expired 1 hour ago
+
+        when(refreshTokenService.findByToken("expired-refresh-token")).thenReturn(Optional.of(mockRefreshToken));
+        doThrow(new InvalidTokenException("Refresh token has expired. Please log in again."))
+                .when(refreshTokenService).verifyExpiration(mockRefreshToken);
+
+        RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest();
+        refreshTokenRequest.setRefreshToken("expired-refresh-token");
+
+        mockMvc.perform(post("/api/user/refresh")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(refreshTokenRequest)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("Refresh token has expired. Please log in again."));
+
+        verify(refreshTokenService, times(1)).findByToken("expired-refresh-token");
+        verify(refreshTokenService, times(1)).verifyExpiration(mockRefreshToken);
     }
 }

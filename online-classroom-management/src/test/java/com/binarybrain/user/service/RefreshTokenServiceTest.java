@@ -41,7 +41,7 @@ public class RefreshTokenServiceTest {
         refreshToken = new RefreshToken();
         refreshToken.setId(1L);
         refreshToken.setToken(UUID.randomUUID().toString());
-        refreshToken.setExpiryDate(Instant.now().plusSeconds(3600)); // 1 hour from now
+        refreshToken.setExpiryDate(Instant.now().plusSeconds(3600));
         refreshToken.setUser(user);
     }
 
