@@ -9,4 +9,5 @@
 *.ipr
 .idea_modules/
 
+target/
 uploads/

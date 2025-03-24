@@ -1,8 +1,0 @@
-com\binarybrain\exception\AlreadyExistsException.class
-com\binarybrain\exception\ErrorDetails.class
-com\binarybrain\exception\UserHasNotPermissionException.class
-com\binarybrain\exception\UnsupportedFileTypeException.class
-com\binarybrain\Main.class
-com\binarybrain\exception\InvalidTokenException.class
-com\binarybrain\exception\global\GlobalExceptionHandler.class
-com\binarybrain\exception\ResourceNotFoundException.class
