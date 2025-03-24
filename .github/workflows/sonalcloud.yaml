@@ -27,7 +27,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Build Entire Project and Generate Coverage
-        run: mvn clean install jacoco:report-aggregate -DskipTests=false
+        run: mvn clean install -Dspring.profiles.active=test jacoco:report-aggregate -DskipTests=false
         working-directory: .
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
