@@ -14,4 +14,4 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     show-sql: true
   config:
-    import: classpath:secret.properties
+    import: classpath:secret-test.properties
