@@ -1,9 +1,15 @@
 spring:
-  config:
-    import: classpath:application.yml
+  h2:
+    console:
+      enabled: true
+      path: /h2
+  datasource:
+    url: jdbc:h2:file:~/testdb
+    username: sa
+    password:
+    driverClassName: org.h2.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
-
-  datasource:
-    url: jdbc:mysql://localhost:3306/TEST_OCM_userDB?createDatabaseIfNotExist=true
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
