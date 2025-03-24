@@ -71,7 +71,7 @@ jobs:
         with:
           projectBaseDir: ${{ matrix.module }}
           args: >
-            -Dsonar.projectKey=Learnathon-By-Geeky-Solutions_binarybrain_${{ matrix.module }}
+            -Dsonar.projectKey=Learnathon-By-Geeky-Solutions_binarybrain
             -Dsonar.organization=learnathon-by-geeky-solutions
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.coverage.jacoco.xmlReportPaths=${{ matrix.module }}/target/site/jacoco/jacoco.xml
