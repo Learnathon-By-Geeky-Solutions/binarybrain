@@ -46,6 +46,8 @@ jobs:
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.coverage.jacoco.xmlReportPaths=classroom-microservice/target/site/jacoco/jacoco.xml,course-microservice/target/site/jacoco/jacoco.xml,eureka-server/target/site/jacoco/jacoco.xml,gateway/target/site/jacoco/jacoco.xml,online-classroom-management/target/site/jacoco/jacoco.xml,task-microservice/target/site/jacoco/jacoco.xml,task-submission-service/target/site/jacoco/jacoco.xml
             -Dsonar.java.binaries=classroom-microservice/target/classes,course-microservice/target/classes,eureka-server/target/classes,gateway/target/classes,online-classroom-management/target/classes,task-microservice/target/classes,task-submission-service/target/classes
+            -Dsonar.sources=classroom-microservice/src/main/java,course-microservice/src/main/java,eureka-server/src/main/java,gateway/src/main/java,online-classroom-management/src/main/java,task-microservice/src/main/java,task-submission-service/src/main/java
+            -Dsonar.tests=classroom-microservice/src/test/java,course-microservice/src/test/java,eureka-server/src/test/java,gateway/src/test/java,online-classroom-management/src/test/java,task-microservice/src/test/java,task-submission-service/src/test/java
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
