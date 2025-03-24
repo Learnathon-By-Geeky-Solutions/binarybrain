@@ -27,10 +27,20 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Build Entire Project and Generate Coverage
-        run: mvn clean install -Dspring.profiles.active=test jacoco:report-aggregate -DskipTests=false
+        run: |
+          mvn clean install -Dspring.profiles.active=test jacoco:report-aggregate -DskipTests=false
+          echo "Listing target folder contents:"
+          find . -path "*/target" -exec ls -la {} \;
         working-directory: .
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload target folders
+        uses: actions/upload-artifact@v3
+        with:
+          name: target-folders
+          path: |
+            **/target
 
   analyze-modules:
     needs: build-and-prepare
@@ -45,7 +55,6 @@ jobs:
           - online-classroom-management
           - task-microservice
           - task-submission-service
-          # Exclude common-exception-handler if it’s not analyzed independently
 
     steps:
       - name: Checkout repository
@@ -66,11 +75,25 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
+      - name: Download target folders
+        uses: actions/download-artifact@v3
+        with:
+          name: target-folders
+          path: .
+
+      - name: Debug target folder paths
+        run: |
+          echo "Checking module: ${{ matrix.module }}"
+          ls -la ${{ matrix.module }}/target || echo "Target folder not found!"
+          ls -la ${{ matrix.module }}/target/classes || echo "Classes not found!"
+          ls -la ${{ matrix.module }}/target/site/jacoco/jacoco.xml || echo "JaCoCo report not found!"
+
       - name: Analyze Module with SonarCloud
         uses: SonarSource/sonarcloud-github-action@v2.2.0
         with:
           projectBaseDir: ${{ matrix.module }}
           args: >
+            -X
             -Dsonar.projectKey=Learnathon-By-Geeky-Solutions_binarybrain
             -Dsonar.organization=learnathon-by-geeky-solutions
             -Dsonar.host.url=https://sonarcloud.io
