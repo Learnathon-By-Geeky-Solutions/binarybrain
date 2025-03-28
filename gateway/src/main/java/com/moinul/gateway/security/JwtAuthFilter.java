@@ -73,6 +73,10 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
         return exchange.getResponse().writeWith(Mono.just(buffer));
     }
 
+    /**
+     * This class is required by AbstractGatewayFilterFactory,
+     * even if it does not contain any configuration fields.
+     */
     public static class Config {
     }
 }
