@@ -31,6 +31,7 @@ public class UserMapper {
      */
     public static UserDto userToUserDtoMapper(User user){
         UserDto userDTO = new UserDto();
+        userDTO.setId(user.getId());
         userDTO.setFirstName(user.getFirstName());
         userDTO.setLastName(user.getLastName());
         userDTO.setCurrentInstitute(user.getCurrentInstitute());
@@ -53,6 +54,7 @@ public class UserMapper {
      */
     public static User userDtoToUserMapper(UserDto userDto) {
         User user = new User();
+        user.setId(userDto.getId());
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
         user.setCurrentInstitute(userDto.getCurrentInstitute());

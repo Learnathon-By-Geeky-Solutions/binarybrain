@@ -49,8 +49,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDto getCourseByCourseId(Long id,  String username) {
-        Course course = courseRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
+        Course course = getCourseById(id);
         return CourseMapper.mapToDto(course);
     }
 
@@ -88,8 +87,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDto updateCourse(Long courseId, CourseDto updatedCourseDto, String username) {
-        Course existingCourse = courseRepository.findById(courseId)
-                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
+        Course existingCourse = getCourseById(courseId);
         validateCourseModificationPermission(existingCourse, username);
 
         if (updatedCourseDto.getTitle() != null)
@@ -107,8 +105,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDto assignTaskInCourse(Long courseId, Long taskId, String username) {
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
+        Course course = getCourseById(courseId);
         validateCourseModificationPermission(course, username);
 
         TaskDto taskDto = taskService.getTaskById(taskId, username);
@@ -126,8 +123,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDto removeTaskFromCourse(Long courseId, Long taskId, String username) {
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
+        Course course = getCourseById(courseId);
         validateCourseModificationPermission(course, username);
 
         if (!course.getTaskIds().remove(taskId)) {
@@ -139,8 +135,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<TaskDto> getAllTaskFromCourse(Long courseId, String username) {
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
+        Course course = getCourseById(courseId);
         validateCourseModificationPermission(course, username);
 
         List<Long> courseIds = new ArrayList<>(course.getTaskIds());
@@ -149,8 +144,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void deleteCourse(Long courseId, String username) {
-        Course existingCourse = courseRepository.findById(courseId)
-                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
+        Course existingCourse = getCourseById(courseId);
         validateCourseModificationPermission(existingCourse, username);
 
         courseRepository.deleteById(courseId);
@@ -164,5 +158,9 @@ public class CourseServiceImpl implements CourseService {
         if (!isAdmin && (!isTeacher || !course.getCreatedBy().equals(userDto.getId()))) {
             throw new UserHasNotPermissionException("You do not have permission to modify this course.");
         }
+    }
+    private Course getCourseById(Long id){
+        return courseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
     }
 }
