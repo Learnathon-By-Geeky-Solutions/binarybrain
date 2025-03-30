@@ -221,7 +221,6 @@ class CourseControllerTest {
                         .header("X-User-Username", "moinul")
         ).andExpect(status().isNoContent());
 
-        // Verify course is deleted
         when(courseRepository.findById(courseId)).thenReturn(Optional.empty());
 
         mockMvc.perform(
