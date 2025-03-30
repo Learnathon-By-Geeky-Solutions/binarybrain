@@ -6,7 +6,7 @@ spring:
     name: GATEWAY-SERVICE
 
   config:
-    import: classpath:secret.properties
+    import: optional:classpath:secret.properties
 
   cloud:
     gateway:

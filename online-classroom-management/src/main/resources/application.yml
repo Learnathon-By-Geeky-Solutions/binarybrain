@@ -11,7 +11,7 @@ spring:
     name: OCM-USER-REGISTRATION
 
   config:
-    import: classpath:secret.properties
+    import: optional:classpath:secret.properties
 
 
   jpa:
