@@ -143,7 +143,8 @@ class CourseControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isNotEmpty());
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$[0].createdBy").value(id));
     }
 
     @Test
@@ -179,7 +180,10 @@ class CourseControllerTest {
         mockMvc.perform(
                 put("/api/v1/private/course/{courseId}/remove-task/{taskId}", courseId, taskId)
                         .header("X-User-Username", "moinul")
-        ).andExpect(status().isOk());
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.taskIds").isArray())
+                .andExpect(jsonPath("$.taskIds").isEmpty());
     }
 
     @Test
