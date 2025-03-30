@@ -14,6 +14,8 @@ import java.util.Date;
 public class GlobalExceptionHandler {
     @ExceptionHandler(UserHasNotPermissionException.class)
     public ResponseEntity<ErrorDetails> handleUserHasNotPermissionException(UserHasNotPermissionException e, WebRequest request){
+        e.printStackTrace();
+        System.out.println("UserHasNotPermissionException: " + e.getMessage());
         ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
     }

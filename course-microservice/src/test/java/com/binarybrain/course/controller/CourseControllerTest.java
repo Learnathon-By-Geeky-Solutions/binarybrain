@@ -1,9 +1,6 @@
 package com.binarybrain.course.controller;
 
-import com.binarybrain.course.dto.RoleDto;
-import com.binarybrain.course.dto.TaskDto;
-import com.binarybrain.course.dto.TaskStatus;
-import com.binarybrain.course.dto.UserDto;
+import com.binarybrain.course.dto.*;
 import com.binarybrain.course.model.Course;
 import com.binarybrain.course.repo.CourseRepository;
 import com.binarybrain.course.service.TaskService;
@@ -37,16 +34,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ActiveProfiles("test")
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class CourseControllerTest {
     private static int runIteration = 0;
     @Autowired
     private MockMvc mockMvc;
-    @Autowired
-    UserService userService;
 
     @MockitoBean
-    UserService courseService;
+    UserService userService;
 
     @MockitoBean
     CourseRepository courseRepository;
@@ -116,7 +111,10 @@ class CourseControllerTest {
         mockMvc.perform(
                 get("/api/v1/private/course/" + getCourse(true).getId())
                         .header("X-User-Username", "moinul")
-        ).andExpect(status().isOk());
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(getCourse(true).getId()))
+                .andExpect(jsonPath("$.title").value(getCourse(true).getTitle()));
     }
 
     @Test
@@ -129,7 +127,10 @@ class CourseControllerTest {
                 get("/api/v1/private/course/by-ids?courseIds=%s,%s".formatted(courseId1, courseId2))
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-User-Username", "moinul")
-        ).andExpect(status().isOk());
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$.length()").value(2));
     }
 
     @Test
@@ -165,7 +166,10 @@ class CourseControllerTest {
         mockMvc.perform(
                 put("/api/v1/private/course/{courseId}/add-task/{taskId}", courseId, taskId)
                         .header("X-User-Username", "moinul")
-        ).andExpect(status().isOk());
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.taskIds").isArray())
+                .andExpect(jsonPath("$.taskIds[0]").value(taskId));
     }
 
     @Test
@@ -216,6 +220,14 @@ class CourseControllerTest {
                 delete("/api/v1/private/course/{id}", courseId)
                         .header("X-User-Username", "moinul")
         ).andExpect(status().isNoContent());
+
+        // Verify course is deleted
+        when(courseRepository.findById(courseId)).thenReturn(Optional.empty());
+
+        mockMvc.perform(
+                get("/api/v1/private/course/{id}", courseId)
+                        .header("X-User-Username", "moinul")
+        ).andExpect(status().isNotFound());
     }
 
     @BeforeEach
@@ -231,9 +243,28 @@ class CourseControllerTest {
         roleDto.setId(1L);
         userDto.setRoles(new HashSet<>(List.of(roleDto)));
 
-        when(courseService.getUserProfile("moinul")).thenReturn(userDto);
+        Course courseDto1 = new Course();
+        courseDto1.setId(1L);
+        courseDto1.setTitle("Java Programming");
+        courseDto1.setCode("JP-101");
+        courseDto1.setDescription("Learn Java Programming");
+        courseDto1.setCreatedBy(1L);
+        courseDto1.setStatus(CourseStatus.OPEN);
+        courseDto1.setTaskIds(new HashSet<>(List.of(1L)));
+
+        Course courseDto2 = new Course();
+        courseDto2.setId(2L);
+        courseDto2.setTitle("Python Programming");
+        courseDto2.setCode("PP-101");
+        courseDto2.setDescription("Learn Python Programming");
+        courseDto2.setCreatedBy(1L);
+        courseDto2.setStatus(CourseStatus.OPEN);
+        courseDto2.setTaskIds(new HashSet<>(List.of(2L)));
+        when(userService.getUserProfile("moinul")).thenReturn(userDto);
+        when(userService.getUserProfileById(1L,"moinul")).thenReturn(userDto);
         when(courseRepository.save(any(Course.class))).thenReturn(getCourse(true));
         when(courseRepository.findById(1L)).thenReturn(Optional.of(getCourse(true)));
+        when(courseRepository.findByIdIn(any())).thenReturn(List.of(courseDto1,courseDto2));
         when(courseRepository.findByCreatedBy(1L)).thenReturn(List.of(getCourse(true)));
         when(courseRepository.findAll()).thenReturn(List.of(getCourse(true)));
         when(taskService.getTasksByIds(List.of(1L),"moinul")).thenReturn(List.of(getTask()));
