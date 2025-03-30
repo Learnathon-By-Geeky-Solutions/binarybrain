@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ClassroomserviceImpl implements ClassroomService {
@@ -83,9 +81,12 @@ public class ClassroomserviceImpl implements ClassroomService {
             if (!validateRole(student, List.of("STUDENT"))) {
                 throw new UserHasNotPermissionException("Only students can be added to the classroom!");
             }
-            if (!classroom.getStudentIds().add(studentId)) {
+            if (classroom.getStudentIds().contains(studentId)) {
                 throw new AlreadyExistsException("Student is already in the classroom!");
             }
+            Set<Long> studentIds = new HashSet<>(Set.copyOf(classroom.getStudentIds()));
+            studentIds.add(studentId);
+            classroom.setStudentIds(studentIds);
             return classroomRepository.save(classroom);
 
         }catch (FeignException.BadRequest e){
@@ -100,9 +101,12 @@ public class ClassroomserviceImpl implements ClassroomService {
             Classroom classroom = getClassroomById(classroomId, username);
             validateClassroomModificationPermission(classroom, username);
 
-            if (!classroom.getStudentIds().remove(studentId)) {
+            if (!classroom.getStudentIds().contains(studentId)) {
                 throw new ResourceNotFoundException("Student not found in the classroom!");
             }
+            Set<Long> studentIds = new HashSet<>(Set.copyOf(classroom.getStudentIds()));
+            studentIds.remove(studentId);
+            classroom.setStudentIds(studentIds);
             return classroomRepository.save(classroom);
 
         }catch (FeignException.BadRequest e){
