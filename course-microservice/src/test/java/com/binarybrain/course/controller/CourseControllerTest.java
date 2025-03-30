@@ -37,16 +37,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ActiveProfiles("test")
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class CourseControllerTest {
     private static int runIteration = 0;
     @Autowired
     private MockMvc mockMvc;
-    @Autowired
-    UserService userService;
 
     @MockitoBean
-    UserService courseService;
+    UserService userService;
 
     @MockitoBean
     CourseRepository courseRepository;
@@ -220,6 +218,7 @@ class CourseControllerTest {
 
     @BeforeEach
     void setUp() {
+        System.out.println("iishanto Run iteration: " + runIteration);
         UserDto userDto = new UserDto();
         userDto.setId(1L);
         userDto.setFirstName("Moinul");
@@ -231,7 +230,9 @@ class CourseControllerTest {
         roleDto.setId(1L);
         userDto.setRoles(new HashSet<>(List.of(roleDto)));
 
-        when(courseService.getUserProfile("moinul")).thenReturn(userDto);
+        when(userService.getUserProfile("moinul")).thenReturn(userDto);
+        when(userService.getUserProfileById(1L,"moinul")).thenReturn(userDto);
+        System.out.println("tested user get mockito:"+userService.getUserProfile("moinul").getEmail());
         when(courseRepository.save(any(Course.class))).thenReturn(getCourse(true));
         when(courseRepository.findById(1L)).thenReturn(Optional.of(getCourse(true)));
         when(courseRepository.findByCreatedBy(1L)).thenReturn(List.of(getCourse(true)));
