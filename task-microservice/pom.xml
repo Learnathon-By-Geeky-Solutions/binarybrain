@@ -80,6 +80,11 @@
 			<version>2.2.224</version> <!-- Latest as of now -->
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.18.2</version>
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
