@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  mysql-submission:
+    image: mysql:8
+    container_name: mysql-submission
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_DATABASE: OCM_submission
+    ports:
+      - "3310:3306"
+    networks:
+      - mynetwork
+
+  courseservice:
+    build: .
+    image: binarybrain/submissionservice:0.0.1
+    container_name: submissionservice
+    depends_on:
+      - mysql-submission
+    ports:
+      - "5005:5005"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-submission:3306/OCM_submission
+      EUREKA_SERVER_URL: http://host.docker.internal:8070/eureka/
+    networks:
+      - mynetwork
+networks:
+  mynetwork:
+    driver: bridge
