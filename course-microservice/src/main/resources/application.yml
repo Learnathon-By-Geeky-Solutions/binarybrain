@@ -19,7 +19,7 @@ spring:
         format_sql: true
 
   datasource:
-    url: jdbc:mysql://localhost:3306/OCM_course?createDatabaseIfNotExist=true
+    url: ${SPRING_DATASOURCE_URL}
     username: root
     password:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -31,4 +31,4 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     serviceUrl:
-      defaultZone: http://localhost:8070/eureka/
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8070/eureka/}
