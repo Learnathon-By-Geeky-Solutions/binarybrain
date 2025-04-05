@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_DATABASE: OCM_userDB
+    ports:
+      - "3306:3306"
+    networks:
+      - mynetwork
+
+  userservice:
+    build: .
+    image: userservice
+    container_name: userservice
+    depends_on:
+      - mysql
+    ports:
+      - "5001:5001"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/OCM_userDB
+      EUREKA_SERVER_URL: http://host.docker.internal:8070/eureka/
+    networks:
+      - mynetwork
+networks:
+  mynetwork:
+    driver: bridge
