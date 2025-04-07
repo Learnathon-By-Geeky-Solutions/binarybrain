@@ -2,9 +2,9 @@ server:
   port: 5002
 
 user-service:
-  url: http://localhost:5001/
+  url: http://userservice:5001/
 course-service:
-  url: http://localhost:5003/
+  url: http://courseservice:5003/
 
 spring:
   application:
@@ -20,7 +20,7 @@ spring:
         format_sql: true
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/OCM_classroom}
     username: root
     password:
     driver-class-name: com.mysql.cj.jdbc.Driver

@@ -1,11 +1,6 @@
 server:
   port: 5001
 
-user-service:
-  url: http://localhost:5001/
-course-service:
-  url: http://localhost:5003/
-
 spring:
   application:
     name: OCM-USER-REGISTRATION
@@ -23,7 +18,7 @@ spring:
         format_sql: true
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/OCM_userDB}
     username: root
     password:
     driver-class-name: com.mysql.cj.jdbc.Driver
