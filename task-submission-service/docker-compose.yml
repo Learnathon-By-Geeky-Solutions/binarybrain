@@ -13,7 +13,7 @@ services:
     networks:
       - mynetwork
 
-  courseservice:
+  submissionservice:
     build: .
     image: binarybrain/submissionservice:0.0.1
     container_name: submissionservice
