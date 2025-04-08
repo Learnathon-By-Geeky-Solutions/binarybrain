@@ -4,7 +4,7 @@ server:
 user-service:
   url: http://userservice:5001/
 task-service:
-  url: http://taskservice:5001/
+  url: http://taskservice:5004/
 
 spring:
   application:
