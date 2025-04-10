@@ -92,7 +92,6 @@ public class ClassroomserviceImpl implements ClassroomService {
         }catch (FeignException.BadRequest e){
             throw new ResourceNotFoundException("User not found with id: " + studentId);
         }
-
     }
 
     @Override
