@@ -143,6 +143,9 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-submission:3306/OCM_submission
       EUREKA_SERVER_URL: http://eurekaserver:8070/eureka/
+      FILE_UPLOAD_DIR: /uploads/submission/
+    volumes:
+      - ./submission-uploads:/uploads/submission:rw
     networks:
       - mynetwork
 
