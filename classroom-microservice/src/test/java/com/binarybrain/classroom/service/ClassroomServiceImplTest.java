@@ -47,7 +47,6 @@ class ClassroomServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        // Setup test data
         teacher = createUserDto(1L, "teacher", "TEACHER");
         admin = createUserDto(2L, "admin", "ADMIN");
         student = createUserDto(3L, "student", "STUDENT");
@@ -120,9 +119,7 @@ class ClassroomServiceImplTest {
     void getClassroomById_WhenUserIsNotTeacherOrAdmin_ShouldThrowException() {
         when(userService.getUserProfile("student")).thenReturn(student);
 
-        assertThrows(UserHasNotPermissionException.class, () -> {
-            classroomService.getClassroomById(3L, "student");
-        });
+        assertThrows(UserHasNotPermissionException.class, () -> classroomService.getClassroomById(3L, "student"));
     }
 
     @Test
@@ -148,9 +145,7 @@ class ClassroomServiceImplTest {
     void getAllClassroomByTeacherId_WhenUserIsNotTeacherOrAdmin_ShouldThrowException() {
         when(userService.getUserProfile("student")).thenReturn(student);
 
-        assertThrows(UserHasNotPermissionException.class, () -> {
-            classroomService.getAllClassroomByTeacherId(3L, "student");
-        });
+        assertThrows(UserHasNotPermissionException.class, () -> classroomService.getAllClassroomByTeacherId(3L, "student"));
     }
 
     @Test
