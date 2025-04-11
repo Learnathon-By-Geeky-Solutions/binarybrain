@@ -146,7 +146,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-task:3306/OCM_task
       EUREKA_SERVER_URL: http://eurekaserver:8070/eureka/
     networks:
-      - mynetwor
+      - mynetwork
 
   submissionservice:
     build: ./task-submission-service
