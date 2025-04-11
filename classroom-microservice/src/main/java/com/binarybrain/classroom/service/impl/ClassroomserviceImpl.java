@@ -50,7 +50,7 @@ public class ClassroomserviceImpl implements ClassroomService {
         if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
             throw new UserHasNotPermissionException("Only teacher or admin can manage classroom!");
         }
-        return classroomRepository.findById(id).orElseThrow(() -> new RuntimeException("Classroom not found with id: " + id));
+        return classroomRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Classroom not found with id: " + id));
     }
 
     @Override
