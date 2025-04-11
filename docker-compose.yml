@@ -23,21 +23,6 @@ services:
     networks:
       - mynetwork
 
-  userservice:
-    build: ./online-classroom-management
-    image: binarybrain/userservice:0.0.1
-    container_name: userservice
-    depends_on:
-      - mysql-user
-      - eurekaserver
-    ports:
-      - "5001:5001"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-user:3306/OCM_userDB
-      EUREKA_SERVER_URL: http://eurekaserver:8070/eureka/
-    networks:
-      - mynetwork
-
   mysql-classroom:
     image: mysql:8
     container_name: mysql-classroom
@@ -47,21 +32,6 @@ services:
       MYSQL_DATABASE: OCM_classroom
     ports:
       - "3307:3306"
-    networks:
-      - mynetwork
-
-  classroomservice:
-    build: ./classroom-microservice
-    image: binarybrain/classroomservice:0.0.1
-    container_name: classroomservice
-    depends_on:
-      - mysql-classroom
-      - eurekaserver
-    ports:
-      - "5002:5002"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-classroom:3306/OCM_classroom
-      EUREKA_SERVER_URL: http://eurekaserver:8070/eureka/
     networks:
       - mynetwork
 
@@ -77,21 +47,6 @@ services:
     networks:
       - mynetwork
 
-  courseservice:
-    build: ./course-microservice
-    image: binarybrain/courseservice:0.0.1
-    container_name: courseservice
-    depends_on:
-      - mysql-course
-      - eurekaserver
-    ports:
-      - "5003:5003"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-course:3306/OCM_course
-      EUREKA_SERVER_URL: http://eurekaserver:8070/eureka/
-    networks:
-      - mynetwork
-
   mysql-task:
     image: mysql:8
     container_name: mysql-task
@@ -101,21 +56,6 @@ services:
       MYSQL_DATABASE: OCM_task
     ports:
       - "3309:3306"
-    networks:
-      - mynetwork
-
-  taskservice:
-    build: ./task-microservice
-    image: binarybrain/taskservice:0.0.1
-    container_name: taskservice
-    depends_on:
-      - mysql-task
-      - eurekaserver
-    ports:
-      - "5004:5004"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-task:3306/OCM_task
-      EUREKA_SERVER_URL: http://eurekaserver:8070/eureka/
     networks:
       - mynetwork
 
@@ -131,11 +71,92 @@ services:
     networks:
       - mynetwork
 
+  userservice:
+    build: ./online-classroom-management
+    image: binarybrain/userservice:0.0.1
+    container_name: userservice
+    depends_on:
+      - mysql-user
+      - mysql-classroom
+      - mysql-course
+      - mysql-task
+      - mysql-submission
+      - eurekaserver
+    ports:
+      - "5001:5001"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-user:3306/OCM_userDB
+      EUREKA_SERVER_URL: http://eurekaserver:8070/eureka/
+    networks:
+      - mynetwork
+
+
+  classroomservice:
+    build: ./classroom-microservice
+    image: binarybrain/classroomservice:0.0.1
+    container_name: classroomservice
+    depends_on:
+      - mysql-user
+      - mysql-classroom
+      - mysql-course
+      - mysql-task
+      - mysql-submission
+      - eurekaserver
+    ports:
+      - "5002:5002"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-classroom:3306/OCM_classroom
+      EUREKA_SERVER_URL: http://eurekaserver:8070/eureka/
+    networks:
+      - mynetwork
+
+  courseservice:
+    build: ./course-microservice
+    image: binarybrain/courseservice:0.0.1
+    container_name: courseservice
+    depends_on:
+      - mysql-user
+      - mysql-classroom
+      - mysql-course
+      - mysql-task
+      - mysql-submission
+      - eurekaserver
+    ports:
+      - "5003:5003"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-course:3306/OCM_course
+      EUREKA_SERVER_URL: http://eurekaserver:8070/eureka/
+    networks:
+      - mynetwork
+
+  taskservice:
+    build: ./task-microservice
+    image: binarybrain/taskservice:0.0.1
+    container_name: taskservice
+    depends_on:
+      - mysql-user
+      - mysql-classroom
+      - mysql-course
+      - mysql-task
+      - mysql-submission
+      - eurekaserver
+    ports:
+      - "5004:5004"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-task:3306/OCM_task
+      EUREKA_SERVER_URL: http://eurekaserver:8070/eureka/
+    networks:
+      - mynetwork
+
   submissionservice:
     build: ./task-submission-service
     image: binarybrain/submissionservice:0.0.1
     container_name: submissionservice
     depends_on:
+      - mysql-user
+      - mysql-classroom
+      - mysql-course
+      - mysql-task
       - mysql-submission
       - eurekaserver
     ports:
@@ -154,6 +175,11 @@ services:
     image: binarybrain/gateway:0.0.1
     container_name: gateway
     depends_on:
+      - mysql-user
+      - mysql-classroom
+      - mysql-course
+      - mysql-task
+      - mysql-submission
       - eurekaserver
     ports:
       - "5000:5000"
