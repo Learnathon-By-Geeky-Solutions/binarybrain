@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  mysql-classroom:
+    image: mysql:8
+    container_name: mysql-classroom
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_DATABASE: OCM_classroom
+    ports:
+      - "3307:3306"
+    networks:
+      - mynetwork
+
+  classroomservice:
+    build: .
+    image: binarybrain/classroomservice:0.0.1
+    container_name: classroomservice
+    depends_on:
+      - mysql-classroom
+    ports:
+      - "5002:5002"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-classroom:3306/OCM_classroom
+      EUREKA_SERVER_URL: http://host.docker.internal:8070/eureka/
+    networks:
+      - mynetwork
+networks:
+  mynetwork:
+    driver: bridge

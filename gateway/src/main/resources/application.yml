@@ -12,40 +12,35 @@ spring:
     gateway:
       routes:
         - id: USER-MICROSERVICE
-          uri:
-            http://localhost:5001
+          uri: lb://OCM-USER-REGISTRATION
           predicates:
             - Path=/api/user/**
           filters:
             - JwtAuthFilter
 
         - id: CLASSROOM-MICROSERVICE
-          uri:
-            http://localhost:5002
+          uri: lb://CLASSROOM-MICROSERVICE
           predicates:
             - Path=/api/v1/private/classroom/**
           filters:
             - JwtAuthFilter
 
         - id: COURSE-MICROSERVICE
-          uri:
-            http://localhost:5003
+          uri: lb://COURSE-MICROSERVICE
           predicates:
             - Path=/api/v1/private/course/**
           filters:
             - JwtAuthFilter
 
         - id: TASK-MICROSERVICE
-          uri:
-            http://localhost:5004
+          uri: lb://TASK-MICROSERVICE
           predicates:
             - Path=/api/v1/private/task/**
           filters:
             - JwtAuthFilter
 
         - id: TASK-SUBMISSION-MICROSERVICE
-          uri:
-            http://localhost:5005
+          uri: lb://TASK-SUBMISSION-MICROSERVICE
           predicates:
             - Path=/api/v1/private/submission/**
           filters:
@@ -58,4 +53,4 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     serviceUrl:
-      defaultZone: http://localhost:8070/eureka/
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8070/eureka/}

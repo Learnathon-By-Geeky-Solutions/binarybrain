@@ -2,9 +2,9 @@ server:
   port: 5005
 
 user-service:
-  url: http://localhost:5001/
+  url: http://userservice:5001/
 task-service:
-  url: http://localhost:5004/
+  url: http://taskservice:5004/
 
 spring:
   application:
@@ -14,6 +14,7 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     properties:
       hibernate:
         format_sql: true
@@ -25,7 +26,7 @@ spring:
       max-request-size: 7MB
 
   datasource:
-    url: jdbc:mysql://localhost:3306/OCM_submission?createDatabaseIfNotExist=true
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/OCM_submission}
     username: root
     password:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -40,4 +41,4 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     serviceUrl:
-      defaultZone: http://localhost:8070/eureka/
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8070/eureka/}

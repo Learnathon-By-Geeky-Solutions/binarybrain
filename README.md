@@ -19,6 +19,10 @@ For a detailed breakdown of project tasks and responsibilities, refer to our **[
 
 ---
 
+## Database Design
+![Current database design](https://imgur.com/a/DPNnO0x)
+
+
 ## Key Features
 
 ### **1. User Roles**
