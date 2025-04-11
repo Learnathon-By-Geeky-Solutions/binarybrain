@@ -114,6 +114,7 @@
 						<configuration>
 							<formats>
 								<format>XML</format> <!-- Ensure XML report is generated -->
+								<format>HTML</format> <!-- Ensure HTML report is generated -->
 							</formats>
 							<outputDirectory>${project.build.directory}/site/jacoco</outputDirectory> <!-- Consistent output path -->
 						</configuration>
