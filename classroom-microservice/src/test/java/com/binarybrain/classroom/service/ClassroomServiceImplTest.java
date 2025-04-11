@@ -127,7 +127,7 @@ class ClassroomServiceImplTest {
         when(userService.getUserProfile("teacher")).thenReturn(teacher);
         when(classroomRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> classroomService.getClassroomById(1L, "teacher"));
+        assertThrows(ResourceNotFoundException.class, () -> classroomService.getClassroomById(1L, "teacher"));
     }
 
     @Test
