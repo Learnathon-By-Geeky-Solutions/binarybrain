@@ -221,45 +221,6 @@ public class UserControllerTest {
         verify(jwtUtil, times(1)).generateToken(userDetails);
     }
 
-//    @Test
-//    void testRefreshToken_NotFound() throws Exception {
-//        RefreshTokenRequest request = new RefreshTokenRequest();
-//        request.setRefreshToken("invalid-refresh-token");
-//
-//        when(refreshTokenService.findByToken("invalid-refresh-token"))
-//                .thenReturn(Optional.empty());
-//
-//        mockMvc.perform(post("/api/user/refresh")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(new ObjectMapper().writeValueAsString(request)))
-//                .andExpect(status().isNotFound());
-//
-//        verify(refreshTokenService, times(1)).findByToken("invalid-refresh-token");
-//    }
-
-//    @Test
-//    void testRefreshToken_Expired() throws Exception {
-//        RefreshTokenRequest request = new RefreshTokenRequest();
-//        request.setRefreshToken("expired-refresh-token");
-//
-//        RefreshToken refreshToken = new RefreshToken();
-//        refreshToken.setToken("expired-refresh-token");
-//        refreshToken.setUser(createdUser);
-//
-//        when(refreshTokenService.findByToken("expired-refresh-token"))
-//                .thenReturn(Optional.of(refreshToken));
-//        doThrow(new RuntimeException("Refresh token was expired"))
-//                .when(refreshTokenService).verifyExpiration(refreshToken);
-//
-//        mockMvc.perform(post("/api/user/refresh")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(new ObjectMapper().writeValueAsString(request)))
-//                .andExpect(status().isBadRequest());
-//
-//        verify(refreshTokenService, times(1)).findByToken("expired-refresh-token");
-//        verify(refreshTokenService, times(1)).verifyExpiration(refreshToken);
-//    }
-
     @Test
     void testGetUserProfileById_Success() throws Exception {
         when(userService.getUserProfileById(1L, "moinulislam"))
