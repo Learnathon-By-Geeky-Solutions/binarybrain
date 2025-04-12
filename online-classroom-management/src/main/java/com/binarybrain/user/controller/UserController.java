@@ -1,5 +1,6 @@
 package com.binarybrain.user.controller;
 
+import com.binarybrain.exception.ResourceNotFoundException;
 import com.binarybrain.user.dto.UserDto;
 import com.binarybrain.user.dto.request.AuthRequest;
 import com.binarybrain.user.dto.request.RefreshTokenRequest;
@@ -114,7 +115,7 @@ public class UserController {
         String requestRefreshToken = request.getRefreshToken();
 
         RefreshToken refreshToken = refreshTokenService.findByToken(requestRefreshToken)
-                .orElseThrow(() -> new RuntimeException("Refresh token not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Refresh token not found!"));
 
         refreshTokenService.verifyExpiration(refreshToken);
         UserDetails userDetails = userDetailsService.loadUserByUsername(refreshToken.getUser().getUsername());

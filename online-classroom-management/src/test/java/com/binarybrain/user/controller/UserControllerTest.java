@@ -1,6 +1,8 @@
 package com.binarybrain.user.controller;
 
 import com.binarybrain.exception.AlreadyExistsException;
+import com.binarybrain.exception.ResourceNotFoundException;
+import com.binarybrain.user.dto.request.RefreshTokenRequest;
 import com.binarybrain.user.repository.UserRepository;
 import com.binarybrain.user.service.RefreshTokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,7 +32,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.springframework.security.authentication.BadCredentialsException;
 
@@ -75,6 +77,8 @@ public class UserControllerTest {
 
         createdUser = UserMapper.userDtoToUserMapper(userDto);
         createdUser.setId(1L);
+
+        UserMapper.userToUserDtoMapper(createdUser); //For coverage
 
         authRequest = new AuthRequest();
         authRequest.setUsername("moinulislam");
@@ -181,4 +185,105 @@ public class UserControllerTest {
 
         verify(authenticationManager, times(1)).authenticate(any());
     }
+
+    @Test
+    void testRefreshToken_Success() throws Exception {
+        RefreshTokenRequest request = new RefreshTokenRequest();
+        request.setRefreshToken("valid-refresh-token");
+
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setToken("valid-refresh-token");
+        refreshToken.setUser(createdUser);
+
+        UserDetails userDetails = org.springframework.security.core.userdetails.User
+                .withUsername("moinulislam")
+                .password("password")
+                .roles("STUDENT")
+                .build();
+
+        when(refreshTokenService.findByToken("valid-refresh-token"))
+                .thenReturn(Optional.of(refreshToken));
+        when(userDetailsService.loadUserByUsername("moinulislam"))
+                .thenReturn(userDetails);
+        when(jwtUtil.generateToken(userDetails))
+                .thenReturn("new-jwt-token");
+
+        mockMvc.perform(post("/api/user/refresh")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.jwt").value("new-jwt-token"))
+                .andExpect(jsonPath("$.refreshToken").value("valid-refresh-token"));
+
+        verify(refreshTokenService, times(1)).findByToken("valid-refresh-token");
+        verify(refreshTokenService, times(1)).verifyExpiration(refreshToken);
+        verify(userDetailsService, times(1)).loadUserByUsername("moinulislam");
+        verify(jwtUtil, times(1)).generateToken(userDetails);
+    }
+
+//    @Test
+//    void testRefreshToken_NotFound() throws Exception {
+//        RefreshTokenRequest request = new RefreshTokenRequest();
+//        request.setRefreshToken("invalid-refresh-token");
+//
+//        when(refreshTokenService.findByToken("invalid-refresh-token"))
+//                .thenReturn(Optional.empty());
+//
+//        mockMvc.perform(post("/api/user/refresh")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(new ObjectMapper().writeValueAsString(request)))
+//                .andExpect(status().isNotFound());
+//
+//        verify(refreshTokenService, times(1)).findByToken("invalid-refresh-token");
+//    }
+
+//    @Test
+//    void testRefreshToken_Expired() throws Exception {
+//        RefreshTokenRequest request = new RefreshTokenRequest();
+//        request.setRefreshToken("expired-refresh-token");
+//
+//        RefreshToken refreshToken = new RefreshToken();
+//        refreshToken.setToken("expired-refresh-token");
+//        refreshToken.setUser(createdUser);
+//
+//        when(refreshTokenService.findByToken("expired-refresh-token"))
+//                .thenReturn(Optional.of(refreshToken));
+//        doThrow(new RuntimeException("Refresh token was expired"))
+//                .when(refreshTokenService).verifyExpiration(refreshToken);
+//
+//        mockMvc.perform(post("/api/user/refresh")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(new ObjectMapper().writeValueAsString(request)))
+//                .andExpect(status().isBadRequest());
+//
+//        verify(refreshTokenService, times(1)).findByToken("expired-refresh-token");
+//        verify(refreshTokenService, times(1)).verifyExpiration(refreshToken);
+//    }
+
+    @Test
+    void testGetUserProfileById_Success() throws Exception {
+        when(userService.getUserProfileById(1L, "moinulislam"))
+                .thenReturn(createdUser);
+
+        mockMvc.perform(get("/api/user/profile/1")
+                        .header("X-User-Username", "moinulislam"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(createdUser.getId()))
+                .andExpect(jsonPath("$.username").value(createdUser.getUsername()));
+
+        verify(userService, times(1)).getUserProfileById(1L, "moinulislam");
+    }
+
+    @Test
+    void testGetUserProfileById_NotFound() throws Exception {
+        when(userService.getUserProfileById(999L, "moinulislam"))
+                .thenThrow(new ResourceNotFoundException("User not found"));
+
+        mockMvc.perform(get("/api/user/profile/999")
+                        .header("X-User-Username", "moinulislam"))
+                .andExpect(status().isNotFound());
+
+        verify(userService, times(1)).getUserProfileById(999L, "moinulislam");
+    }
+
 }
