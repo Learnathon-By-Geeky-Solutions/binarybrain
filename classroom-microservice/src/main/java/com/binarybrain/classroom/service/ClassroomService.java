@@ -18,5 +18,6 @@ public interface ClassroomService {
     Classroom removeStudentFromClassroomById(Long classroomId, Long studentId, String username);
     List<Classroom> getClassroomsByStudentId(Long studentId);
     Classroom addCourseToClassroom(Long classroomId, Long courseId, String username);
+    Classroom removeCourseFromClassroomById(Long classroomId, Long courseId, String username);
     List<CourseDto> getAllCourseInClassroom(Long classroomId, String username);
 }

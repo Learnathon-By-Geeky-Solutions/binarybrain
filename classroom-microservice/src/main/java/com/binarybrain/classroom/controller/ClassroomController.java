@@ -89,6 +89,14 @@ public class ClassroomController {
         return new ResponseEntity<>(classroom, HttpStatus.OK);
     }
 
+    @DeleteMapping("/{classroomId}/remove-course/{courseId}")
+    ResponseEntity<Classroom> removeCourseFromClassroomById(@PathVariable Long classroomId,
+                                                             @PathVariable Long courseId,
+                                                             @RequestHeader("X-User-Username") String username){
+        Classroom classroom = classroomService.removeCourseFromClassroomById(classroomId, courseId, username);
+        return new ResponseEntity<>(classroom, HttpStatus.OK);
+    }
+
     @GetMapping("/{classroomId}/courses")
     public ResponseEntity<List<CourseDto>> getAllCourseInClassroom(@PathVariable Long classroomId,
                                                                    @RequestHeader("X-User-Username") String username) {
