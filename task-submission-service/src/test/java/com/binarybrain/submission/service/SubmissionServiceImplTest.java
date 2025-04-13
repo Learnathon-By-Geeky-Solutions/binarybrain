@@ -55,18 +55,18 @@ class SubmissionServiceImplTest {
         task.setStatus("OPEN");
         task.setDeadline(LocalDateTime.now().plusDays(1));
 
-        submission = new Submission();
-        submission.setId(1L);
-        submission.setTaskId(1L);
-        submission.setStudentId(1L);
-        submission.setSubmittedBy("student");
-        submission.setFileUrl("test-file.pdf");
-        submission.setGithubLink("https://github.com/test");
-        submission.setSubmissionType(SubmissionType.IN_TIME);
-        submission.setSubmissionStatus(SubmissionStatus.PENDING);
-        submission.setSubmissionTime(LocalDateTime.now());
+        SubmissionDto submissionDto = new SubmissionDto();
+        submissionDto.setId(1L);
+        submissionDto.setTaskId(1L);
+        submissionDto.setStudentId(1L);
+        submissionDto.setSubmittedBy("student");
+        submissionDto.setFileUrl("test-file.pdf");
+        submissionDto.setGithubLink("https://github.com/test");
+        submissionDto.setSubmissionType(SubmissionType.IN_TIME);
+        submissionDto.setSubmissionStatus(SubmissionStatus.PENDING);
+        submissionDto.setSubmissionTime(LocalDateTime.now());
 
-        SubmissionDto submissionDto = SubmissionMapper.toSubmissionDto(submission);
+        submission = SubmissionMapper.toSubmission(submissionDto);
 
         file = mock(MultipartFile.class);
     }
