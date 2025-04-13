@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
@@ -28,8 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Unit tests for the SubmissionController class.
@@ -142,6 +142,25 @@ class SubmissionControllerTest {
                 .andExpect(jsonPath("$.submissionStatus").value("PENDING"));
     }
 
+    @Test
+    void testSubmitTaskWithEmptyFile() throws Exception {
+        MockMultipartFile emptyFile = new MockMultipartFile("file", "test.pdf",
+                MediaType.APPLICATION_PDF_VALUE, new byte[0]);
+
+        mockMvc.perform(multipart("/api/v1/private/submission/2/submit")
+                        .file(emptyFile)
+                        .header("X-User-Username", "moinul"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testSubmitTaskWithNullFile() throws Exception {
+        mockMvc.perform(multipart("/api/v1/private/submission/2/submit")
+                        .param("githubLink", "https://github.com/example/repo")
+                        .header("X-User-Username", "moinul"))
+                .andExpect(status().isBadRequest());
+    }
+
     /**
      * Tests retrieval of a submission by its ID.
      *
@@ -208,6 +227,66 @@ class SubmissionControllerTest {
         mockMvc.perform(get("/api/v1/private/submission/file/test.pdf"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").exists());
+    }
+
+    @Test
+    void testDownloadPdfFile() throws Exception {
+        byte[] fileContent = "PDF content".getBytes();
+        when(fileHandlerService.downloadFile("test.pdf")).thenReturn(fileContent);
+
+        mockMvc.perform(get("/api/v1/private/submission/file/test.pdf"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE))
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "form-data; name=\"attachment\"; filename=\"test.pdf\""))
+                .andExpect(content().bytes(fileContent));
+    }
+
+    @Test
+    void testDownloadPngFile() throws Exception {
+        byte[] fileContent = "PNG content".getBytes();
+        when(fileHandlerService.downloadFile("test.png")).thenReturn(fileContent);
+
+        mockMvc.perform(get("/api/v1/private/submission/file/test.png"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_PNG_VALUE))
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "form-data; name=\"attachment\"; filename=\"test.png\""))
+                .andExpect(content().bytes(fileContent));
+    }
+
+    @Test
+    void testDownloadJpgFile() throws Exception {
+        byte[] fileContent = "JPG content".getBytes();
+        when(fileHandlerService.downloadFile("test.jpg")).thenReturn(fileContent);
+
+        mockMvc.perform(get("/api/v1/private/submission/file/test.jpg"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_JPEG_VALUE))
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "form-data; name=\"attachment\"; filename=\"test.jpg\""))
+                .andExpect(content().bytes(fileContent));
+    }
+
+    @Test
+    void testDownloadJpegFile() throws Exception {
+        byte[] fileContent = "JPEG content".getBytes();
+        when(fileHandlerService.downloadFile("test.jpeg")).thenReturn(fileContent);
+
+        mockMvc.perform(get("/api/v1/private/submission/file/test.jpeg"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_JPEG_VALUE))
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "form-data; name=\"attachment\"; filename=\"test.jpeg\""))
+                .andExpect(content().bytes(fileContent));
+    }
+
+    @Test
+    void testDownloadUnknownFileType() throws Exception {
+        byte[] fileContent = "Unknown content".getBytes();
+        when(fileHandlerService.downloadFile("test.unknown")).thenReturn(fileContent);
+
+        mockMvc.perform(get("/api/v1/private/submission/file/test.unknown"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE))
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "form-data; name=\"attachment\"; filename=\"test.unknown\""))
+                .andExpect(content().bytes(fileContent));
     }
 
     /**
