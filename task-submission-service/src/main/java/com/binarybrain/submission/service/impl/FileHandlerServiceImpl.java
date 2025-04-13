@@ -90,7 +90,7 @@ public class FileHandlerServiceImpl implements FileHandlerService {
             "image/jpeg",
             "image/jpg"
     );
-    private boolean isValidFileType(MultipartFile file) {
+    public boolean isValidFileType(MultipartFile file) {
         return ALLOWED_FILE_TYPES.contains(file.getContentType());
     }
 
