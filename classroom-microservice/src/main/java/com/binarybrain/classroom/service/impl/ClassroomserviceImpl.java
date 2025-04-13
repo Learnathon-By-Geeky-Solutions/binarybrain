@@ -133,6 +133,25 @@ public class ClassroomserviceImpl implements ClassroomService {
     }
 
     @Override
+    public Classroom removeCourseFromClassroomById(Long classroomId, Long courseId, String username) {
+        try {
+            Classroom classroom = getClassroomById(classroomId, username);
+            validateClassroomModificationPermission(classroom, username);
+
+            if (!classroom.getCourseIds().contains(courseId)) {
+                throw new ResourceNotFoundException("This Course is not added in this classroom!");
+            }
+            Set<Long> courseIds = new HashSet<>(Set.copyOf(classroom.getCourseIds()));
+            courseIds.remove(courseId);
+            classroom.setCourseIds(courseIds);
+            return classroomRepository.save(classroom);
+
+        }catch (FeignException.BadRequest e){
+            throw new ResourceNotFoundException("Course not found with id: " + courseId);
+        }
+    }
+
+    @Override
     public List<CourseDto> getAllCourseInClassroom(Long classroomId, String username) {
         Classroom classroom = getClassroomById(classroomId, username);
         validateClassroomModificationPermission(classroom, username);
