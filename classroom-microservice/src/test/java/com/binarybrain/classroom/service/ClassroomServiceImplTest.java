@@ -272,6 +272,33 @@ class ClassroomServiceImplTest {
     }
 
     @Test
+    void removeCourseFromClassroomById_ShouldRemoveCourse() {
+        classroom.getCourseIds().add(3L);
+        when(userService.getUserProfile("teacher")).thenReturn(teacher);
+        when(classroomRepository.findById(1L)).thenReturn(Optional.of(classroom));
+        when(classroomRepository.save(any(Classroom.class))).thenReturn(classroom);
+
+        Classroom result = classroomService.removeCourseFromClassroomById(1L, 3L, "teacher");
+
+        assertFalse(result.getStudentIds().contains(3L));
+    }
+
+    @Test
+    void removeCourseFromClassroomById_WhenCourseNotInClassroom_ShouldThrowNotFoundException() {
+        classroom.getCourseIds().add(99L);
+        when(userService.getUserProfile("teacher")).thenReturn(teacher);
+        when(classroomRepository.findById(1L)).thenReturn(Optional.of(classroom));
+
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
+                () -> classroomService.removeCourseFromClassroomById(1L, 100L, "teacher")
+        );
+
+        assertEquals("This Course is not added in this classroom!", exception.getMessage());
+        verify(classroomRepository, never()).save(any());
+    }
+
+    @Test
     void getAllCourseInClassroom_ShouldReturnCourses() {
         classroom.getCourseIds().add(1L);
         when(userService.getUserProfile("teacher")).thenReturn(teacher);
