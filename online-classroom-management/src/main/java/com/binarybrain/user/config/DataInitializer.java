@@ -1,30 +1,30 @@
 package com.binarybrain.user.config;
 
-import com.binarybrain.user.model.Role;
-import com.binarybrain.user.repository.RoleRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.stereotype.Component;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+
 @Component
+@Profile("!test")
 public class DataInitializer implements CommandLineRunner {
 
-    private final RoleRepository roleRepository;
+    private final DataSource dataSource;
 
-    public DataInitializer(RoleRepository roleRepository) {
-        this.roleRepository = roleRepository;
+    public DataInitializer(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     @Override
-    public void run(String... args) {
-        createRoleIfNotExist("ADMIN");
-        createRoleIfNotExist("TEACHER");
-        createRoleIfNotExist("STUDENT");
-    }
-
-    private void createRoleIfNotExist(String roleName){
-        roleRepository.findByName(roleName)
-                .orElseGet(() ->
-                        roleRepository.save(new Role(roleName))
-                );
+    @Transactional
+    public void run(String... args) throws Exception {
+        try (Connection connection = dataSource.getConnection()) {
+            ScriptUtils.executeSqlScript(connection, new ClassPathResource("OCM_userDB.sql"));
+        }
     }
 }
