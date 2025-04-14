@@ -280,7 +280,7 @@ class ClassroomServiceImplTest {
 
         Classroom result = classroomService.removeCourseFromClassroomById(1L, 3L, "teacher");
 
-        assertFalse(result.getStudentIds().contains(3L));
+        assertFalse(result.getCourseIds().contains(3L));
     }
 
     @Test
