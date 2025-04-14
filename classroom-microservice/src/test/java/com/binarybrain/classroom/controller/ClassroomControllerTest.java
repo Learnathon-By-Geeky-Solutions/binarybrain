@@ -23,8 +23,7 @@ import java.util.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -38,6 +37,7 @@ class ClassroomControllerTest {
     private static final Long CLASSROOM_ID_1 = 1L;
     private static final Long CLASSROOM_ID_2 = 2L;
     private static final Long CLASSROOM_ID_3 = 3L;
+    private static final Long CLASSROOM_ID_4 = 4L;
     private static final Long COURSE_ID = 1L;
 
     @Autowired
@@ -61,6 +61,7 @@ class ClassroomControllerTest {
     private Classroom classroom1;
     private Classroom classroom2;
     private Classroom classroom3;
+    private Classroom classroom4;
 
     @BeforeEach
     void setUp() {
@@ -79,6 +80,7 @@ class ClassroomControllerTest {
         classroom1 = createClassroom(CLASSROOM_ID_1, "Classroom 1", TEACHER_ID, Set.of(STUDENT_ID), null);
         classroom2 = createClassroom(CLASSROOM_ID_2, "Classroom 2", TEACHER_ID, Set.of(STUDENT_ID), null);
         classroom3 = createClassroom(CLASSROOM_ID_3, "Classroom 3", TEACHER_ID, Set.of(STUDENT_ID, NEW_STUDENT_ID), null);
+        classroom4 = createClassroom(CLASSROOM_ID_4, "Classroom 4", TEACHER_ID, Set.of(STUDENT_ID, NEW_STUDENT_ID), Set.of(COURSE_ID));
     }
 
     private UserDto createUserDto(Long id, String firstName, String lastName, String username, String email, String roleName, Long roleId) {
@@ -124,6 +126,7 @@ class ClassroomControllerTest {
         when(classroomRepository.findById(CLASSROOM_ID_1)).thenReturn(Optional.of(classroom1));
         when(classroomRepository.findById(CLASSROOM_ID_2)).thenReturn(Optional.of(classroom2));
         when(classroomRepository.findById(CLASSROOM_ID_3)).thenReturn(Optional.of(classroom3));
+        when(classroomRepository.findById(CLASSROOM_ID_4)).thenReturn(Optional.of(classroom4));
         when(classroomRepository.findByTeacherId(TEACHER_ID)).thenReturn(List.of(classroom1));
         when(classroomRepository.findByStudentIdsContaining(STUDENT_ID)).thenReturn(List.of(classroom1));
         when(classroomRepository.save(any(Classroom.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -216,6 +219,17 @@ class ClassroomControllerTest {
         when(classroomRepository.save(classroom3)).thenReturn(updatedClassroom);
 
         mockMvc.perform(put("/api/v1/private/classroom/" + CLASSROOM_ID_3 + "/add-course/" + COURSE_ID)
+                        .header("X-User-Username", TEACHER_USERNAME))
+                .andExpect(status().isOk())
+                .andExpect(content().json(asJsonString(updatedClassroom)));
+    }
+
+    @Test
+    void removeCourseFromClassroomById() throws Exception {
+        Classroom updatedClassroom = createClassroom(CLASSROOM_ID_4, "Classroom 4", TEACHER_ID, Set.of(STUDENT_ID, NEW_STUDENT_ID), Set.of());
+        when(classroomRepository.save(classroom4)).thenReturn(updatedClassroom);
+
+        mockMvc.perform(delete("/api/v1/private/classroom/" + CLASSROOM_ID_4 + "/remove-course/" + COURSE_ID)
                         .header("X-User-Username", TEACHER_USERNAME))
                 .andExpect(status().isOk())
                 .andExpect(content().json(asJsonString(updatedClassroom)));
