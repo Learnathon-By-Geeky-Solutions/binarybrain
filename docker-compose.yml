@@ -4,7 +4,7 @@ services:
 
   eurekaserver:
     build: ./eureka-server
-    image: eureka
+    image: iishanto/binarybrain:1.0-eurekaserver  # Updated tag with suffix
     container_name: eurekaserver
     ports:
       - "8070:8070"
@@ -12,7 +12,7 @@ services:
       - mynetwork
 
   mysql-user:
-    image: mysql:8
+    image: mysql:8  # No change, using official MySQL image
     container_name: mysql-user
     restart: always
     environment:
@@ -24,7 +24,7 @@ services:
       - mynetwork
 
   mysql-classroom:
-    image: mysql:8
+    image: mysql:8  # No change
     container_name: mysql-classroom
     restart: always
     environment:
@@ -36,7 +36,7 @@ services:
       - mynetwork
 
   mysql-course:
-    image: mysql:8
+    image: mysql:8  # No change
     container_name: mysql-course
     restart: always
     environment:
@@ -48,7 +48,7 @@ services:
       - mynetwork
 
   mysql-task:
-    image: mysql:8
+    image: mysql:8  # No change
     container_name: mysql-task
     restart: always
     environment:
@@ -60,7 +60,7 @@ services:
       - mynetwork
 
   mysql-submission:
-    image: mysql:8
+    image: mysql:8  # No change
     container_name: mysql-submission
     restart: always
     environment:
@@ -73,7 +73,7 @@ services:
 
   userservice:
     build: ./online-classroom-management
-    image: binarybrain/userservice:0.0.1
+    image: iishanto/binarybrain:1.0-userservice  # Updated tag with suffix
     container_name: userservice
     depends_on:
       - mysql-user
@@ -90,10 +90,9 @@ services:
     networks:
       - mynetwork
 
-
   classroomservice:
     build: ./classroom-microservice
-    image: binarybrain/classroomservice:0.0.1
+    image: iishanto/binarybrain:1.0-classroomservice  # Updated tag with suffix
     container_name: classroomservice
     depends_on:
       - mysql-user
@@ -112,7 +111,7 @@ services:
 
   courseservice:
     build: ./course-microservice
-    image: binarybrain/courseservice:0.0.1
+    image: iishanto/binarybrain:1.0-courseservice  # Updated tag with suffix
     container_name: courseservice
     depends_on:
       - mysql-user
@@ -131,7 +130,7 @@ services:
 
   taskservice:
     build: ./task-microservice
-    image: binarybrain/taskservice:0.0.1
+    image: iishanto/binarybrain:1.0-taskservice  # Updated tag with suffix
     container_name: taskservice
     depends_on:
       - mysql-user
@@ -150,7 +149,7 @@ services:
 
   submissionservice:
     build: ./task-submission-service
-    image: binarybrain/submissionservice:0.0.1
+    image: iishanto/binarybrain:1.0-submissionservice  # Updated tag with suffix
     container_name: submissionservice
     depends_on:
       - mysql-user
@@ -172,7 +171,7 @@ services:
 
   gateway:
     build: ./gateway
-    image: binarybrain/gateway:0.0.1
+    image: iishanto/binarybrain:1.0-gateway  # Updated tag with suffix
     container_name: gateway
     depends_on:
       - mysql-user
