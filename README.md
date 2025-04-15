@@ -23,6 +23,11 @@ For a detailed breakdown of project tasks and responsibilities, refer to our **[
 ![Current database design](https://imgur.com/a/DPNnO0x)
 
 
+# Test Coverage
+[![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=Learnathon-By-Geeky-Solutions_binarybrain&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Learnathon-By-Geeky-Solutions_binarybrain)
+
+---
+
 ## Key Features
 
 ### **1. User Roles**
