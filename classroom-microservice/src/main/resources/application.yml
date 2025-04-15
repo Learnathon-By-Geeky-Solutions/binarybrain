@@ -25,6 +25,9 @@ spring:
     password:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  profiles:
+    active: dev
+
 eureka:
   instance:
     prefer-ip-address: true
