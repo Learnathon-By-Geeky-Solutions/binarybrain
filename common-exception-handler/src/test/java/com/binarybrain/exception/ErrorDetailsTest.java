@@ -16,10 +16,6 @@ class ErrorDetailsTest {
 
         ErrorDetails errorDetails = new ErrorDetails(date, message, details);
 
-        errorDetails.setTimestamp(date);
-        errorDetails.setMessage(message);
-        errorDetails.setDetails(details);
-
         assertEquals(date, errorDetails.getTimestamp());
         assertEquals(message, errorDetails.getMessage());
         assertEquals(details, errorDetails.getDetails());
