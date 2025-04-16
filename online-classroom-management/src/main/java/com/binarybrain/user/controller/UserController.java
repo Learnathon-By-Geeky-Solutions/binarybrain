@@ -10,12 +10,14 @@ import com.binarybrain.user.model.User;
 import com.binarybrain.user.repository.UserRepository;
 import com.binarybrain.user.service.CustomUserDetailsService;
 import com.binarybrain.user.service.RefreshTokenService;
+import com.binarybrain.user.service.UserImageService;
 import com.binarybrain.user.service.UserService;
 import com.binarybrain.user.security.JwtUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,8 +25,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import static org.springframework.http.MediaType.*;
 
 /**
  * UserController class handles HTTP request related to user operation(s).
@@ -37,6 +43,7 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
+    private final UserImageService imageService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
@@ -45,12 +52,14 @@ public class UserController {
 
     @Autowired
     public UserController(UserService userService,
+                          UserImageService imageService,
                           AuthenticationManager authenticationManager,
                           JwtUtil jwtUtil,
                           CustomUserDetailsService userDetailsService,
                           UserRepository userRepository,
                           RefreshTokenService refreshTokenService) {
         this.userService = userService;
+        this.imageService = imageService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
@@ -136,5 +145,22 @@ public class UserController {
         User user = userService.getUserProfileById(id, username);
 
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @RequestMapping(
+            path = "/photo",
+            method = RequestMethod.POST,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadPhoto(@RequestParam("id") Long id,
+                                              @RequestPart("file") MultipartFile file,
+                                              @RequestHeader("X-User-Username") String username) throws Exception {
+
+        String photoUrl = imageService.uploadPhoto(id, file, username);
+        return ResponseEntity.ok().body(photoUrl);
+    }
+
+    @GetMapping(path = "/photo/{filename}", produces = {IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE})
+    public byte[] getPhoto (@PathVariable("filename") String filename) throws IOException {
+        return imageService.getPhoto(filename);
     }
 }
