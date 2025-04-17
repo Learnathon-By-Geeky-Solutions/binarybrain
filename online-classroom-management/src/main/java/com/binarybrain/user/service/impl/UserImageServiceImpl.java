@@ -1,6 +1,5 @@
 package com.binarybrain.user.service.impl;
 
-import com.binarybrain.exception.ResourceNotFoundException;
 import com.binarybrain.user.model.User;
 import com.binarybrain.user.model.UserImage;
 import com.binarybrain.user.repository.UserImageRepository;
@@ -27,12 +26,15 @@ public class UserImageServiceImpl implements UserImageService {
     private final UserRepository userRepository;
     private final UserImageRepository imageRepository;
     private final UserService userService;
+    private final ImageSearchService imageSearchService;
 
-    public UserImageServiceImpl(UserRepository userRepository, UserImageRepository imageRepository, UserService userService) {
+    public UserImageServiceImpl(UserRepository userRepository, UserImageRepository imageRepository, UserService userService, ImageSearchService imageSearchService) {
         this.userRepository = userRepository;
         this.imageRepository = imageRepository;
         this.userService = userService;
+        this.imageSearchService = imageSearchService;
     }
+
 
     @Override
     public String uploadPhoto(Long id, MultipartFile file, String username) throws IOException {
@@ -57,11 +59,10 @@ public class UserImageServiceImpl implements UserImageService {
         return Files.readAllBytes(Paths.get(photoDirectory + filename));
     }
 
+
     @Override
-    public List<UserImage> getAllUserImage64() throws ResourceNotFoundException {
-        List<UserImage> allUsersImage = imageRepository.findAll();
-        return allUsersImage.stream()
-                .toList();
+    public List<User> searchUsersByImage(MultipartFile[] base64Image) throws IOException {
+        return imageSearchService.searchByImage(base64Image);
     }
 
     private final Function<String, String> fileExtension = fileName -> Optional.of(fileName).filter(name -> name.contains(".")).

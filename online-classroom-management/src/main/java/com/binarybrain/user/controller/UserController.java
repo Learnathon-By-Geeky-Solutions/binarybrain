@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import static org.springframework.http.MediaType.*;
@@ -162,5 +163,20 @@ public class UserController {
     @GetMapping(path = "/photo/{filename}", produces = {IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE})
     public byte[] getPhoto (@PathVariable("filename") String filename) throws IOException {
         return imageService.getPhoto(filename);
+    }
+
+    @RequestMapping(
+            path = "/search-by-image",
+            method = RequestMethod.POST,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<List<User>> searchByImage(@RequestPart("image") MultipartFile[] image) {
+        try {
+            List<User> matchedUsers = imageService.searchUsersByImage(image);
+            return ResponseEntity.ok(matchedUsers);
+        }
+        catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.emptyList());
+        }
     }
 }
