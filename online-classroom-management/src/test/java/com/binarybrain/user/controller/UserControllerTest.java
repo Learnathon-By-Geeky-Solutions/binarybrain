@@ -5,6 +5,7 @@ import com.binarybrain.exception.ResourceNotFoundException;
 import com.binarybrain.user.dto.request.RefreshTokenRequest;
 import com.binarybrain.user.repository.UserRepository;
 import com.binarybrain.user.service.RefreshTokenService;
+import com.binarybrain.user.service.UserImageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.binarybrain.user.dto.UserDto;
 import com.binarybrain.user.dto.request.AuthRequest;
@@ -14,20 +15,19 @@ import com.binarybrain.user.model.User;
 import com.binarybrain.user.security.JwtUtil;
 import com.binarybrain.user.service.CustomUserDetailsService;
 import com.binarybrain.user.service.UserService;
-import com.binarybrain.user.service.impl.RefreshTokenServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -35,6 +35,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -43,6 +45,8 @@ public class UserControllerTest {
     private MockMvc mockMvc;
     @MockitoBean
     private UserService userService;
+    @MockitoBean
+    private UserImageService imageService;
 
     @MockitoBean
     private AuthenticationManager authenticationManager;
@@ -246,5 +250,64 @@ public class UserControllerTest {
 
         verify(userService, times(1)).getUserProfileById(999L, "moinulislam");
     }
+
+    @Test
+    void testUploadPhoto() throws Exception {
+        Long userId = 1L;
+        String username = "testuser";
+        String photoUrl = "http://localhost:8080/image/photo123.jpg";
+
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "photo.jpg", MediaType.IMAGE_JPEG_VALUE, "dummy image content".getBytes());
+
+        when(imageService.uploadPhoto(eq(userId), any(MultipartFile.class), eq(username)))
+                .thenReturn(photoUrl);
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/user/photo")
+                        .file(file)
+                        .param("id", userId.toString())
+                        .header("X-User-Username", username))
+                .andExpect(status().isOk())
+                .andExpect(content().string(photoUrl));
+    }
+
+    @Test
+    void testGetPhoto() throws Exception {
+        String filename = "photo123.jpg";
+        byte[] photoContent = "dummy image content".getBytes();
+
+        when(imageService.getPhoto(filename)).thenReturn(photoContent);
+
+        mockMvc.perform(get("/api/user/photo/{filename}", filename))
+                .andExpect(status().isOk())
+                .andExpect(content().bytes(photoContent));
+    }
+
+    @Test
+    void testSearchByImage() throws Exception {
+        MockMultipartFile imageFile = new MockMultipartFile(
+                "image", "test.jpg", MediaType.IMAGE_JPEG_VALUE, "dummy content".getBytes());
+
+        User user1 = new User();
+        user1.setId(1L);
+        user1.setFirstName("John");
+        user1.setLastName("Doe");
+
+        User user2 = new User();
+        user2.setId(2L);
+        user2.setFirstName("Jane");
+        user2.setLastName("Smith");
+
+        when(imageService.searchUsersByImage(any(MultipartFile[].class)))
+                .thenReturn(List.of(user1, user2));
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/user/search-by-image")
+                        .file(imageFile))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].firstName").value("John"))
+                .andExpect(jsonPath("$[1].firstName").value("Jane"));
+    }
+
 
 }
