@@ -23,6 +23,9 @@ spring:
     password:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  profiles:
+    active: dev
+
   servlet:
     multipart:
       enabled: true
@@ -31,6 +34,8 @@ spring:
 
 photo:
   upload-dir: ${PHOTO_UPLOAD_DIR:./uploads/images/}
+opencv:
+  api-key: sampleApiKey
 
 eureka:
   instance:

@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * The {@code SecurityConfig} class Configures the security setting of the application to handle HTTP request security, session managment and password encoding.
@@ -55,4 +56,8 @@ public class SecurityConfig{
         return authConfig.getAuthenticationManager();
     }
 
+    @Bean
+    public RestTemplate restTemplate(){
+        return new RestTemplate();
+    }
 }
