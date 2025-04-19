@@ -154,7 +154,7 @@ public class UserController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadPhoto(@RequestParam("id") Long id,
                                               @RequestPart("file") MultipartFile file,
-                                              @RequestHeader("X-User-Username") String username) throws Exception {
+                                              @RequestHeader("X-User-Username") String username) throws IOException {
 
         String photoUrl = imageService.uploadPhoto(id, file, username);
         return ResponseEntity.ok().body(photoUrl);
@@ -169,14 +169,9 @@ public class UserController {
             path = "/search-by-image",
             method = RequestMethod.POST,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<List<User>> searchByImage(@RequestPart("image") MultipartFile[] image) {
-        try {
-            List<User> matchedUsers = imageService.searchUsersByImage(image);
-            return ResponseEntity.ok(matchedUsers);
-        }
-        catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Collections.emptyList());
-        }
+    public ResponseEntity<List<User>> searchByImage(@RequestPart("image") MultipartFile[] image) throws IOException {
+        List<User> matchedUsers = imageService.searchUsersByImage(image);
+        return ResponseEntity.ok(matchedUsers);
+
     }
 }

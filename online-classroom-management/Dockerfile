@@ -2,6 +2,8 @@ FROM eclipse-temurin:21-jdk-alpine
 
 ARG JAR_FILE=target/*.jar
 
+WORKDIR /app
+
 # Create upload directory with correct permissions
 RUN mkdir -p /uploads/images && \
     chown -R 1000:1000 /uploads && \

@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: OCM-USER-REGISTRATION
+    name: USER-MICROSERVICE
 
   config:
     import: optional:classpath:secret.properties
