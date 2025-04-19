@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name = "COURSE-MICROSERVICE", url="${course-service.url}")
+@FeignClient(name = "COURSE-MICROSERVICE")
 public interface CourseService {
     @GetMapping("/api/v1/private/course/{id}")
     CourseDto getCourseById(@PathVariable Long id,
