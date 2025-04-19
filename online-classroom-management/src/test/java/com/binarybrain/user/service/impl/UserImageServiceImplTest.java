@@ -1,20 +1,22 @@
 package com.binarybrain.user.service.impl;
 
+import com.binarybrain.exception.ResourceNotFoundException;
 import com.binarybrain.user.model.User;
 import com.binarybrain.user.model.UserImage;
 import com.binarybrain.user.repository.UserImageRepository;
 import com.binarybrain.user.repository.UserRepository;
 import com.binarybrain.user.service.UserService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,12 +34,14 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserImageServiceImplTest {
+    @InjectMocks
+    private UserImageServiceImpl userImageService;
 
     @Mock
     private UserRepository userRepository;
 
     @Mock
-    private UserImageRepository imageRepository;
+    private UserImageRepository userImageRepository;
 
     @Mock
     private UserService userService;
@@ -45,16 +49,29 @@ class UserImageServiceImplTest {
     @Mock
     private ImageSearchService imageSearchService;
 
-    @InjectMocks
-    private UserImageServiceImpl userImageService;
+    @Mock
+    private MultipartFile multipartFile;
 
-    @TempDir
-    Path tempDir;
+    private final String testUploadDir = "test-user-uploads";
+    private final String username = "testuser";
+    private final Long userId = 1L;
 
     @BeforeEach
-    void setUp() {
-        ReflectionTestUtils.setField(userImageService, "photoDirectory", tempDir.toString() + "/");
+    void setUp() throws Exception {
+        ReflectionTestUtils.setField(userImageService, "photoDirectory", testUploadDir);
+        Path dirPath = Paths.get(testUploadDir);
+        if (!Files.exists(dirPath)) {
+            Files.createDirectories(dirPath);
+        }
+
+        Files.write(dirPath.resolve(userId + ".png"), "fake image".getBytes());
     }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        FileSystemUtils.deleteRecursively(Paths.get(testUploadDir));
+    }
+
     @Test
     void uploadPhoto() throws IOException {
         MockHttpServletRequest request = new MockHttpServletRequest();
@@ -62,9 +79,8 @@ class UserImageServiceImplTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
         Long userId = 1L;
-        String username = "testuser";
         String imageContent = "test image";
-        MultipartFile file = new MockMultipartFile("file", "photo.jpg", "image/jpeg", imageContent.getBytes());
+        MultipartFile file = new MockMultipartFile("file", "photo.png", "image/jpeg", imageContent.getBytes());
 
         User mockUser = new User();
         mockUser.setId(userId);
@@ -76,35 +92,35 @@ class UserImageServiceImplTest {
 
         assertTrue(result.contains("/api/user/photo/"));
         verify(userRepository).save(any(User.class));
-        verify(imageRepository).save(any(UserImage.class));
+        verify(userImageRepository).save(any(UserImage.class));
     }
 
     @Test
-    void getPhoto() throws IOException {
-        String fileName = "sample.png";
-        Path filePath = Paths.get(tempDir.toString(), fileName);
-        byte[] sampleBytes = "dummy".getBytes();
-        Files.write(filePath, sampleBytes);
-
-        ReflectionTestUtils.setField(userImageService, "photoDirectory", tempDir.toString() + "/");
-
-        byte[] result = userImageService.getPhoto(fileName);
-
-        assertArrayEquals(sampleBytes, result);
+    void getPhoto_ShouldReturnBytes_WhenFileExists() {
+        byte[] result = userImageService.getPhoto(userId + ".png");
+        assertArrayEquals("fake image".getBytes(), result);
     }
 
     @Test
-    void searchUsersByImage() throws IOException {
-        MultipartFile[] images = {
-                new MockMultipartFile("image", "img1.png", "image/png", "dummy data".getBytes())
-        };
+    void getPhoto_ShouldThrowException_WhenPathTraversalAttempted() {
+        assertThrows(IllegalArgumentException.class, () -> userImageService.getPhoto("../evil.png"));
+    }
 
-        List<User> users = List.of(new User());
-        when(imageSearchService.searchByImage(images)).thenReturn(users);
+    @Test
+    void getPhoto_ShouldThrowException_WhenFileDoesNotExist() {
+        assertThrows(ResourceNotFoundException.class, () -> userImageService.getPhoto("not-found.png"));
+    }
 
-        List<User> result = userImageService.searchUsersByImage(images);
+    @Test
+    void searchUsersByImage_ShouldReturnMatchingUsers() throws Exception {
+        MultipartFile[] files = new MultipartFile[] { multipartFile };
+        List<User> users = List.of(new User(), new User());
 
-        assertEquals(1, result.size());
-        verify(imageSearchService).searchByImage(images);
+        when(imageSearchService.searchByImage(files)).thenReturn(users);
+
+        List<User> result = userImageService.searchUsersByImage(files);
+
+        assertEquals(2, result.size());
+        verify(imageSearchService).searchByImage(files);
     }
 }

@@ -16,8 +16,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
+
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Service
@@ -43,7 +44,7 @@ public class UserImageServiceImpl implements UserImageService {
         UserImage userImage = new UserImage();
 
         String base64Image = Base64.getEncoder().encodeToString(file.getBytes());
-        String photoUrl = photoFunction.apply(id.toString(), base64Image);
+        String photoUrl = generatePhotoUrl(id.toString(), base64Image);
 
         user.setProfilePicture(photoUrl);
         userImage.setId(id);
@@ -81,11 +82,11 @@ public class UserImageServiceImpl implements UserImageService {
         return imageSearchService.searchByImage(base64Image);
     }
 
-    private final Function<String, String> fileExtension = fileName -> Optional.of(fileName).filter(name -> name.contains(".")).
+    private final UnaryOperator<String> fileExtension = fileName -> Optional.of(fileName).filter(name -> name.contains(".")).
             map(name -> "." + name.substring(fileName.lastIndexOf(".") + 1)).orElse(".png");
 
 
-    private final BiFunction<String, String, String> photoFunction = (id, base64Image) -> {
+    private String generatePhotoUrl(String id, String base64Image) {
         try {
             byte[] imageBytes = Base64.getDecoder().decode(base64Image);
 
@@ -105,5 +106,5 @@ public class UserImageServiceImpl implements UserImageService {
         } catch (Exception exception) {
             throw new RuntimeException("Unable to save image", exception);
         }
-    };
+    }
 }
