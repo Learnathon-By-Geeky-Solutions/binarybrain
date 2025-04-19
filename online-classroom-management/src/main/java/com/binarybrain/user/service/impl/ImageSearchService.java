@@ -17,7 +17,7 @@ import java.util.*;
 @Service
 public class ImageSearchService {
 
-    @Value("${opencv.api-key}")
+    @Value("${opencv.apikey}")
     private String apiDeveloperKey;
 
     private final RestTemplate restTemplate;

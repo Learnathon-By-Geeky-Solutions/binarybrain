@@ -34,8 +34,6 @@ spring:
 
 photo:
   upload-dir: ${PHOTO_UPLOAD_DIR:./uploads/images/}
-opencv:
-  api-key: sampleApiKey
 
 eureka:
   instance:
