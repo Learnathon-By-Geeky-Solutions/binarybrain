@@ -82,8 +82,10 @@ public class UserImageServiceImpl implements UserImageService {
         return imageSearchService.searchByImage(base64Image);
     }
 
-    private final UnaryOperator<String> fileExtension = fileName -> Optional.of(fileName).filter(name -> name.contains(".")).
-            map(name -> "." + name.substring(fileName.lastIndexOf(".") + 1)).orElse(".png");
+    private final UnaryOperator<String> fileExtension = fileName -> Optional.of(fileName)
+            .filter(name -> name.contains(".")).
+            map(name -> "." + name.substring(name.lastIndexOf(".") + 1))
+            .orElse(".png");
 
 
     private String generatePhotoUrl(String id, String base64Image) {
@@ -104,7 +106,7 @@ public class UserImageServiceImpl implements UserImageService {
                     .fromCurrentContextPath()
                     .path("/api/user/photo/" + fileName).toUriString();
         } catch (Exception exception) {
-            throw new RuntimeException("Unable to save image", exception);
+            throw new IllegalArgumentException("Unable to save image", exception);
         }
     }
 }
