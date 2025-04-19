@@ -284,29 +284,45 @@ public class UserControllerTest {
     }
 
     @Test
+    void testGetPhoto_NotFound() throws Exception {
+        String filename = "nonexistent.jpg";
+        when(imageService.getPhoto(filename))
+                .thenThrow(new ResourceNotFoundException("Image not found"));
+        mockMvc.perform(get("/api/user/photo/{filename}", filename))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void testSearchByImage() throws Exception {
         MockMultipartFile imageFile = new MockMultipartFile(
                 "image", "test.jpg", MediaType.IMAGE_JPEG_VALUE, "dummy content".getBytes());
-
         User user1 = new User();
         user1.setId(1L);
         user1.setFirstName("John");
         user1.setLastName("Doe");
-
         User user2 = new User();
         user2.setId(2L);
         user2.setFirstName("Jane");
         user2.setLastName("Smith");
-
         when(imageService.searchUsersByImage(any(MultipartFile[].class)))
                 .thenReturn(List.of(user1, user2));
-
         mockMvc.perform(MockMvcRequestBuilders.multipart("/api/user/search-by-image")
                         .file(imageFile))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].firstName").value("John"))
                 .andExpect(jsonPath("$[1].firstName").value("Jane"));
+    }
+    @Test
+    void testSearchByImage_NoResults() throws Exception {
+        MockMultipartFile imageFile = new MockMultipartFile(
+                "image", "test.jpg", MediaType.IMAGE_JPEG_VALUE, "dummy content".getBytes());
+        when(imageService.searchUsersByImage(any(MultipartFile[].class)))
+                .thenReturn(List.of());
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/user/search-by-image")
+                        .file(imageFile))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
     }
 
 

@@ -78,7 +78,6 @@ class UserImageServiceImplTest {
         request.setContextPath("/api");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-        Long userId = 1L;
         String imageContent = "test image";
         MultipartFile file = new MockMultipartFile("file", "photo.png", "image/jpeg", imageContent.getBytes());
 
