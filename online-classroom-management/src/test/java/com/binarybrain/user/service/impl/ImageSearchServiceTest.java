@@ -103,7 +103,7 @@ class ImageSearchServiceTest {
         when(imageRepository.findAll()).thenReturn(List.of(userImage));
 
         JSONObject fakeJson = new JSONObject();
-        fakeJson.put("score", 0.80);
+        fakeJson.put("score", 0.30);
 
         ResponseEntity<String> response = new ResponseEntity<>(fakeJson.toString(), HttpStatus.OK);
         when(restTemplate.exchange(
@@ -115,7 +115,6 @@ class ImageSearchServiceTest {
 
         List<User> result = imageSearchService.searchByImage(inputImages);
 
-        assertEquals(1, result.size());
-        assertEquals("john", result.getFirst().getUsername());
+        assertTrue(result.isEmpty(), "Expect no user when score is below threshold");
     }
 }

@@ -1,6 +1,5 @@
 package com.binarybrain.user.config;
 
-import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
@@ -21,7 +20,6 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     @Override
-    @Transactional
     public void run(String... args) throws Exception {
         try (Connection connection = dataSource.getConnection()) {
             ScriptUtils.executeSqlScript(connection, new ClassPathResource("db/OCM_userDB.sql"));

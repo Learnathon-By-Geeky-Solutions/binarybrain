@@ -2,6 +2,7 @@ package com.binarybrain.user.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -58,6 +59,9 @@ public class SecurityConfig{
 
     @Bean
     public RestTemplate restTemplate(){
-        return new RestTemplate();
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+        factory.setConnectTimeout(5000);
+        factory.setReadTimeout(5000);
+        return new RestTemplate(factory);
     }
 }

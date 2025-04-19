@@ -324,6 +324,4 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
     }
-
-
 }

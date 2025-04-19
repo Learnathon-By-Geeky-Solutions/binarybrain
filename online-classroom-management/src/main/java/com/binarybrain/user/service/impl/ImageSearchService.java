@@ -8,6 +8,7 @@ import com.binarybrain.user.repository.UserRepository;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -63,7 +64,7 @@ public class ImageSearchService {
         headers.set("accept", "application/json");
         return headers;
     }
-    
+
     private Map<String, Object> buildJsonPayload(List<String> imageBase64, String dbImage64){
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("gallery", Collections.singletonList(dbImage64));
@@ -74,20 +75,22 @@ public class ImageSearchService {
 
     private double callOpenCvApi(HttpEntity<Map<String, Object>> entity) throws IOException {
         String url = "https://sg.opencv.fr/compare";
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
-        if (response.getStatusCode() == HttpStatus.OK) {
-            JSONObject json = new JSONObject(response.getBody());
-            return json.getDouble("score");
-        } else {
-            throw new IOException("Failed to search! " + response.getStatusCode());
+            if (response.getStatusCode() == HttpStatus.OK) {
+                JSONObject json = new JSONObject(response.getBody());
+                return json.getDouble("score");
+            } else {
+                throw new IOException("Failed to search! " + response.getStatusCode());
+            }
+        } catch (RestClientException e){
+            throw new IOException("Failed to connect to OpenCV API: " + e.getMessage(), e);
         }
     }
 
     public List<UserImage> getAllUserImage64() throws ResourceNotFoundException {
-        List<UserImage> allUsersImage = imageRepository.findAll();
-        return allUsersImage.stream()
-                .toList();
+        return imageRepository.findAll();
     }
 
     private List<String> convertToBase64List(MultipartFile[] images){
