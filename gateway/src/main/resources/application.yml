@@ -12,11 +12,12 @@ spring:
     gateway:
       routes:
         - id: USER-MICROSERVICE
-          uri: lb://OCM-USER-REGISTRATION
+          uri: lb://USER-MICROSERVICE
           predicates:
             - Path=/api/user/**
           filters:
             - JwtAuthFilter
+            - RewritePath=/api/user/(?<segment>.*), /$\{segment}
 
         - id: CLASSROOM-MICROSERVICE
           uri: lb://CLASSROOM-MICROSERVICE
@@ -24,6 +25,7 @@ spring:
             - Path=/api/v1/private/classroom/**
           filters:
             - JwtAuthFilter
+            - RewritePath=/api/v1/private/classroom/(?<segment>.*), /$\{segment}
 
         - id: COURSE-MICROSERVICE
           uri: lb://COURSE-MICROSERVICE
@@ -31,6 +33,7 @@ spring:
             - Path=/api/v1/private/course/**
           filters:
             - JwtAuthFilter
+            - RewritePath=/api/v1/private/course/(?<segment>.*), /$\{segment}
 
         - id: TASK-MICROSERVICE
           uri: lb://TASK-MICROSERVICE
@@ -38,6 +41,7 @@ spring:
             - Path=/api/v1/private/task/**
           filters:
             - JwtAuthFilter
+            - RewritePath=/api/v1/private/task/(?<segment>.*), /$\{segment}
 
         - id: TASK-SUBMISSION-MICROSERVICE
           uri: lb://TASK-SUBMISSION-MICROSERVICE
@@ -45,6 +49,7 @@ spring:
             - Path=/api/v1/private/submission/**
           filters:
             - JwtAuthFilter
+            - RewritePath=/api/v1/private/submission/(?<segment>.*), /$\{segment}
 
 eureka:
   instance:
@@ -54,3 +59,20 @@ eureka:
     register-with-eureka: true
     serviceUrl:
       defaultZone: ${EUREKA_SERVER_URL:http://localhost:8070/eureka/}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: USER-MICROSERVICE
+        url: /api/user/v3/api-docs
+      - name: CLASSROOM-MICROSERVICE
+        url: /api/v1/private/classroom/v3/api-docs
+      - name: COURSE-MICROSERVICE
+        url: /api/v1/private/course/v3/api-docs
+      - name: TASK-MICROSERVICE
+        url: /api/v1/private/task/v3/api-docs
+      - name: TASK-SUBMISSION-MICROSERVICE
+        url: /api/v1/private/submission/v3/api-docs
+  api-docs:
+    path: /v3/api-docs

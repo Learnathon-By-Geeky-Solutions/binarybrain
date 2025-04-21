@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: OCM-USER-REGISTRATION
+    name: USER-MICROSERVICE
 
   config:
     import: optional:classpath:secret.properties
@@ -31,3 +31,9 @@ eureka:
     register-with-eureka: true
     serviceUrl:
       defaultZone: ${EUREKA_SERVER_URL:http://localhost:8070/eureka/}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

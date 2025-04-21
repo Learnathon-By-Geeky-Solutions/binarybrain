@@ -1,5 +1,6 @@
 package com.binarybrain.user.controller;
 
+import com.binarybrain.exception.ErrorDetails;
 import com.binarybrain.exception.ResourceNotFoundException;
 import com.binarybrain.user.dto.UserDto;
 import com.binarybrain.user.dto.request.AuthRequest;
@@ -12,6 +13,10 @@ import com.binarybrain.user.service.CustomUserDetailsService;
 import com.binarybrain.user.service.RefreshTokenService;
 import com.binarybrain.user.service.UserService;
 import com.binarybrain.user.security.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -67,6 +72,17 @@ public class UserController {
      *                If registration succeeeds, it returns {@code User}.
      *                If validation fails, it returns {@code List<String>} (error messages).
      */
+    @Operation(
+            summary = "Register a new user",
+            description = "To Register a new user, you should provide unique username, email and a valid ROLE.\n" +
+                    "Acceptable user ROLE list: ADMIN, TEACHER, STUDENT.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "User created successfully"),
+                    @ApiResponse(responseCode = "400", description = "Invalid input data!"),
+                    @ApiResponse(responseCode = "404", description = "ROLE not found!"),
+                    @ApiResponse(responseCode = "409", description = "Username or Email already exist!")
+            }
+    )
     @PostMapping("/register")
     public ResponseEntity<Object> registerUser(@Valid @RequestBody UserDto userDto, BindingResult result){
 
@@ -88,6 +104,27 @@ public class UserController {
      * @param authRequest The {@code AuthRequest} containing username and password.
      * @return The {@code AuthResponse} containing the JWT token if authentication is successful.
      */
+
+    @Operation(
+            summary = "User Login",
+            description = "Authenticates a user with username and password. Returns JWT and Refresh Token on success.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Login successful - returns access and refresh tokens",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = AuthResponse.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid request (e.g., missing fields)"
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - bad credentials",
+                            content = @Content(schema = @Schema(implementation = ErrorDetails.class))
+                    )
+            }
+    )
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> loginUser(@RequestBody AuthRequest authRequest) {
         authenticationManager.authenticate(
@@ -110,6 +147,25 @@ public class UserController {
      * @return A {@link ResponseEntity} containing a new access token and the same refresh token.
      *  *         If the refresh token is invalid or expired, an exception is thrown.
      */
+    @Operation(
+            summary = "Refresh JWT Token",
+            description = "Generates a new JWT access token using a valid refresh token.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "New access jwt token and refresh token generated successfully"
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Refresh token not found"
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Refresh token expired or invalid",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class))
+                    )
+            }
+    )
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
         String requestRefreshToken = request.getRefreshToken();

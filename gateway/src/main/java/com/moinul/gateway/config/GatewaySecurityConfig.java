@@ -20,8 +20,13 @@ public class GatewaySecurityConfig {
                                 "/api/v1/private/course/**",
                                 "/api/v1/private/classroom/**",
                                 "/api/v1/private/task/**",
-                                "/api/v1/private/submission/**")
-                        .permitAll()
+                                "/api/v1/private/submission/**"
+                        ).permitAll()
+                        .pathMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         .anyExchange().authenticated()
                 )
                 .build();
