@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -180,12 +181,25 @@ public class UserController {
         return ResponseEntity.ok(new AuthResponse(newAccessToken, refreshToken.getToken()));
     }
 
+
+    @Operation(
+            summary = "Get profile of the authenticated user",
+            description = "Returns the profile of the user extracted from the Bearer token. "
+                    + "No need to provide `X-User-Username` manually — it's set by the Gateway.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
     @GetMapping("/profile")
     public ResponseEntity<Optional<User>> getUserProfile(@RequestHeader("X-User-Username") String username){
         Optional<User> user= userService.getUserProfile(username);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Get profile by user ID",
+            description = "Returns the profile of the user identified by ID. "
+                    + "The username is extracted from the Bearer token via Gateway.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
     @GetMapping("/profile/{id}")
     public ResponseEntity<User> getUserProfileById(@PathVariable Long id,
                                                    @RequestHeader("X-User-Username") String username){
