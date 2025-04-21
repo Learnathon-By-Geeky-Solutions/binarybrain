@@ -36,6 +36,6 @@ eureka:
 
 springdoc:
   api-docs:
-    path: /v3/api-docs
+    path: /api/v1/private/classroom/v3/api-docs
   swagger-ui:
-    path: /swagger-ui.html
+    path: /api/v1/private/classroom/swagger-ui.html
