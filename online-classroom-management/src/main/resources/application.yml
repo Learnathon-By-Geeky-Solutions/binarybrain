@@ -33,7 +33,16 @@ eureka:
       defaultZone: ${EUREKA_SERVER_URL:http://localhost:8070/eureka/}
 
 springdoc:
+  swagger-ui:
+    enabled: true
+    path: /api/user/swagger-ui.html
+    try-it-out-enabled: true
   api-docs:
     path: /api/user/v3/api-docs
-  swagger-ui:
-    path: /api/user/swagger-ui.html
+  default-produces-media-type: application/json
+  show-actuator: false
+  use-management-port: false
+  remove-broken-reference-definitions: true
+  override-with-gateway-url: true
+  server:
+    url: http://localhost:5000
