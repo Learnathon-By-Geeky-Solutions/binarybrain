@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: OCM-USER-REGISTRATION
+    name: USER-MICROSERVICE
 
   config:
     import: optional:classpath:secret.properties
@@ -22,6 +22,18 @@ spring:
     username: root
     password:
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  profiles:
+    active: dev
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 7MB
+      max-request-size: 7MB
+
+photo:
+  upload-dir: ${PHOTO_UPLOAD_DIR:./uploads/images/}
 
 eureka:
   instance:
