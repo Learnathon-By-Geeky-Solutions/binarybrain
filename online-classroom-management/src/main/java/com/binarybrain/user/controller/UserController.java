@@ -196,8 +196,7 @@ public class UserController {
     )
     @GetMapping("/profile/{id}")
     public ResponseEntity<User> getUserProfileById(@PathVariable Long id,
-                                                   @Parameter(hidden = true)
-                                                   @RequestHeader("X-User-Username") String username){
+                                                   @Parameter(hidden = true) @RequestHeader("X-User-Username") String username){
         User user = userService.getUserProfileById(id, username);
 
         return new ResponseEntity<>(user, HttpStatus.OK);
