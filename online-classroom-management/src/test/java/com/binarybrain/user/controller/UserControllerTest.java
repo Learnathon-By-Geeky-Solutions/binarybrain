@@ -178,7 +178,7 @@ public class UserControllerTest {
         mockMvc.perform(post("/api/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(authRequest)))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
 
         verify(authenticationManager, times(1)).authenticate(any());
     }

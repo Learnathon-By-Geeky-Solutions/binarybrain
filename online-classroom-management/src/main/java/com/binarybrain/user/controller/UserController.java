@@ -14,6 +14,7 @@ import com.binarybrain.user.service.RefreshTokenService;
 import com.binarybrain.user.service.UserService;
 import com.binarybrain.user.security.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -74,13 +75,16 @@ public class UserController {
      *                If validation fails, it returns {@code List<String>} (error messages).
      */
     @Operation(
-            summary = "Register a new user",
-            description = "To Register a new user, you should provide unique username, email and a valid ROLE.\n Acceptable user ROLE list: ADMIN, TEACHER, STUDENT.",
+            summary = "Create a new user",
+            description = "To Register a new user, you should provide unique username, email and a valid ROLE.\n Acceptable user ROLE list: [ADMIN, TEACHER, STUDENT].",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "User created successfully"),
-                    @ApiResponse(responseCode = "400", description = "Invalid input data!"),
-                    @ApiResponse(responseCode = "404", description = "ROLE not found!"),
-                    @ApiResponse(responseCode = "409", description = "Username or Email already exist!")
+                    @ApiResponse(responseCode = "200", description = "User created successfully",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))),
+                    @ApiResponse(responseCode = "400", description = "Invalid input data (e.g., missing fields)"),
+                    @ApiResponse(responseCode = "404", description = "User ROLE not found! Please try with \"ADMIN\", \"TEACHER\" or \"STUDENT\" ",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class))),
+                    @ApiResponse(responseCode = "409", description = "Username or Email already exist!",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class)))
             }
     )
     @PostMapping("/register")
@@ -109,20 +113,11 @@ public class UserController {
             summary = "User Login",
             description = "Authenticates a user with username and password. Returns JWT and Refresh Token on success.",
             responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Login successful - returns access and refresh tokens",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = AuthResponse.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid request (e.g., missing fields)"
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized - bad credentials",
-                            content = @Content(schema = @Schema(implementation = ErrorDetails.class))
-                    )
+                    @ApiResponse(responseCode = "200", description = "User login successfully.",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = AuthResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "Invalid request (e.g., missing fields)"),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized - bad credentials!",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class)))
             }
     )
     @PostMapping("/login")
@@ -148,22 +143,13 @@ public class UserController {
      *  *         If the refresh token is invalid or expired, an exception is thrown.
      */
     @Operation(
-            summary = "Refresh JWT Token",
-            description = "Generates a new JWT access token using a valid refresh token.",
+            summary = "New JWT by Refresh Token",
+            description = "JWT expiration time is set for 1 day while the Refresh token for 3 days. Generates a new JWT access token using a valid refresh token instead of further login.",
             responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "New access jwt token and refresh token generated successfully"
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Refresh token not found"
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Refresh token expired or invalid",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class))
-                    )
+                    @ApiResponse(responseCode = "200", description = "New jwt token and refresh token generated successfully"),
+                    @ApiResponse(responseCode = "404", description = "Refresh token not found!"),
+                    @ApiResponse(responseCode = "403", description = "Refresh token expired or invalid",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class)))
             }
     )
     @PostMapping("/refresh")
@@ -180,27 +166,37 @@ public class UserController {
         return ResponseEntity.ok(new AuthResponse(newAccessToken, refreshToken.getToken()));
     }
 
-
     @Operation(
-            summary = "Get profile of the authenticated user",
-            description = "Returns the profile of the user extracted from the Bearer token. "
-                    + "No need to provide `X-User-Username` manually — it's set by the Gateway.",
+            summary = "Get profile of the authenticated user from JWT",
+            description = "Returns the profile of the user extracted from the Bearer token. This request has no RequestBody, just add JWT as AUTHORIZATION header.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successful",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))),
+                    @ApiResponse(responseCode = "401", description = "Invalid or expired token!",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class)))
+            },
             security = @SecurityRequirement(name = "bearerToken")
     )
     @GetMapping("/profile")
-    public ResponseEntity<Optional<User>> getUserProfile(@RequestHeader("X-User-Username") String username){
+    public ResponseEntity<Optional<User>> getUserProfile(@Parameter(hidden = true) @RequestHeader("X-User-Username") String username){
         Optional<User> user= userService.getUserProfile(username);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @Operation(
             summary = "Get profile by user ID",
-            description = "Returns the profile of the user identified by ID. "
-                    + "The username is extracted from the Bearer token via Gateway.",
+            description = "Returns the profile of the user identified by userId.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successful",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))),
+                    @ApiResponse(responseCode = "401", description = "Invalid or expired token!",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class)))
+            },
             security = @SecurityRequirement(name = "bearerToken")
     )
     @GetMapping("/profile/{id}")
     public ResponseEntity<User> getUserProfileById(@PathVariable Long id,
+                                                   @Parameter(hidden = true)
                                                    @RequestHeader("X-User-Username") String username){
         User user = userService.getUserProfileById(id, username);
 
