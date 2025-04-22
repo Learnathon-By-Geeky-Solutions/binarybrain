@@ -82,7 +82,7 @@ class FileHandlerServiceImplTest {
 
     @Test
     void uploadFile_WithDirectoryTraversal_ShouldThrowException() throws IOException {
-        when(multipartFile.getOriginalFilename()).thenReturn("../malicious-file.xlsx");
+        when(multipartFile.getOriginalFilename()).thenReturn("../malicious-file.pdf");
         when(multipartFile.getContentType()).thenReturn(testFileContentType);
         when(multipartFile.getBytes()).thenReturn("malicious content".getBytes());
 

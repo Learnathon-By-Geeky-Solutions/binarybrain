@@ -30,24 +30,38 @@ public class FileHandlerServiceImpl implements FileHandlerService {
 
     @Override
     public String uploadFile(MultipartFile file) {
-        // Validate the file type before proceeding
-        validateFileType(file);
+        try {
+            validateFileType(file);
 
-        String fileName = generateFileName(file);
-        Path filePath = resolveFilePath(fileName);
+            Path targetDirectory = getNormalizedDirectory();
+            String fileName = generateUniqueFilename(file.getOriginalFilename());
+            Path filePath = resolveSecurePath(targetDirectory, fileName);
 
-        ensureDirectoryExists(filePath);
+            createDirectoryIfMissing(targetDirectory);
+            Files.write(filePath, file.getBytes());
 
-        return writeFile(file, filePath, fileName);
+            return fileName;
+        } catch (IOException ex) {
+            throw new UnsupportedFileTypeException("File upload failed: " + file.getOriginalFilename() + "\n" + ex);
+        }
     }
 
     @Override
     public byte[] downloadFile(String filename) {
         validateFilename(filename);
 
-        Path filePath = resolveFilePath(filename);
+        try {
+            Path targetDirectory = getNormalizedDirectory();
+            Path filePath = resolveSecurePath(targetDirectory, filename);
 
-        return readFile(filePath, filename);
+            if (!Files.exists(filePath)) {
+                throw new ResourceNotFoundException("FILE NOT FOUND: " + filename);
+            }
+
+            return Files.readAllBytes(filePath);
+        } catch (IOException ex) {
+            throw new UnsupportedFileTypeException("File download failed: " + filename + "\n" + ex);
+        }
     }
 
     @Override
@@ -56,21 +70,13 @@ public class FileHandlerServiceImpl implements FileHandlerService {
 
         validateFilename(fileName);
 
-        Path filePath = resolveFilePath(fileName);
-
-        deleteFileIfExists(filePath);
-    }
-
-    // File validation methods
-    private void validateFileType(MultipartFile file) {
-        if (!isValidFileType(file)) {
-            throw new UnsupportedFileTypeException("Unsupported file type: " + file.getContentType() + "\n(Supported file types: PDF, JPG, JPEG, PNG)");
-        }
-    }
-
-    private void validateFilename(String filename) {
-        if (filename.contains("..") || filename.contains("/") || filename.contains("\\")) {
-            throw new IllegalArgumentException("Invalid filename: " + filename);
+        try {
+            Path filePath = resolveSecurePath(getNormalizedDirectory(), fileName);
+            if (Files.exists(filePath)) {
+                Files.delete(filePath);
+            }
+        } catch (IOException ex) {
+            throw new UnsupportedFileTypeException("File deletion failed! " + ex);
         }
     }
 
@@ -78,54 +84,40 @@ public class FileHandlerServiceImpl implements FileHandlerService {
         return ALLOWED_FILE_TYPES.contains(file.getContentType());
     }
 
-    // File operations
-    private String generateFileName(MultipartFile file) {
-        return UUID.randomUUID() + "_" + file.getOriginalFilename();
-    }
+    // ----- Private Helper Methods -----
 
-    private Path resolveFilePath(String fileName) {
-        Path targetDirectory = Paths.get(fileDirectory).normalize();
-        return targetDirectory.resolve(fileName).normalize();
-    }
-
-    private void ensureDirectoryExists(Path filePath) {
-        try {
-            Path targetDirectory = filePath.getParent();
-            if (!Files.exists(targetDirectory)) {
-                Files.createDirectories(targetDirectory);
-            }
-        } catch (IOException ex) {
-            throw new UnsupportedFileTypeException("Failed to create directories: " + ex.getMessage());
+    private void validateFileType(MultipartFile file) {
+        if (!isValidFileType(file)) {
+            throw new UnsupportedFileTypeException("Unsupported file type: " + file.getContentType()
+                    + "\n (Supported file: PDF, JPG, JPEG, PNG)");
         }
     }
 
-    private String writeFile(MultipartFile file, Path filePath, String fileName) {
-        try {
-            Files.write(filePath, file.getBytes());
-            return fileName;
-        } catch (IOException ex) {
-            throw new UnsupportedFileTypeException("File upload failed: " + file.getOriginalFilename() + "\n" + ex.getMessage());
+    private void validateFilename(String filename) {
+        if (filename.contains("..") || filename.contains("/") || filename.contains("\\")) {
+            throw new IllegalArgumentException("Invalid filename");
         }
     }
 
-    private byte[] readFile(Path filePath, String filename) {
-        try {
-            if (!Files.exists(filePath)) {
-                throw new ResourceNotFoundException("FILE NOT FOUND: " + filename);
-            }
-            return Files.readAllBytes(filePath);
-        } catch (IOException ex) {
-            throw new UnsupportedFileTypeException("File download failed: " + filename + "\n" + ex.getMessage());
-        }
+    private Path getNormalizedDirectory() {
+        return Paths.get(fileDirectory).normalize();
     }
 
-    private void deleteFileIfExists(Path filePath) {
-        try {
-            if (Files.exists(filePath)) {
-                Files.delete(filePath);
-            }
-        } catch (IOException ex) {
-            throw new UnsupportedFileTypeException("File deletion failed! " + ex.getMessage());
+    private String generateUniqueFilename(String originalName) {
+        return UUID.randomUUID() + "_" + originalName;
+    }
+
+    private Path resolveSecurePath(Path baseDirectory, String fileName) throws IOException {
+        Path resolved = baseDirectory.resolve(fileName).normalize();
+        if (!resolved.startsWith(baseDirectory)) {
+            throw new IOException("Entry is outside of the target directory");
+        }
+        return resolved;
+    }
+
+    private void createDirectoryIfMissing(Path directory) throws IOException {
+        if (!Files.exists(directory)) {
+            Files.createDirectories(directory);
         }
     }
 }
