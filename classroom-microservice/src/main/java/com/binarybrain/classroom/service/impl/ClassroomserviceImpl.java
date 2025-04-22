@@ -14,6 +14,7 @@ import java.util.*;
 
 @Service
 public class ClassroomserviceImpl implements ClassroomService {
+
     private static final String ADMIN = "ADMIN";
     private static final String TEACHER = "TEACHER";
     private final ClassroomRepository classroomRepository;
@@ -25,40 +26,52 @@ public class ClassroomserviceImpl implements ClassroomService {
         this.userService = userService;
         this.courseService = courseService;
     }
-    boolean validateRole(UserDto userDto, List<String> targetRoles){
-        return userDto.getRoles()
-                .stream()
+
+    private boolean validateRole(UserDto userDto, List<String> targetRoles) {
+        return userDto.getRoles().stream()
                 .map(RoleDto::getName)
                 .anyMatch(targetRoles::contains);
     }
+
+    private void validateUserPermission(String username, List<String> targetRoles) {
+        UserDto userDto = userService.getUserProfile(username);
+        if (!validateRole(userDto, targetRoles)) {
+            throw new UserHasNotPermissionException("Only teacher or admin can manage classroom!");
+        }
+    }
+
+    private void validateClassroomModificationPermission(Classroom classroom, String jwt) {
+        UserDto userDto = userService.getUserProfile(jwt);
+        boolean isAdmin = validateRole(userDto, List.of(ADMIN));
+        boolean isTeacher = validateRole(userDto, List.of(TEACHER));
+        if (!isAdmin && (!isTeacher || !classroom.getTeacherId().equals(userDto.getId()))) {
+            throw new UserHasNotPermissionException("You do not have permission to modify this classroom.");
+        }
+    }
+
     @Override
     public Classroom createClassroom(Classroom classroom, String username) {
+        validateUserPermission(username, Arrays.asList(TEACHER, ADMIN));
 
-        UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
-            throw new UserHasNotPermissionException("Only teacher or admin can create classroom!");
-        }
-        Long teacherId = userDto.getId();
+        Long teacherId = userService.getUserProfile(username).getId();
         classroom.setStartDate(LocalDate.from(LocalDateTime.now()));
         classroom.setTeacherId(teacherId);
+
         return classroomRepository.save(classroom);
     }
 
     @Override
     public Classroom getClassroomById(Long id, String username) {
-        UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
-            throw new UserHasNotPermissionException("Only teacher or admin can manage classroom!");
-        }
-        return classroomRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Classroom not found with id: " + id));
+        validateUserPermission(username, Arrays.asList(TEACHER, ADMIN));
+
+        return classroomRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Classroom not found with id: " + id));
     }
 
     @Override
     public List<Classroom> getAllClassroomByTeacherId(Long id, String username) {
-        UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
-            throw new UserHasNotPermissionException("Only teacher or admin can manage classroom!");
-        }
+        validateUserPermission(username, Arrays.asList(TEACHER, ADMIN));
+
         return classroomRepository.findByTeacherId(id);
     }
 
@@ -72,45 +85,51 @@ public class ClassroomserviceImpl implements ClassroomService {
 
     @Override
     public Classroom addStudentInClassroom(Long classroomId, Long studentId, String username) {
+        Classroom classroom = getClassroomById(classroomId, username);
+        validateClassroomModificationPermission(classroom, username);
 
+        UserDto student = getStudentProfile(studentId, username);
+
+        validateStudentAssignment(student, classroom);
+
+        Set<Long> studentIds = new HashSet<>(Set.copyOf(classroom.getStudentIds()));
+        studentIds.add(studentId);
+        classroom.setStudentIds(studentIds);
+
+        return classroomRepository.save(classroom);
+    }
+
+    private void validateStudentAssignment(UserDto student,Classroom classroom) {
+        if (classroom.getStudentIds().contains(student.getId())) {
+            throw new AlreadyExistsException("Student is already in the classroom!");
+        }
+        if (!validateRole(student, List.of("STUDENT"))) {
+            throw new UserHasNotPermissionException("Only students can be added to the classroom!");
+        }
+    }
+
+    private UserDto getStudentProfile(Long studentId, String username) {
         try {
-            Classroom classroom = getClassroomById(classroomId, username);
-            validateClassroomModificationPermission(classroom, username);
-            UserDto student = userService.getUserProfileById(studentId, username);
-
-            if (!validateRole(student, List.of("STUDENT"))) {
-                throw new UserHasNotPermissionException("Only students can be added to the classroom!");
-            }
-            if (classroom.getStudentIds().contains(studentId)) {
-                throw new AlreadyExistsException("Student is already in the classroom!");
-            }
-            Set<Long> studentIds = new HashSet<>(Set.copyOf(classroom.getStudentIds()));
-            studentIds.add(studentId);
-            classroom.setStudentIds(studentIds);
-            return classroomRepository.save(classroom);
-
-        }catch (FeignException.BadRequest e){
+            return userService.getUserProfileById(studentId, username);
+        } catch (FeignException.BadRequest e) {
             throw new ResourceNotFoundException("User not found with id: " + studentId);
         }
     }
 
     @Override
     public Classroom removeStudentFromClassroomById(Long classroomId, Long studentId, String username) {
-        try {
-            Classroom classroom = getClassroomById(classroomId, username);
-            validateClassroomModificationPermission(classroom, username);
+        Classroom classroom = getClassroomById(classroomId, username);
+        validateClassroomModificationPermission(classroom, username);
 
-            if (!classroom.getStudentIds().contains(studentId)) {
-                throw new ResourceNotFoundException("Student not found in the classroom!");
-            }
-            Set<Long> studentIds = new HashSet<>(Set.copyOf(classroom.getStudentIds()));
-            studentIds.remove(studentId);
-            classroom.setStudentIds(studentIds);
-            return classroomRepository.save(classroom);
-
-        }catch (FeignException.BadRequest e){
-            throw new ResourceNotFoundException("Student not found with id: " + studentId);
+        if (!classroom.getStudentIds().contains(studentId)) {
+            throw new ResourceNotFoundException("Student not found in the classroom!");
         }
+
+        Set<Long> studentIds = new HashSet<>(Set.copyOf(classroom.getStudentIds()));
+        studentIds.remove(studentId);
+        classroom.setStudentIds(studentIds);
+
+        return classroomRepository.save(classroom);
     }
 
     @Override
@@ -124,9 +143,11 @@ public class ClassroomserviceImpl implements ClassroomService {
         validateClassroomModificationPermission(classroom, username);
 
         courseService.getCourseById(courseId, username);
+
         if (classroom.getCourseIds().contains(courseId)) {
             throw new AlreadyExistsException("Course is already assigned to this classroom.");
         }
+
         classroom.getCourseIds().add(courseId);
 
         return classroomRepository.save(classroom);
@@ -134,21 +155,18 @@ public class ClassroomserviceImpl implements ClassroomService {
 
     @Override
     public Classroom removeCourseFromClassroomById(Long classroomId, Long courseId, String username) {
-        try {
-            Classroom classroom = getClassroomById(classroomId, username);
-            validateClassroomModificationPermission(classroom, username);
+        Classroom classroom = getClassroomById(classroomId, username);
+        validateClassroomModificationPermission(classroom, username);
 
-            if (!classroom.getCourseIds().contains(courseId)) {
-                throw new ResourceNotFoundException("This Course is not added in this classroom!");
-            }
-            Set<Long> courseIds = new HashSet<>(Set.copyOf(classroom.getCourseIds()));
-            courseIds.remove(courseId);
-            classroom.setCourseIds(courseIds);
-            return classroomRepository.save(classroom);
-
-        }catch (FeignException.BadRequest e){
-            throw new ResourceNotFoundException("Course not found with id: " + courseId);
+        if (!classroom.getCourseIds().contains(courseId)) {
+            throw new ResourceNotFoundException("This Course is not added in this classroom!");
         }
+
+        Set<Long> courseIds = new HashSet<>(Set.copyOf(classroom.getCourseIds()));
+        courseIds.remove(courseId);
+        classroom.setCourseIds(courseIds);
+
+        return classroomRepository.save(classroom);
     }
 
     @Override
@@ -157,17 +175,6 @@ public class ClassroomserviceImpl implements ClassroomService {
         validateClassroomModificationPermission(classroom, username);
 
         List<Long> courseIds = new ArrayList<>(classroom.getCourseIds());
-
         return courseService.getCoursesByIds(courseIds, username);
-    }
-
-    private void validateClassroomModificationPermission(Classroom classroom, String jwt) {
-        UserDto userDto = userService.getUserProfile(jwt);
-        boolean isAdmin = validateRole(userDto, List.of(ADMIN));
-        boolean isTeacher = validateRole(userDto, List.of(TEACHER));
-
-        if (!isAdmin && (!isTeacher || !classroom.getTeacherId().equals(userDto.getId()))) {
-            throw new UserHasNotPermissionException("You do not have permission to modify this course.");
-        }
     }
 }

@@ -11,8 +11,10 @@ import com.binarybrain.submission.service.TaskService;
 import com.binarybrain.submission.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SubmissionServiceImpl implements SubmissionService {
@@ -27,51 +29,77 @@ public class SubmissionServiceImpl implements SubmissionService {
         this.userService = userService;
         this.fileHandlerService = fileHandlerService;
     }
+
+    // Helper to validate user role
     private boolean validateRole(UserDto userDto, List<String> targetRoles) {
-        return userDto.getRoles()
-                .stream()
+        return userDto.getRoles().stream()
                 .map(RoleDto::getName)
                 .anyMatch(targetRoles::contains);
     }
-    @Override
-    public SubmissionDto submitTask(Long taskId, MultipartFile file, String githubLink, String username) {
-        TaskDto taskDto = taskService.getTaskById(taskId,username);
-        if("CLOSED".equals(taskDto.getStatus())){
+
+    // Helper to check if the task is open for submission
+    private TaskDto validateTaskForSubmission(Long taskId, String username) {
+        TaskDto taskDto = taskService.getTaskById(taskId, username);
+        if ("CLOSED".equals(taskDto.getStatus())) {
             throw new ResourceNotFoundException("Task is not OPEN for submission!");
         }
-        UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, List.of("STUDENT")))
-            throw new UserHasNotPermissionException("Only STUDENT can submit task!");
+        return taskDto;
+    }
 
-        if(submissionRepo.findByTaskIdAndSubmittedBy(taskId, username).isPresent()){
+    // Helper to check if the user has already submitted the task
+    private void checkIfAlreadySubmitted(Long taskId, String username) {
+        Optional<Submission> existingSubmission = submissionRepo.findByTaskIdAndSubmittedBy(taskId, username);
+        if (existingSubmission.isPresent()) {
             throw new AlreadyExistsException("You have already submitted this task. Multiple submissions are not allowed!");
         }
+    }
 
-        String fileName = fileHandlerService.uploadFile(file);
+    // Helper to upload file
+    private String uploadFile(MultipartFile file) {
+        return fileHandlerService.uploadFile(file);
+    }
 
+    // Helper to set submission status based on task deadline
+    private SubmissionType getSubmissionType(TaskDto taskDto) {
+        return taskDto.getDeadline().isAfter(LocalDateTime.now()) ? SubmissionType.IN_TIME : SubmissionType.LATE;
+    }
+
+    // Main method for submitting task
+    @Override
+    public SubmissionDto submitTask(Long taskId, MultipartFile file, String githubLink, String username) {
+        TaskDto taskDto = validateTaskForSubmission(taskId, username);
+        UserDto userDto = userService.getUserProfile(username);
+
+        if (!validateRole(userDto, List.of("STUDENT"))) {
+            throw new UserHasNotPermissionException("Only STUDENT can submit task!");
+        }
+
+        checkIfAlreadySubmitted(taskId, username);
+
+        String fileName = uploadFile(file);
         Submission submission = new Submission();
         submission.setTaskId(taskId);
         submission.setStudentId(userDto.getId());
         submission.setSubmittedBy(username);
         submission.setFileUrl(fileName);
         submission.setGithubLink(githubLink);
-
-        if(taskDto.getDeadline().isAfter(LocalDateTime.now()))
-            submission.setSubmissionType(SubmissionType.IN_TIME);
-        else submission.setSubmissionType(SubmissionType.LATE);
-
+        submission.setSubmissionType(getSubmissionType(taskDto));
         submission.setSubmissionStatus(SubmissionStatus.PENDING);
         submission.setSubmissionTime(LocalDateTime.now());
 
         submissionRepo.save(submission);
         return SubmissionMapper.toSubmissionDto(submission);
     }
+
+    // Get a submission by ID
     @Override
     public SubmissionDto getSubmissionById(Long submissionId) {
-        Submission submission = submissionRepo.findById(submissionId).orElseThrow(() -> new ResourceNotFoundException("Submission not found with id: " + submissionId));
+        Submission submission = submissionRepo.findById(submissionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Submission not found with id: " + submissionId));
         return SubmissionMapper.toSubmissionDto(submission);
     }
 
+    // Get all submissions for a given task
     @Override
     public List<SubmissionDto> getAllSubmissionFromTask(Long taskId) {
         List<Submission> submissionList = submissionRepo.findByTaskId(taskId);
@@ -80,38 +108,47 @@ public class SubmissionServiceImpl implements SubmissionService {
                 .toList();
     }
 
+    // Get submission by task ID and student username
     @Override
     public SubmissionDto getSubmissionByTaskIdAndUsername(Long taskId, String username) {
         Submission submission = submissionRepo.findByTaskIdAndSubmittedBy(taskId, username)
-                .orElseThrow( ()-> new ResourceNotFoundException("No submission found for task id "+ taskId + "by student " + username));
-
+                .orElseThrow(() -> new ResourceNotFoundException("No submission found for task id " + taskId + " by student " + username));
         return SubmissionMapper.toSubmissionDto(submission);
     }
+
+    // Accept or reject a submission by teacher
     @Override
-    public SubmissionDto acceptOrRejectSubmission(Long submissionId, SubmissionStatus status, String username){
+    public SubmissionDto acceptOrRejectSubmission(Long submissionId, SubmissionStatus status, String username) {
         Submission submission = submissionRepo.findById(submissionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Submission not found with id: " + submissionId));
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, List.of("TEACHER")))
+
+        if (!validateRole(userDto, List.of("TEACHER"))) {
             throw new UserHasNotPermissionException("Only TEACHER can accept/reject submission!");
+        }
 
         submission.setSubmissionStatus(status);
         submissionRepo.save(submission);
-
         return SubmissionMapper.toSubmissionDto(submission);
     }
+
+    // Update a submission by task ID
     @Override
     public SubmissionDto updateSubmissionByTaskId(Long taskId, MultipartFile file, String githubLink, String username) {
         Submission submission = SubmissionMapper.toSubmission(getSubmissionByTaskIdAndUsername(taskId, username));
         deleteFileByTaskId(taskId, username);
-        String fileName = fileHandlerService.uploadFile(file);
 
+        String fileName = uploadFile(file);
         submission.setFileUrl(fileName);
-        if(githubLink!=null) submission.setGithubLink(githubLink);
-        submissionRepo.save(submission);
+        if (githubLink != null) {
+            submission.setGithubLink(githubLink);
+        }
 
+        submissionRepo.save(submission);
         return SubmissionMapper.toSubmissionDto(submission);
     }
+
+    // Delete the file of a submission by task ID
     @Override
     public SubmissionDto deleteFileByTaskId(Long taskId, String username) {
         Submission submission = SubmissionMapper.toSubmission(getSubmissionByTaskIdAndUsername(taskId, username));
@@ -121,5 +158,4 @@ public class SubmissionServiceImpl implements SubmissionService {
         submissionRepo.save(submission);
         return SubmissionMapper.toSubmissionDto(submission);
     }
-
 }

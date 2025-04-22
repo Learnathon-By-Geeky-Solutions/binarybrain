@@ -20,69 +20,6 @@ public class FileHandlerServiceImpl implements FileHandlerService {
 
     @Value("${file.upload-dir}")
     private String fileDirectory;
-    @Override
-    public String uploadFile(MultipartFile file) {
-        try{
-            if (!isValidFileType(file)){
-                throw new UnsupportedFileTypeException("Unsupported file type: " + file.getContentType() + "\n (Supported file: PDF, JPG, JPEG, PNG)");
-            }
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path targetDirectory = Paths.get(fileDirectory).normalize();
-            Path path = targetDirectory.resolve(fileName).normalize();
-
-            if (!path.startsWith(targetDirectory)) {
-                throw new IOException("Entry is outside of the target directory");
-            }
-
-            if (!Files.exists(targetDirectory)) {
-                Files.createDirectories(targetDirectory);
-            }
-
-            Files.write(path, file.getBytes());
-            return fileName;
-        }catch (IOException ex){
-            throw new UnsupportedFileTypeException("File upload failed: "+ file.getOriginalFilename() + "\n" + ex);
-        }
-    }
-
-    @Override
-    public byte[] downloadFile(String filename) {
-        if (filename.contains("..") || filename.contains("/") || filename.contains("\\")) {
-            throw new IllegalArgumentException("Invalid filename");
-        }
-        try{
-            Path targetDirectory = Paths.get(fileDirectory).normalize();
-            Path filePath = targetDirectory.resolve(filename).normalize();
-
-            if (!filePath.startsWith(targetDirectory)) {
-                throw new IOException("Entry is outside of the target directory");
-            }
-            if(!Files.exists(filePath)){
-                throw new ResourceNotFoundException("FILE NOT FOUND: " + filename);
-            }
-            return Files.readAllBytes(filePath);
-        } catch (IOException ex){
-            throw new UnsupportedFileTypeException("File download failed: "+ filename + "\n" + ex);
-        }
-    }
-
-    @Override
-    public void deleteFile(String fileName) {
-        if (fileName==null) {
-            return;
-        }
-        if (fileName.contains("..") || fileName.contains("/") || fileName.contains("\\")) {
-            throw new IllegalArgumentException("Invalid filename");
-        }
-        Path filePath = Paths.get(fileDirectory).resolve(fileName).normalize();
-        try {
-            if(Files.exists(filePath)){
-                Files.delete(filePath);
-            }
-        }catch (IOException ex){
-            throw new UnsupportedFileTypeException("File deletion failed! " + ex);
-        }
-    }
 
     private static final List<String> ALLOWED_FILE_TYPES = Arrays.asList(
             "application/pdf",
@@ -90,8 +27,105 @@ public class FileHandlerServiceImpl implements FileHandlerService {
             "image/jpeg",
             "image/jpg"
     );
+
+    @Override
+    public String uploadFile(MultipartFile file) {
+        // Validate the file type before proceeding
+        validateFileType(file);
+
+        String fileName = generateFileName(file);
+        Path filePath = resolveFilePath(fileName);
+
+        ensureDirectoryExists(filePath);
+
+        return writeFile(file, filePath, fileName);
+    }
+
+    @Override
+    public byte[] downloadFile(String filename) {
+        validateFilename(filename);
+
+        Path filePath = resolveFilePath(filename);
+
+        return readFile(filePath, filename);
+    }
+
+    @Override
+    public void deleteFile(String fileName) {
+        if (fileName == null) return;
+
+        validateFilename(fileName);
+
+        Path filePath = resolveFilePath(fileName);
+
+        deleteFileIfExists(filePath);
+    }
+
+    // File validation methods
+    private void validateFileType(MultipartFile file) {
+        if (!isValidFileType(file)) {
+            throw new UnsupportedFileTypeException("Unsupported file type: " + file.getContentType() + "\n(Supported file types: PDF, JPG, JPEG, PNG)");
+        }
+    }
+
+    private void validateFilename(String filename) {
+        if (filename.contains("..") || filename.contains("/") || filename.contains("\\")) {
+            throw new IllegalArgumentException("Invalid filename: " + filename);
+        }
+    }
+
     public boolean isValidFileType(MultipartFile file) {
         return ALLOWED_FILE_TYPES.contains(file.getContentType());
     }
 
+    // File operations
+    private String generateFileName(MultipartFile file) {
+        return UUID.randomUUID() + "_" + file.getOriginalFilename();
+    }
+
+    private Path resolveFilePath(String fileName) {
+        Path targetDirectory = Paths.get(fileDirectory).normalize();
+        return targetDirectory.resolve(fileName).normalize();
+    }
+
+    private void ensureDirectoryExists(Path filePath) {
+        try {
+            Path targetDirectory = filePath.getParent();
+            if (!Files.exists(targetDirectory)) {
+                Files.createDirectories(targetDirectory);
+            }
+        } catch (IOException ex) {
+            throw new UnsupportedFileTypeException("Failed to create directories: " + ex.getMessage());
+        }
+    }
+
+    private String writeFile(MultipartFile file, Path filePath, String fileName) {
+        try {
+            Files.write(filePath, file.getBytes());
+            return fileName;
+        } catch (IOException ex) {
+            throw new UnsupportedFileTypeException("File upload failed: " + file.getOriginalFilename() + "\n" + ex.getMessage());
+        }
+    }
+
+    private byte[] readFile(Path filePath, String filename) {
+        try {
+            if (!Files.exists(filePath)) {
+                throw new ResourceNotFoundException("FILE NOT FOUND: " + filename);
+            }
+            return Files.readAllBytes(filePath);
+        } catch (IOException ex) {
+            throw new UnsupportedFileTypeException("File download failed: " + filename + "\n" + ex.getMessage());
+        }
+    }
+
+    private void deleteFileIfExists(Path filePath) {
+        try {
+            if (Files.exists(filePath)) {
+                Files.delete(filePath);
+            }
+        } catch (IOException ex) {
+            throw new UnsupportedFileTypeException("File deletion failed! " + ex.getMessage());
+        }
+    }
 }

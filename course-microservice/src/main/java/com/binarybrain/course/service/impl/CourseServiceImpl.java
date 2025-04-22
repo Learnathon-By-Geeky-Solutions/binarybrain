@@ -11,11 +11,13 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class CourseServiceImpl implements CourseService {
     private static final String ADMIN = "ADMIN";
     private static final String TEACHER = "TEACHER";
+
     private final CourseRepository courseRepository;
     private final UserService userService;
     private final TaskService taskService;
@@ -26,37 +28,39 @@ public class CourseServiceImpl implements CourseService {
         this.taskService = taskService;
     }
 
-    private boolean validateRole(UserDto userDto, List<String> targetRoles) {
-        return userDto.getRoles()
-                .stream()
+    private boolean hasRole(UserDto userDto, List<String> roles) {
+        return userDto.getRoles().stream()
                 .map(RoleDto::getName)
-                .anyMatch(targetRoles::contains);
+                .anyMatch(roles::contains);
+    }
+
+    private void requireRole(UserDto userDto, List<String> requiredRoles, String errorMessage) {
+        if (!hasRole(userDto, requiredRoles)) {
+            throw new UserHasNotPermissionException(errorMessage);
+        }
     }
 
     @Override
     public CourseDto createCourse(CourseDto courseDto, String username) {
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
-            throw new UserHasNotPermissionException("Only ADMIN & TEACHER can create course!");
-        }
-        Long teacherId = userDto.getId();
+        requireRole(userDto, Arrays.asList(TEACHER, ADMIN), "Only ADMIN & TEACHER can create course!");
+
         Course course = CourseMapper.mapToCourse(courseDto);
-        course.setCreatedBy(teacherId);
+        course.setCreatedBy(userDto.getId());
         course.setStatus(CourseStatus.OPEN);
         courseRepository.save(course);
+
         return CourseMapper.mapToDto(course);
     }
 
     @Override
-    public CourseDto getCourseByCourseId(Long id,  String username) {
-        Course course = getCourseById(id);
-        return CourseMapper.mapToDto(course);
+    public CourseDto getCourseByCourseId(Long id, String username) {
+        return CourseMapper.mapToDto(getCourseById(id));
     }
 
     @Override
     public List<CourseDto> getCoursesbyIds(List<Long> courseIds, String username) {
-        List<Course> courseList = courseRepository.findByIdIn(courseIds);
-        return courseList.stream()
+        return courseRepository.findByIdIn(courseIds).stream()
                 .map(CourseMapper::mapToDto)
                 .toList();
     }
@@ -64,11 +68,9 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<CourseDto> getAllCourseByAuthorId(Long id, String username) {
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
-            throw new UserHasNotPermissionException("Only ADMIN & TEACHER can get corresponding courses list!");
-        }
-        List<Course> courseList = courseRepository.findByCreatedBy(id);
-        return courseList.stream()
+        requireRole(userDto, Arrays.asList(TEACHER, ADMIN), "Only ADMIN & TEACHER can get corresponding courses list!");
+
+        return courseRepository.findByCreatedBy(id).stream()
                 .map(CourseMapper::mapToDto)
                 .toList();
     }
@@ -76,11 +78,9 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<CourseDto> getAllCourse(String username) {
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, List.of(ADMIN))){
-            throw new UserHasNotPermissionException("Only ADMIN can get all course list!");
-        }
-        List<Course> courseList = courseRepository.findAll();
-        return courseList.stream()
+        requireRole(userDto, List.of(ADMIN), "Only ADMIN can get all course list!");
+
+        return courseRepository.findAll().stream()
                 .map(CourseMapper::mapToDto)
                 .toList();
     }
@@ -90,17 +90,17 @@ public class CourseServiceImpl implements CourseService {
         Course existingCourse = getCourseById(courseId);
         validateCourseModificationPermission(existingCourse, username);
 
-        if (updatedCourseDto.getTitle() != null)
-            existingCourse.setTitle(updatedCourseDto.getTitle());
-        if (updatedCourseDto.getCode() != null)
-            existingCourse.setCode(updatedCourseDto.getCode());
-        if (updatedCourseDto.getDescription() != null)
-            existingCourse.setDescription(updatedCourseDto.getDescription());
-        if (updatedCourseDto.getStatus() != null)
-            existingCourse.setStatus(updatedCourseDto.getStatus());
-
+        updateCourseFields(existingCourse, updatedCourseDto);
         courseRepository.save(existingCourse);
+
         return CourseMapper.mapToDto(existingCourse);
+    }
+
+    private void updateCourseFields(Course course, CourseDto dto) {
+        if (dto.getTitle() != null) course.setTitle(dto.getTitle());
+        if (dto.getCode() != null) course.setCode(dto.getCode());
+        if (dto.getDescription() != null) course.setDescription(dto.getDescription());
+        if (dto.getStatus() != null) course.setStatus(dto.getStatus());
     }
 
     @Override
@@ -109,13 +109,13 @@ public class CourseServiceImpl implements CourseService {
         validateCourseModificationPermission(course, username);
 
         TaskDto taskDto = taskService.getTaskById(taskId, username);
-        if(taskDto.getStatus().equals(TaskStatus.CLOSED)){
+        if (TaskStatus.CLOSED.equals(taskDto.getStatus())) {
             throw new UserHasNotPermissionException("CLOSED task can't be added! You should OPEN this first.");
         }
-        if (course.getTaskIds().contains(taskId)) {
+
+        if (!course.getTaskIds().add(taskId)) {
             throw new AlreadyExistsException("Task is already assigned to this course.");
         }
-        course.getTaskIds().add(taskId);
 
         courseRepository.save(course);
         return CourseMapper.mapToDto(course);
@@ -129,6 +129,7 @@ public class CourseServiceImpl implements CourseService {
         if (!course.getTaskIds().remove(taskId)) {
             throw new ResourceNotFoundException("Task not found in the course!");
         }
+
         courseRepository.save(course);
         return CourseMapper.mapToDto(course);
     }
@@ -138,28 +139,27 @@ public class CourseServiceImpl implements CourseService {
         Course course = getCourseById(courseId);
         validateCourseModificationPermission(course, username);
 
-        List<Long> courseIds = new ArrayList<>(course.getTaskIds());
-        return taskService.getTasksByIds(courseIds, username);
+        return taskService.getTasksByIds(new ArrayList<>(course.getTaskIds()), username);
     }
 
     @Override
     public void deleteCourse(Long courseId, String username) {
-        Course existingCourse = getCourseById(courseId);
-        validateCourseModificationPermission(existingCourse, username);
-
+        Course course = getCourseById(courseId);
+        validateCourseModificationPermission(course, username);
         courseRepository.deleteById(courseId);
     }
 
     private void validateCourseModificationPermission(Course course, String username) {
         UserDto userDto = userService.getUserProfile(username);
-        boolean isAdmin = validateRole(userDto, List.of(ADMIN));
-        boolean isTeacher = validateRole(userDto, List.of(TEACHER));
+        boolean isAdmin = hasRole(userDto, List.of(ADMIN));
+        boolean isAuthor = hasRole(userDto, List.of(TEACHER)) && Objects.equals(course.getCreatedBy(), userDto.getId());
 
-        if (!isAdmin && (!isTeacher || !course.getCreatedBy().equals(userDto.getId()))) {
+        if (!isAdmin && !isAuthor) {
             throw new UserHasNotPermissionException("You do not have permission to modify this course.");
         }
     }
-    private Course getCourseById(Long id){
+
+    private Course getCourseById(Long id) {
         return courseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
     }
