@@ -75,8 +75,7 @@ public class UserController {
      */
     @Operation(
             summary = "Register a new user",
-            description = "To Register a new user, you should provide unique username, email and a valid ROLE.\n" +
-                    "Acceptable user ROLE list: ADMIN, TEACHER, STUDENT.",
+            description = "To Register a new user, you should provide unique username, email and a valid ROLE.\n Acceptable user ROLE list: ADMIN, TEACHER, STUDENT.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "User created successfully"),
                     @ApiResponse(responseCode = "400", description = "Invalid input data!"),
@@ -186,7 +185,7 @@ public class UserController {
             summary = "Get profile of the authenticated user",
             description = "Returns the profile of the user extracted from the Bearer token. "
                     + "No need to provide `X-User-Username` manually — it's set by the Gateway.",
-            security = @SecurityRequirement(name = "bearerAuth")
+            security = @SecurityRequirement(name = "bearerToken")
     )
     @GetMapping("/profile")
     public ResponseEntity<Optional<User>> getUserProfile(@RequestHeader("X-User-Username") String username){
@@ -198,7 +197,7 @@ public class UserController {
             summary = "Get profile by user ID",
             description = "Returns the profile of the user identified by ID. "
                     + "The username is extracted from the Bearer token via Gateway.",
-            security = @SecurityRequirement(name = "bearerAuth")
+            security = @SecurityRequirement(name = "bearerToken")
     )
     @GetMapping("/profile/{id}")
     public ResponseEntity<User> getUserProfileById(@PathVariable Long id,

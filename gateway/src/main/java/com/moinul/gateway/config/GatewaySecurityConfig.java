@@ -28,9 +28,7 @@ public class GatewaySecurityConfig {
                                 "/api/v1/private/submission/**"
                         ).permitAll()
                         .pathMatchers(
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html"
+                                "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html"
                         ).permitAll()
                         .anyExchange().authenticated()
                 )
