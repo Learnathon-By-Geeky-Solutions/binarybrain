@@ -59,5 +59,19 @@ public class GlobalExceptionHandler {
         ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    public static class Thrower {
+
+        public static <T extends Throwable> void throwIf(boolean condition, T exception) {
+            if (condition) {
+                throwUnchecked(exception);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        private static <T extends Throwable> void throwUnchecked(Throwable exception) throws T {
+            throw (T) exception;
+        }
+    }
 }
 

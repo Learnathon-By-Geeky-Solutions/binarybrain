@@ -2,6 +2,7 @@ package com.binarybrain.user.service.impl;
 
 import com.binarybrain.exception.AlreadyExistsException;
 import com.binarybrain.exception.ResourceNotFoundException;
+import com.binarybrain.exception.global.GlobalExceptionHandler;
 import com.binarybrain.user.dto.UserDto;
 import com.binarybrain.user.mapper.UserMapper;
 import com.binarybrain.user.model.Role;
@@ -55,23 +56,19 @@ public class UserServiceImpl implements UserService {
         String username = userDto.getUsername();
         String email = userDto.getEmail();
 
-        if(userRepository.findByUsername(username).isPresent()){
-            throw new AlreadyExistsException("Error! Username is already exists: " + username);
-        }
-        if(userRepository.findByEmail(email).isPresent()){
-            throw new AlreadyExistsException("Error! Email is already exist: " + email);
-        }
+        GlobalExceptionHandler.Thrower.throwIf(userRepository.findByUsername(username).isPresent(),new AlreadyExistsException("Error! Username is already exists: " + username));
+        GlobalExceptionHandler.Thrower.throwIf(userRepository.findByEmail(email).isPresent(),new AlreadyExistsException("Error! Email is already exist: " + email));
 
         User user = UserMapper.userDtoToUserMapper(userDto);
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
         if(userDto.getRoles() != null){
             Set<Role> roles = new HashSet<>();
-            for(String roleName : userDto.getRoles()){
+            userDto.getRoles().forEach(roleName -> {
                 Role role = roleRepository.findByName(roleName)
                         .orElseThrow(() -> new ResourceNotFoundException("Role not found: " + roleName));
                 roles.add(role);
-            }
+            });
             user.setRoles(roles);
         }
         return userRepository.save(user);

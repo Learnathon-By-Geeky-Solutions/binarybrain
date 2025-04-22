@@ -41,6 +41,8 @@ public class ImageSearchService {
         List<User> predictPersons = new ArrayList<>();
 
         int i=0;
+
+
         for(UserImage userImage: userImageList){
             String dbImage64 = userImage.getImageBase64();
 
@@ -77,13 +79,11 @@ public class ImageSearchService {
         String url = "https://sg.opencv.fr/compare";
         try {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-
             if (response.getStatusCode() == HttpStatus.OK) {
                 JSONObject json = new JSONObject(response.getBody());
                 return json.getDouble("score");
-            } else {
-                throw new IOException("Failed to search! " + response.getStatusCode());
             }
+            throw new IOException("Failed to search! " + response.getStatusCode());
         } catch (RestClientException e){
             throw new IOException("Failed to connect to OpenCV API: " + e.getMessage(), e);
         }
