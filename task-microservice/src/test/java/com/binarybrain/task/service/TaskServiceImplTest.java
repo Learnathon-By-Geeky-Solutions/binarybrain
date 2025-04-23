@@ -185,6 +185,16 @@ class TaskServiceImplTest {
     }
 
     @Test
+    void closeTask_WhenUserIsStudent_ShouldNotCloseTask() {
+        when(userService.getUserProfile("student")).thenReturn(student);
+        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+
+        assertThrows(UserHasNotPermissionException.class, () -> {
+            taskService.closeTask(1L, "student");
+        });
+    }
+
+    @Test
     void closeTask_WhenUserIsNotOwner_ShouldThrowException() {
         when(userService.getUserProfile("otherTeacher")).thenReturn(otherTeacher);
         when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
