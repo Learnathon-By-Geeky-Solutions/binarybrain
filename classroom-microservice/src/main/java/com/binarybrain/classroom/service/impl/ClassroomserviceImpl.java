@@ -32,12 +32,15 @@ public class ClassroomserviceImpl implements ClassroomService {
                 .anyMatch(targetRoles::contains);
     }
     @Override
-    public Classroom createClassroom(Classroom classroom, String username) {
+    public Classroom createClassroom(ClassroomDto classroomDto, String username) {
 
         UserDto userDto = userService.getUserProfile(username);
         if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
             throw new UserHasNotPermissionException("Only teacher or admin can create classroom!");
         }
+        Classroom classroom = new Classroom();
+        classroom.setTitle(classroomDto.getTitle());
+        classroom.setDescription(classroomDto.getDescription());
         Long teacherId = userDto.getId();
         classroom.setStartDate(LocalDate.from(LocalDateTime.now()));
         classroom.setTeacherId(teacherId);
@@ -58,6 +61,9 @@ public class ClassroomserviceImpl implements ClassroomService {
         UserDto userDto = userService.getUserProfile(username);
         if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
             throw new UserHasNotPermissionException("Only teacher or admin can manage classroom!");
+        }
+        if (!userDto.getId().equals(id)) {
+            throw new UserHasNotPermissionException("Only Admin or corresponding Teacher can get classroom list.");
         }
         return classroomRepository.findByTeacherId(id);
     }
@@ -167,7 +173,7 @@ public class ClassroomserviceImpl implements ClassroomService {
         boolean isTeacher = validateRole(userDto, List.of(TEACHER));
 
         if (!isAdmin && (!isTeacher || !classroom.getTeacherId().equals(userDto.getId()))) {
-            throw new UserHasNotPermissionException("You do not have permission to modify this course.");
+            throw new UserHasNotPermissionException("You do not have permission to modify this classroom.");
         }
     }
 }

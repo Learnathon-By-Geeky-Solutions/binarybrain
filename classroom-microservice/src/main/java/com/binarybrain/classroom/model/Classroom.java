@@ -13,7 +13,7 @@ import java.util.Set;
 public class Classroom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(hidden = true)
+    @Schema(example = "Long")
     private Long id;
 
     @Column(nullable = false)
@@ -21,25 +21,24 @@ public class Classroom {
 
     private String description;
 
-    @Schema(hidden = true)
     @Column(nullable = false)
     private LocalDate startDate;
 
-    @Schema(hidden = true)
+    @Schema(example = "Long")
     @Column(nullable = false)
     private Long teacherId;
 
-    @Schema(hidden = true)
+    @Schema(example = "[\"Long\"]")
     @ElementCollection
     @CollectionTable(name = "classroom_students", joinColumns = @JoinColumn(name = "classroom_id"))
     private Set<Long> studentIds = new HashSet<>();
 
-    @Schema(hidden = true)
+    @Schema(example = "[\"Long\"]")
     @ElementCollection
     @CollectionTable(name = "classroom_courses", joinColumns = @JoinColumn(name = "classroom_id"))
     private Set<Long> courseIds = new HashSet<>();
 
-    @Schema(hidden = true)
+    @Schema(example = "[\"Long\"]")
     @ElementCollection
     @CollectionTable(name = "classroom_resources", joinColumns = @JoinColumn(name = "classroom_id"))
     private Set<Long> resourceIds = new HashSet<>();

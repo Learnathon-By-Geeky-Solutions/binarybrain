@@ -1,5 +1,6 @@
 package com.binarybrain.classroom.controller;
 
+import com.binarybrain.classroom.dto.ClassroomDto;
 import com.binarybrain.classroom.dto.CourseDto;
 import com.binarybrain.classroom.model.Classroom;
 import com.binarybrain.classroom.service.ClassroomService;
@@ -10,7 +11,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,11 +42,11 @@ public class ClassroomController {
             security = @SecurityRequirement(name = "bearerToken")
     )
     @PostMapping
-    public ResponseEntity<Classroom> createClassroom(@RequestBody Classroom classroom,
+    public ResponseEntity<Classroom> createClassroom(@RequestBody ClassroomDto classroomDto,
                                                      @Parameter(hidden = true) @RequestHeader("X-User-Username") String username){
 
 
-        Classroom createdClassroom = classroomService.createClassroom(classroom, username);
+        Classroom createdClassroom = classroomService.createClassroom(classroomDto, username);
 
         return new ResponseEntity<>(createdClassroom, HttpStatus.CREATED);
     }
