@@ -59,5 +59,14 @@ public class GlobalExceptionHandler {
         ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    public static class Thrower {
+        private Thrower() {}
+        public static <T extends Throwable> void throwIf(boolean condition, T exception) throws T{
+            if (condition) {
+                throw exception;
+            }
+        }
+    }
 }
 

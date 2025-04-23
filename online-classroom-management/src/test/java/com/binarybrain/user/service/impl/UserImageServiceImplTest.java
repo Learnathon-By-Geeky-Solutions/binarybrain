@@ -22,6 +22,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -94,6 +95,71 @@ class UserImageServiceImplTest {
         verify(userImageRepository).save(any(UserImage.class));
     }
 
+
+    private void processUploadDir(boolean delete) throws Exception {
+        Field field = UserImageServiceImpl.class.getDeclaredField("photoDirectory");
+        field.setAccessible(true);
+
+        Path dirPath = Paths.get((String) field.get(userImageService)).normalize();
+        if(delete){
+            FileSystemUtils.deleteRecursively(dirPath);
+        }else{
+            Files.createDirectories(dirPath);
+        }
+    }
+
+    @Test
+    void uploadPhoto_FileDirDoesNotExists() throws IOException {
+        try{
+            MockHttpServletRequest request = new MockHttpServletRequest();
+            request.setContextPath("/api");
+            RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+            String imageContent = "test image";
+            MultipartFile file = new MockMultipartFile("file", "photo.png", "image/jpeg", imageContent.getBytes());
+
+            User mockUser = new User();
+            mockUser.setId(userId);
+            mockUser.setUsername(username);
+
+            when(userService.getUserProfileById(userId, username)).thenReturn(mockUser);
+            processUploadDir(false);
+            String result = userImageService.uploadPhoto(userId, file, username);
+
+            assertTrue(result.contains("/api/user/photo/"));
+            verify(userRepository).save(any(User.class));
+            verify(userImageRepository).save(any(UserImage.class));
+        }catch (Exception e){
+            fail();
+        }
+    }
+
+    @Test
+    void uploadPhoto_FileDirExists() throws IOException {
+        try{
+            MockHttpServletRequest request = new MockHttpServletRequest();
+            request.setContextPath("/api");
+            RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+            String imageContent = "test image";
+            MultipartFile file = new MockMultipartFile("file", "photo.png", "image/jpeg", imageContent.getBytes());
+
+            User mockUser = new User();
+            mockUser.setId(userId);
+            mockUser.setUsername(username);
+
+            when(userService.getUserProfileById(userId, username)).thenReturn(mockUser);
+            processUploadDir(true);
+            String result = userImageService.uploadPhoto(userId, file, username);
+
+            assertTrue(result.contains("/api/user/photo/"));
+            verify(userRepository).save(any(User.class));
+            verify(userImageRepository).save(any(UserImage.class));
+        }catch (Exception e){
+            fail();
+        }
+    }
+
     @Test
     void getPhoto_ShouldReturnBytes_WhenFileExists() {
         byte[] result = userImageService.getPhoto(userId + ".png");
@@ -121,5 +187,12 @@ class UserImageServiceImplTest {
 
         assertEquals(2, result.size());
         verify(imageSearchService).searchByImage(files);
+    }
+
+    @Test
+    void getPhoto_ShouldReturnBytes_InvalidFileName() {
+        assertThrows(IllegalArgumentException.class, () -> userImageService.getPhoto("..invalid-file" + ".png"));
+        assertThrows(IllegalArgumentException.class, () -> userImageService.getPhoto("/invalid-file" + ".png"));
+        assertThrows(IllegalArgumentException.class, () -> userImageService.getPhoto("\\invalid-file" + ".png"));
     }
 }

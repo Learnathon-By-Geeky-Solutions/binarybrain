@@ -78,5 +78,10 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
      * even if it does not contain any configuration fields.
      */
     public static class Config {
+        public Config() {
+            /*
+             * This file is required for JWT  Auth filter to work
+             */
+        }
     }
 }

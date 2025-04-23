@@ -1,8 +1,6 @@
 package com.binarybrain.user.service;
 
-import com.binarybrain.exception.ResourceNotFoundException;
 import com.binarybrain.user.model.User;
-import com.binarybrain.user.model.UserImage;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;

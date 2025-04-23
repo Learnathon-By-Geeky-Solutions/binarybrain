@@ -136,13 +136,20 @@ class FileHandlerServiceImplTest {
 
     @Test
     void deleteFile_WithNullFilename_ShouldDoNothing() {
-        fileHandlerService.deleteFile(null);
+        try{
+            fileHandlerService.deleteFile(null);
+        }catch (IllegalArgumentException e){
+            fail();
+        }
     }
 
     @Test
     void deleteFile_WithNonexistentFile_ShouldNotThrowException() {
-        fileHandlerService.deleteFile("nonexistent-file.pdf");
-
+        try{
+            fileHandlerService.deleteFile("nonexistent-file.pdf");
+        }catch (IllegalArgumentException e){
+            fail();
+        }
     }
 
     @Test

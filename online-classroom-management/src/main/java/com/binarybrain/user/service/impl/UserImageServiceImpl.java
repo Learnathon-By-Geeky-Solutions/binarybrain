@@ -1,6 +1,7 @@
 package com.binarybrain.user.service.impl;
 
 import com.binarybrain.exception.ResourceNotFoundException;
+import com.binarybrain.exception.global.GlobalExceptionHandler;
 import com.binarybrain.user.model.User;
 import com.binarybrain.user.model.UserImage;
 import com.binarybrain.user.repository.UserImageRepository;
@@ -16,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -58,19 +58,11 @@ public class UserImageServiceImpl implements UserImageService {
 
     @Override
     public byte[] getPhoto(String filename) {
-        if (filename.contains("..") || filename.contains("/") || filename.contains("\\")) {
-            throw new IllegalArgumentException("Invalid filename!");
-        }
+        GlobalExceptionHandler.Thrower.throwIf(filename.contains("..") || filename.contains("/") || filename.contains("\\"),new IllegalArgumentException("Invalid filename!"));
         try{
             Path targetDirectory = Paths.get(photoDirectory).normalize();
             Path photoPath = targetDirectory.resolve(filename).normalize();
-
-            if (!photoPath.startsWith(targetDirectory)) {
-                throw new IOException("Entry is outside of the target directory");
-            }
-            if(!Files.exists(photoPath)){
-                throw new ResourceNotFoundException("Photo NOT FOUND: " + filename);
-            }
+            GlobalExceptionHandler.Thrower.throwIf(!photoPath.startsWith(targetDirectory),new IOException("Entry is outside of the target directory"));
             return Files.readAllBytes(photoPath);
         } catch (IOException ex){
             throw new ResourceNotFoundException("Photo download failed: "+ filename + "\n" + ex);
@@ -99,6 +91,7 @@ public class UserImageServiceImpl implements UserImageService {
             if (!Files.exists(fileStorageLocation)) {
                 Files.createDirectories(fileStorageLocation);
             }
+            GlobalExceptionHandler.Thrower.throwIf(!Files.exists(fileStorageLocation),new IOException("Entry is outside of the target directory"));
             Path targetLocation = fileStorageLocation.resolve(fileName);
             Files.write(targetLocation, imageBytes);
 

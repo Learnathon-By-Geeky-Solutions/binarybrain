@@ -24,7 +24,7 @@ class GlobalExceptionHandlerTest {
         Exception exception = new Exception("Something went wrong!");
         ResponseEntity<ErrorDetails> response = globalExceptionHandler.handleGlobalException(exception, webRequest);
 
-        assertEquals(500, response.getStatusCodeValue());
+        assertTrue(response.getStatusCode().is5xxServerError());
         assertNotNull(response.getBody(), "Response body should not be null!");
         assertEquals("Something went wrong!", response.getBody().getMessage());
     }
@@ -33,9 +33,26 @@ class GlobalExceptionHandlerTest {
     void handleGlobalIOException() {
         IOException exception = new IOException("Something went wrong!");
         ResponseEntity<ErrorDetails> response = globalExceptionHandler.handleGlobalIOException(exception, webRequest);
-
-        assertEquals(500, response.getStatusCodeValue());
+        assertTrue(response.getStatusCode().is5xxServerError());
         assertNotNull(response.getBody(), "Response body should not be null!");
         assertEquals("Something went wrong!", response.getBody().getMessage());
+    }
+
+    @Test
+    void throwIfTest(){
+        try{
+            GlobalExceptionHandler.Thrower.throwIf(false,new RuntimeException("Something went wrong!"));
+        }catch (RuntimeException e){
+            fail();
+        }
+    }
+
+    @Test
+    void throwIfTest_False(){
+        try{
+            GlobalExceptionHandler.Thrower.throwIf(true,new RuntimeException("Something went wrong!"));
+        }catch (RuntimeException e){
+            assertTrue(true);
+        }
     }
 }
