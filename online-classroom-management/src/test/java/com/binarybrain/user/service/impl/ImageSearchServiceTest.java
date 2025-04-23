@@ -120,7 +120,7 @@ class ImageSearchServiceTest {
     }
 
     @Test
-    void searchByImage_InvalidImage() throws JSONException, IOException {
+    void searchByImage_InvalidImage() throws JSONException {
         byte[] imageBytes = "test image".getBytes(StandardCharsets.UTF_8);
         MockMultipartFile multipartFile = new MockMultipartFile("file", "photo.jpg", "image/jpeg", imageBytes);
         MultipartFile[] inputImages = new MultipartFile[]{multipartFile};
@@ -153,7 +153,7 @@ class ImageSearchServiceTest {
 
 
     @Test
-    void searchByImage_ThrowsRestTemplateException() throws JSONException, IOException {
+    void searchByImage_ThrowsRestTemplateException() throws JSONException {
         byte[] imageBytes = "test image".getBytes(StandardCharsets.UTF_8);
         MockMultipartFile multipartFile = new MockMultipartFile("file", "photo.jpg", "image/jpeg", imageBytes);
         MultipartFile[] inputImages = new MultipartFile[]{multipartFile};
@@ -184,9 +184,8 @@ class ImageSearchServiceTest {
     }
 
     @Test
-    void searchByImage_ImageDecodingFailure() throws JSONException, IOException {
+    void searchByImage_ImageDecodingFailure() throws JSONException {
         byte[] imageBytes = "test image".getBytes(StandardCharsets.US_ASCII);
-        MockMultipartFile multipartFile = new MockMultipartFile("file", "photo.jpg", "image/jpeg", imageBytes);
         String probeBase64 = Base64.getEncoder().encodeToString(imageBytes);
 
         User user = new User();

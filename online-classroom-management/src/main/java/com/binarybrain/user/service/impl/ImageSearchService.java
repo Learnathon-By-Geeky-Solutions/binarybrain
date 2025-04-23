@@ -99,7 +99,7 @@ public class ImageSearchService {
                     try {
                         return java.util.Base64.getEncoder().encodeToString(image.getBytes());
                     } catch (IOException e) {
-                        throw new RuntimeException("Failed to encode image", e);
+                        throw new IllegalArgumentException("Failed to encode image", e);
                     }
                 })
                 .toList();
