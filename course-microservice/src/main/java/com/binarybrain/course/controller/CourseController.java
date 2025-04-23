@@ -6,6 +6,7 @@ import com.binarybrain.course.model.Course;
 import com.binarybrain.course.service.CourseService;
 import com.binarybrain.exception.ErrorDetails;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -42,7 +43,7 @@ public class CourseController {
     )
     @PostMapping
     public ResponseEntity<CourseDto> createCourse(@Valid @RequestBody CourseDto courseDto,
-                                                  @RequestHeader("X-User-Username") String username) {
+                                                  @Parameter(hidden = true) @RequestHeader("X-User-Username") String username) {
         CourseDto createdCourseDto = courseService.createCourse(courseDto, username);
         return new ResponseEntity<>(createdCourseDto, HttpStatus.CREATED);
     }
@@ -62,7 +63,7 @@ public class CourseController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<CourseDto> getCourseById(@PathVariable Long id,
-                                                   @RequestHeader("X-User-Username") String username) {
+                                                   @Parameter(hidden = true) @RequestHeader("X-User-Username") String username) {
         CourseDto courseDto = courseService.getCourseByCourseId(id, username);
         return new ResponseEntity<>(courseDto, HttpStatus.OK);
     }
@@ -80,7 +81,7 @@ public class CourseController {
     )
     @GetMapping("/by-ids")
     public ResponseEntity<List<CourseDto>> getCoursesByIds(@RequestParam List<Long> courseIds,
-                                                        @RequestHeader("X-User-Username") String username){
+                                                           @Parameter(hidden = true) @RequestHeader("X-User-Username") String username){
         List<CourseDto> courseDtoList = courseService.getCoursesbyIds(courseIds, username);
         return ResponseEntity.ok(courseDtoList);
     }
@@ -103,7 +104,7 @@ public class CourseController {
     )
     @GetMapping("/author/{authorId}")
     public ResponseEntity<List<CourseDto>> getAllCoursesByAuthorId(@PathVariable Long authorId,
-                                                                @RequestHeader("X-User-Username") String username) {
+                                                                   @Parameter(hidden = true) @RequestHeader("X-User-Username") String username) {
         List<CourseDto> courseDtoList = courseService.getAllCourseByAuthorId(authorId, username);
         return ResponseEntity.ok(courseDtoList);
     }
@@ -123,14 +124,14 @@ public class CourseController {
             security = @SecurityRequirement(name = "bearerToken")
     )
     @GetMapping
-    public ResponseEntity<List<CourseDto>> getAllCourses(@RequestHeader("X-User-Username") String username) {
+    public ResponseEntity<List<CourseDto>> getAllCourses(@Parameter(hidden = true) @RequestHeader("X-User-Username") String username) {
         List<CourseDto> courseDtoList = courseService.getAllCourse(username);
         return ResponseEntity.ok(courseDtoList);
     }
 
     @Operation(
             summary = "Assign task in a course",
-            tags = {"04 - Manage courses"},
+            tags = {"04 - Manage Course"},
             description = "Admin or Teacher can assign task in corresponding course.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully assigned task in course.",
@@ -146,8 +147,8 @@ public class CourseController {
     )
     @PutMapping("/{courseId}/add-task/{taskId}")
     public ResponseEntity<CourseDto> assignTaskInCourse(@PathVariable Long courseId,
-                                                         @PathVariable Long taskId,
-                                                         @RequestHeader("X-User-Username") String username){
+                                                        @PathVariable Long taskId,
+                                                        @Parameter(hidden = true) @RequestHeader("X-User-Username") String username){
 
         CourseDto courseDto = courseService.assignTaskInCourse(courseId, taskId, username);
         return new ResponseEntity<>(courseDto, HttpStatus.OK);
@@ -155,7 +156,7 @@ public class CourseController {
 
     @Operation(
             summary = "Remove task from a course",
-            tags = {"04 - Manage courses"},
+            tags = {"04 - Manage Course"},
             description = "Teacher can remove task from their courses with task id",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully removed task from course.",
@@ -171,8 +172,8 @@ public class CourseController {
     )
     @PutMapping("/{courseId}/remove-task/{taskId}")
     public ResponseEntity<CourseDto> removeTaskFromCourse(@PathVariable Long courseId,
-                                                     @PathVariable Long taskId,
-                                                     @RequestHeader("X-User-Username") String username){
+                                                          @PathVariable Long taskId,
+                                                          @Parameter(hidden = true) @RequestHeader("X-User-Username") String username){
 
         CourseDto courseDto = courseService.removeTaskFromCourse(courseId, taskId, username);
         return new ResponseEntity<>(courseDto, HttpStatus.OK);
@@ -180,7 +181,7 @@ public class CourseController {
 
     @Operation(
             summary = "Retrieve all task from a course",
-            tags = {"02 - Search Classroom"},
+            tags = {"02 - Search Course"},
             description = "This will response the list of tasks which are assign in a course with request courseId.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully retrieved task list from course",
@@ -192,14 +193,14 @@ public class CourseController {
     )
     @GetMapping("/{courseId}/tasks")
     public ResponseEntity<List<TaskDto>> getAllTasksFromCourse(@PathVariable Long courseId,
-                                                                   @RequestHeader("X-User-Username") String username) {
+                                                               @Parameter(hidden = true) @RequestHeader("X-User-Username") String username) {
         List<TaskDto> taskDtoList = courseService.getAllTaskFromCourse(courseId,username);
         return new ResponseEntity<>(taskDtoList, HttpStatus.OK);
     }
 
     @Operation(
             summary = "Modify a existing course",
-            tags = {"02 - Search Classroom"},
+            tags = {"04 - Manage Course"},
             description = "Admin or Course Teacher can upgrade course information e.g. Change courseStatus from OPEN to CLOSED or vice versa.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Course modification successful",
@@ -214,17 +215,17 @@ public class CourseController {
     @PutMapping("/{id}")
     public ResponseEntity<CourseDto> updateCourse(@PathVariable Long id,
                                                   @Valid @RequestBody CourseDto courseDto,
-                                                  @RequestHeader("X-User-Username") String username) {
+                                                  @Parameter(hidden = true) @RequestHeader("X-User-Username") String username) {
         CourseDto updatedCourseDto = courseService.updateCourse(id, courseDto, username);
         return ResponseEntity.ok(updatedCourseDto);
     }
 
     @Operation(
             summary = "Delete course",
-            tags = {"05 - Delete Classroom"},
+            tags = {"05 - Delete Course"},
             description = "Admin or corresponding Teacher can delete course.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully deleted course."),
+                    @ApiResponse(responseCode = "204", description = "Successfully deleted course."),
                     @ApiResponse(responseCode = "401", description = "Unauthorized: Invalid or Expired JWT token.",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class))),
                     @ApiResponse(responseCode = "403", description = "You don't have permission to delete another teacher's course!",
@@ -236,7 +237,7 @@ public class CourseController {
     )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id,
-                                             @RequestHeader("X-User-Username") String username) {
+                                             @Parameter(hidden = true) @RequestHeader("X-User-Username") String username) {
         courseService.deleteCourse(id, username);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

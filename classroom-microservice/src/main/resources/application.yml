@@ -34,7 +34,8 @@ springdoc:
     enabled: true
     path: /api/v1/private/classroom/swagger-ui.html
     try-it-out-enabled: true
-    tags-sorter: alpha
+    tags-sorter: ordered
+    operations-sorter: alpha
   api-docs:
     path: /api/v1/private/classroom/v3/api-docs
   default-produces-media-type: application/json

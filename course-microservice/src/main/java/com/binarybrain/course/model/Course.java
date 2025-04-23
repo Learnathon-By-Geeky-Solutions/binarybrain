@@ -28,6 +28,7 @@ public class Course {
     private CourseStatus status;
 
     @Column(nullable = false)
+    @Schema(example = "Long")
     private Long createdBy;
 
     @ElementCollection
