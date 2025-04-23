@@ -3,6 +3,7 @@ package com.binarybrain.exception.global;
 import com.binarybrain.exception.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
@@ -37,5 +38,15 @@ class GlobalExceptionHandlerTest {
         assertEquals(500, response.getStatusCodeValue());
         assertNotNull(response.getBody(), "Response body should not be null!");
         assertEquals("Something went wrong!", response.getBody().getMessage());
+    }
+
+    @Test
+    void throwIfTest(){
+        assertThrows(RuntimeException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                GlobalExceptionHandler.Thrower.throwIf(true,new RuntimeException("Something went wrong!"));
+            }
+        });
     }
 }
