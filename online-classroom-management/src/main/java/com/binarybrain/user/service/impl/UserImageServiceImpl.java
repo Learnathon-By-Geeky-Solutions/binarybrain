@@ -63,7 +63,6 @@ public class UserImageServiceImpl implements UserImageService {
             Path targetDirectory = Paths.get(photoDirectory).normalize();
             Path photoPath = targetDirectory.resolve(filename).normalize();
             GlobalExceptionHandler.Thrower.throwIf(!photoPath.startsWith(targetDirectory),new IOException("Entry is outside of the target directory"));
-            GlobalExceptionHandler.Thrower.throwIf(!Files.exists(photoPath),new ResourceNotFoundException("Photo NOT FOUND: " + filename));
             return Files.readAllBytes(photoPath);
         } catch (IOException ex){
             throw new ResourceNotFoundException("Photo download failed: "+ filename + "\n" + ex);
