@@ -187,7 +187,6 @@ class ImageSearchServiceTest {
     void searchByImage_ImageDecodingFailure() throws JSONException, IOException {
         byte[] imageBytes = "test image".getBytes(StandardCharsets.US_ASCII);
         MockMultipartFile multipartFile = new MockMultipartFile("file", "photo.jpg", "image/jpeg", imageBytes);
-        MultipartFile[] inputImages = new MultipartFile[]{multipartFile};
         String probeBase64 = Base64.getEncoder().encodeToString(imageBytes);
 
         User user = new User();
