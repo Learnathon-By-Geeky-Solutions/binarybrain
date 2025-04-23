@@ -62,15 +62,15 @@ public class UserServiceImpl implements UserService {
         User user = UserMapper.userDtoToUserMapper(userDto);
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
-        if(userDto.getRoles() != null){
+        Optional.ofNullable(userDto.getRoles()).ifPresent(userRoles->{
             Set<Role> roles = new HashSet<>();
-            userDto.getRoles().forEach(roleName -> {
+            userRoles.forEach(roleName -> {
                 Role role = roleRepository.findByName(roleName)
                         .orElseThrow(() -> new ResourceNotFoundException("Role not found: " + roleName));
                 roles.add(role);
             });
             user.setRoles(roles);
-        }
+        });
         return userRepository.save(user);
     }
 
