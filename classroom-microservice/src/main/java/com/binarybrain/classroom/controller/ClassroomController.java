@@ -175,8 +175,7 @@ public class ClassroomController {
             tags = {"05 - Delete Classroom"},
             description = "Admin or corresponding Teacher can delete classroom.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully deleted classroom.",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Classroom.class))),
+                    @ApiResponse(responseCode = "200", description = "Successfully deleted classroom."),
                     @ApiResponse(responseCode = "401", description = "Unauthorized: Invalid or Expired JWT token.",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class))),
                     @ApiResponse(responseCode = "403", description = "You don't have permission to delete another teacher's classroom!",
@@ -242,16 +241,14 @@ public class ClassroomController {
     }
 
     @Operation(
-            summary = "Retrieve all classroom",
+            summary = "Retrieve all courses from a classroom",
             tags = {"02 - Search Classroom"},
-            description = "Only ADMIN can see all classroom list.",
+            description = "This will response the list of all courses which are assign in a classroom with request classroomId.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully retrieved classroom list",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = Classroom.class))),
                     @ApiResponse(responseCode = "401", description = "Unauthorized: Invalid or Expired JWT token.",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class))),
-                    @ApiResponse(responseCode = "403", description = "You don't have permission to search classroom! Only ADMIN can do this.",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class))),
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class)))
             },
             security = @SecurityRequirement(name = "bearerToken")
     )

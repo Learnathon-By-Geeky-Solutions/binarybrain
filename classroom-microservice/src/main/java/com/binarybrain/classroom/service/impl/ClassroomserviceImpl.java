@@ -160,7 +160,6 @@ public class ClassroomserviceImpl implements ClassroomService {
     @Override
     public List<CourseDto> getAllCourseInClassroom(Long classroomId, String username) {
         Classroom classroom = getClassroomById(classroomId, username);
-        validateClassroomModificationPermission(classroom, username);
 
         List<Long> courseIds = new ArrayList<>(classroom.getCourseIds());
 

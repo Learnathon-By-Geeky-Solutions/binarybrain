@@ -67,6 +67,9 @@ public class CourseServiceImpl implements CourseService {
         if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
             throw new UserHasNotPermissionException("Only ADMIN & TEACHER can get corresponding courses list!");
         }
+        if (!userDto.getId().equals(id)) {
+            throw new UserHasNotPermissionException("Only Admin or corresponding Teacher can get course list.");
+        }
         List<Course> courseList = courseRepository.findByCreatedBy(id);
         return courseList.stream()
                 .map(CourseMapper::mapToDto)
@@ -136,7 +139,6 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<TaskDto> getAllTaskFromCourse(Long courseId, String username) {
         Course course = getCourseById(courseId);
-        validateCourseModificationPermission(course, username);
 
         List<Long> courseIds = new ArrayList<>(course.getTaskIds());
         return taskService.getTasksByIds(courseIds, username);

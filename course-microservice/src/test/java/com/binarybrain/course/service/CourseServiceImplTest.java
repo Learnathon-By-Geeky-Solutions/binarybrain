@@ -268,7 +268,6 @@ class CourseServiceImplTest {
     @Test
     void getAllTaskFromCourse_ShouldReturnTasks() {
         course.getTaskIds().add(1L);
-        when(userService.getUserProfile("teacher")).thenReturn(teacher);
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
         when(taskService.getTasksByIds(List.of(1L), "teacher")).thenReturn(List.of(taskDto));
 
