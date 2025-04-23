@@ -131,7 +131,7 @@ public class CourseController {
 
     @Operation(
             summary = "Assign task in a course",
-            tags = {"04 - Manage Course"},
+            tags = {"03 - Manage Course"},
             description = "Admin or Teacher can assign task in corresponding course.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully assigned task in course.",
@@ -156,7 +156,7 @@ public class CourseController {
 
     @Operation(
             summary = "Remove task from a course",
-            tags = {"04 - Manage Course"},
+            tags = {"03 - Manage Course"},
             description = "Teacher can remove task from their courses with task id",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully removed task from course.",
@@ -200,7 +200,7 @@ public class CourseController {
 
     @Operation(
             summary = "Modify a existing course",
-            tags = {"04 - Manage Course"},
+            tags = {"03 - Manage Course"},
             description = "Admin or Course Teacher can upgrade course information e.g. Change courseStatus from OPEN to CLOSED or vice versa.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Course modification successful",
@@ -222,7 +222,7 @@ public class CourseController {
 
     @Operation(
             summary = "Delete course",
-            tags = {"05 - Delete Course"},
+            tags = {"04 - Delete Course"},
             description = "Admin or corresponding Teacher can delete course.",
             responses = {
                     @ApiResponse(responseCode = "204", description = "Successfully deleted course."),
