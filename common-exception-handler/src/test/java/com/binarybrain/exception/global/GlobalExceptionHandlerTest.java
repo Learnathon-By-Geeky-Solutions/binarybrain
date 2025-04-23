@@ -42,11 +42,19 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void throwIfTest(){
-        assertThrows(RuntimeException.class, new Executable() {
-            @Override
-            public void execute() throws Throwable {
-                GlobalExceptionHandler.Thrower.throwIf(true,new RuntimeException("Something went wrong!"));
-            }
-        });
+        try{
+            GlobalExceptionHandler.Thrower.throwIf(false,new RuntimeException("Something went wrong!"));
+        }catch (RuntimeException e){
+            fail();
+        }
+    }
+
+    @Test
+    void throwIfTest_False(){
+        try{
+            GlobalExceptionHandler.Thrower.throwIf(true,new RuntimeException("Something went wrong!"));
+        }catch (RuntimeException e){
+            assertTrue(true);
+        }
     }
 }

@@ -61,16 +61,11 @@ public class GlobalExceptionHandler {
     }
 
     public static class Thrower {
-
-        public static <T extends Throwable> void throwIf(boolean condition, T exception) {
+        private Thrower() {}
+        public static <T extends Throwable> void throwIf(boolean condition, T exception) throws T{
             if (condition) {
-                throwUnchecked(exception);
+                throw exception;
             }
-        }
-
-        @SuppressWarnings("unchecked")
-        private static <T extends Throwable> void throwUnchecked(Throwable exception) throws T {
-            throw (T) exception;
         }
     }
 }
