@@ -5,8 +5,6 @@ spring:
   application:
     name: USER-MICROSERVICE
 
-  config:
-    import: optional:classpath:secret.properties
 
   jpa:
     hibernate:
@@ -18,10 +16,10 @@ spring:
         format_sql: true
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/OCM_userDB}
-    username: root
-    password:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://${SPRING_DATASOURCE_HOSTNAME}/OCM_userDB}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
 
   profiles:
     active: dev
@@ -43,3 +41,13 @@ eureka:
     register-with-eureka: true
     serviceUrl:
       defaultZone: ${EUREKA_SERVER_URL:http://localhost:8070/eureka/}
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+  refresh:
+    expiration: ${JWT_REFRESH_EXPIRATION}
+
+opencv:
+  apikey: ${OPENCV_APIKEY}
+  
