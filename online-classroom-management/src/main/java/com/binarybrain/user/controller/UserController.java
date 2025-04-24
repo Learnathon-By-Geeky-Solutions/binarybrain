@@ -11,6 +11,7 @@ import com.binarybrain.user.model.User;
 import com.binarybrain.user.repository.UserRepository;
 import com.binarybrain.user.service.CustomUserDetailsService;
 import com.binarybrain.user.service.RefreshTokenService;
+import com.binarybrain.user.service.UserImageService;
 import com.binarybrain.user.service.UserService;
 import com.binarybrain.user.security.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +24,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,8 +32,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import static org.springframework.http.MediaType.*;
 
 /**
  * UserController class handles HTTP request related to user operation(s).
@@ -44,6 +50,7 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
+    private final UserImageService imageService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
@@ -52,12 +59,14 @@ public class UserController {
 
     @Autowired
     public UserController(UserService userService,
+                          UserImageService imageService,
                           AuthenticationManager authenticationManager,
                           JwtUtil jwtUtil,
                           CustomUserDetailsService userDetailsService,
                           UserRepository userRepository,
                           RefreshTokenService refreshTokenService) {
         this.userService = userService;
+        this.imageService = imageService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
@@ -76,6 +85,7 @@ public class UserController {
      */
     @Operation(
             summary = "Create a new user",
+            tags = {"01 - Register"},
             description = "To Register a new user, you should provide unique username, email and a valid ROLE.\n Acceptable user ROLE list: [ADMIN, TEACHER, STUDENT].",
             responses = {
                     @ApiResponse(responseCode = "200", description = "User created successfully",
@@ -111,6 +121,7 @@ public class UserController {
 
     @Operation(
             summary = "User Login",
+            tags = {"02 - Login"},
             description = "Authenticates a user with username and password. Returns JWT and Refresh Token on success.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "User login successfully.",
@@ -144,6 +155,7 @@ public class UserController {
      */
     @Operation(
             summary = "New JWT by Refresh Token",
+            tags = {"02 - Login"},
             description = "JWT expiration time is set for 1 day while the Refresh token for 3 days. Generates a new JWT access token using a valid refresh token instead of further login.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "New jwt token and refresh token generated successfully"),
@@ -168,6 +180,7 @@ public class UserController {
 
     @Operation(
             summary = "Get profile of the authenticated user from JWT",
+            tags = {"03 - Search"},
             description = "Returns the profile of the user extracted from the Bearer token. This request has no RequestBody, just add JWT as AUTHORIZATION header.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successful",
@@ -185,6 +198,7 @@ public class UserController {
 
     @Operation(
             summary = "Get profile by user ID",
+            tags = {"03 - Search"},
             description = "Returns the profile of the user identified by userId.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successful",
@@ -200,5 +214,72 @@ public class UserController {
         User user = userService.getUserProfileById(id, username);
 
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @Operation(
+            summary = "Upload photo",
+            tags = {"04 - Image"},
+            description = "Upload user profile picture.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Image upload successful",
+                            content = @Content(schema = @Schema(implementation = String.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized: Invalid or Expired JWT token.",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class))),
+                    @ApiResponse(responseCode = "400", description = "Image is required!",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class)))
+            },
+            security = @SecurityRequirement(name = "bearerToken")
+    )
+    @PostMapping(value = "/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadPhoto(@RequestParam("id") Long id,
+                                              @Parameter(description = "Upload Photo(MAX 1MB)", required = true,
+                                                      content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+                                              @RequestPart("file") MultipartFile file,
+                                              @Parameter(hidden = true) @RequestHeader("X-User-Username") String username) throws IOException {
+
+        String photoUrl = imageService.uploadPhoto(id, file, username);
+        return ResponseEntity.ok().body(photoUrl);
+    }
+
+    @Operation(
+            summary = "Download photo",
+            tags = {"04 - Image"},
+            description = "Download user profile picture from photo name.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Image download successful",
+                            content = @Content(schema = @Schema(implementation = String.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized: Invalid or Expired JWT token.",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class))),
+                    @ApiResponse(responseCode = "404", description = "Image not found!",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class)))
+            },
+            security = @SecurityRequirement(name = "bearerToken")
+    )
+    @GetMapping(path = "/photo/{filename}", produces = {IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE})
+    public byte[] getPhoto (@PathVariable("filename") String filename) throws IOException {
+        return imageService.getPhoto(filename);
+    }
+
+    @Operation(
+            summary = "Search user by image",
+            tags = {"05 - Image Search"},
+            description = "Search one image and recieve a list of matching users",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Search successful",
+                            content = @Content(schema = @Schema(implementation = String.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized: Invalid or Expired JWT token.",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class))),
+                    @ApiResponse(responseCode = "400", description = "Image is required!",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class)))
+            },
+            security = @SecurityRequirement(name = "bearerToken")
+    )
+    @PostMapping(value = "/search-by-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<List<User>> searchByImage(@Parameter(description = "Upload image to search", required = true,
+                                                            content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+                                                        @RequestPart("image") MultipartFile[] image) throws IOException {
+        List<User> matchedUsers = imageService.searchUsersByImage(image);
+        return ResponseEntity.ok(matchedUsers);
+
     }
 }

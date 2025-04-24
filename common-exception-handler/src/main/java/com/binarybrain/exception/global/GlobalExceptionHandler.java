@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+import java.io.IOException;
 import java.util.Date;
 
 @ControllerAdvice
@@ -53,5 +54,19 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<ErrorDetails> handleGlobalIOException(IOException e, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    public static class Thrower {
+        private Thrower() {}
+        public static <T extends Throwable> void throwIf(boolean condition, T exception) throws T{
+            if (condition) {
+                throw exception;
+            }
+        }
+    }
 }
 

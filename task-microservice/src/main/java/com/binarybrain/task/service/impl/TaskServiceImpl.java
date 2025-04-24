@@ -2,6 +2,7 @@ package com.binarybrain.task.service.impl;
 
 import com.binarybrain.exception.ResourceNotFoundException;
 import com.binarybrain.exception.UserHasNotPermissionException;
+import com.binarybrain.exception.global.GlobalExceptionHandler;
 import com.binarybrain.task.dto.*;
 import com.binarybrain.task.mapper.TaskMapper;
 import com.binarybrain.task.model.Task;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -34,13 +36,9 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskDto createTask(TaskDto taskDto, String username) {
         LocalDateTime deadline = taskDto.getDeadline();
-        if (deadline.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Deadline must be in the future");
-        }
+        GlobalExceptionHandler.Thrower.throwIf(deadline.isBefore(LocalDateTime.now()),new IllegalArgumentException("Deadline must be in the future"));
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, List.of("TEACHER")))
-            throw new UserHasNotPermissionException("Only TEACHER can create assignment!");
-
+        GlobalExceptionHandler.Thrower.throwIf(!validateRole(userDto, List.of("TEACHER")),new UserHasNotPermissionException("Only TEACHER can create assignment!"));
         Long teacherId = userDto.getId();
         Task task = TaskMapper.toTask(taskDto);
         task.setTeacherId(teacherId);
@@ -100,20 +98,15 @@ public class TaskServiceImpl implements TaskService {
         TaskDto existingTaskDto = getTaskById(taskId, username);
         validateTaskModificationPermission(existingTaskDto, username);
 
-        if (updatedTaskDto.getTitle() != null)
-            existingTaskDto.setTitle(updatedTaskDto.getTitle());
-        if (updatedTaskDto.getDescription() != null)
-            existingTaskDto.setDescription(updatedTaskDto.getDescription());
-        if (updatedTaskDto.getDeadline() != null) {
-            if (updatedTaskDto.getDeadline().isBefore(LocalDateTime.now())) {
-                throw new IllegalArgumentException("Deadline must be in the future");
-            }
+        Optional.ofNullable(updatedTaskDto.getTitle()).ifPresent(existingTaskDto::setTitle);
+        Optional.ofNullable(updatedTaskDto.getDescription()).ifPresent(existingTaskDto::setDescription);
+        Optional.ofNullable(updatedTaskDto.getDeadline()).ifPresent(localDateTime -> {
+            GlobalExceptionHandler.Thrower.throwIf(updatedTaskDto.getDeadline().isBefore(LocalDateTime.now()),new IllegalArgumentException("Deadline must be in the future"));
             existingTaskDto.setDeadline(updatedTaskDto.getDeadline());
-        }
-        if (updatedTaskDto.getStatus() != null)
-            existingTaskDto.setStatus(updatedTaskDto.getStatus());
-        if (updatedTaskDto.getAttachmentUrl() != null)
-            existingTaskDto.setAttachmentUrl(updatedTaskDto.getAttachmentUrl());
+        });
+
+        Optional.ofNullable(updatedTaskDto.getStatus()).ifPresent(existingTaskDto::setStatus);
+        Optional.ofNullable(updatedTaskDto.getAttachmentUrl()).ifPresent(existingTaskDto::setAttachmentUrl);
 
         Task existingTask = TaskMapper.toTask(existingTaskDto);
         taskRepository.save(existingTask);
@@ -130,8 +123,6 @@ public class TaskServiceImpl implements TaskService {
         UserDto userDto = userService.getUserProfile(username);
         boolean isTeacher = validateRole(userDto, List.of("TEACHER"));
 
-        if ((!isTeacher || !taskDto.getTeacherId().equals(userDto.getId()))) {
-            throw new UserHasNotPermissionException("You do not have permission to modify this task.");
-        }
+        GlobalExceptionHandler.Thrower.throwIf((!isTeacher || !taskDto.getTeacherId().equals(userDto.getId())),new UserHasNotPermissionException("You do not have permission to modify this task."));
     }
 }
