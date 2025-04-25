@@ -1,7 +1,6 @@
 package com.binarybrain.user.security;
 
 import com.binarybrain.exception.InvalidTokenException;
-import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -55,6 +54,7 @@ class JwtUtilTest {
         String token = jwtUtil.createToken(map,"sample",1000L);
         String username = jwtUtil.extractUsername(token);
         assertNotNull(username);
+        assertEquals("sample",username);
     }
 
     @Test
@@ -84,6 +84,7 @@ class JwtUtilTest {
         String token = jwtUtil.createToken(map,"sample",1000L);
         String username = jwtUtil.extractUsername(token);
         assertNotNull(username);
+        jwtUtil.extractAllClaims(token);
     }
 
     @Test
