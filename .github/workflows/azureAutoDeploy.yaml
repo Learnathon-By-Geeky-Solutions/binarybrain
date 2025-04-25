@@ -1,5 +1,9 @@
 name: Build and Deploy to Azure Container Apps
 
+permissions:
+  contents: read
+  pull-requests: write
+  
 on:
   push:
     branches:
