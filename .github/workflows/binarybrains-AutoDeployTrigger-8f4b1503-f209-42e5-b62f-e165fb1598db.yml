@@ -41,7 +41,7 @@ jobs:
           registryPassword: ${{ secrets.BINARYBRAINS_REGISTRY_PASSWORD }}
           containerAppName: binarybrains
           resourceGroup: iishanto
-          imageToBuild: index.docker.io/binarybrains:${{ github.sha }}
+          imageToBuild: index.docker.io/iishanto/binarybrain:${{ github.sha }}
           _buildArgumentsKey_: |
             _buildArgumentsValues_
 
