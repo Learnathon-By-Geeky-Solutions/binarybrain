@@ -2,6 +2,7 @@ package com.binarybrain.submission.service.impl;
 
 import com.binarybrain.exception.ResourceNotFoundException;
 import com.binarybrain.exception.UnsupportedFileTypeException;
+import com.binarybrain.exception.global.GlobalExceptionHandler;
 import com.binarybrain.submission.service.FileHandlerService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,9 +24,10 @@ public class FileHandlerServiceImpl implements FileHandlerService {
     @Override
     public String uploadFile(MultipartFile file) {
         try{
-            if (!isValidFileType(file)){
-                throw new UnsupportedFileTypeException("Unsupported file type: " + file.getContentType() + "\n (Supported file: PDF, JPG, JPEG, PNG)");
-            }
+            GlobalExceptionHandler.Thrower.throwIf(
+                    !isValidFileType(file),
+                    new UnsupportedFileTypeException("Unsupported file type: " + file.getContentType() + "\n (Supported file: PDF, JPG, JPEG, PNG)"));
+
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
             Path targetDirectory = Paths.get(fileDirectory).normalize();
             Path path = targetDirectory.resolve(fileName).normalize();
@@ -57,9 +59,10 @@ public class FileHandlerServiceImpl implements FileHandlerService {
             if (!filePath.startsWith(targetDirectory)) {
                 throw new IOException("Entry is outside of the target directory");
             }
-            if(!Files.exists(filePath)){
-                throw new ResourceNotFoundException("FILE NOT FOUND: " + filename);
-            }
+            GlobalExceptionHandler.Thrower.throwIf(
+                    !Files.exists(filePath),
+                    new ResourceNotFoundException("FILE NOT FOUND: " + filename));
+
             return Files.readAllBytes(filePath);
         } catch (IOException ex){
             throw new UnsupportedFileTypeException("File download failed: "+ filename + "\n" + ex);

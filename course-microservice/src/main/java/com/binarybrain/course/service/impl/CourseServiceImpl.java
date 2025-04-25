@@ -6,11 +6,13 @@ import com.binarybrain.course.model.Course;
 import com.binarybrain.course.repo.CourseRepository;
 import com.binarybrain.course.service.*;
 import com.binarybrain.exception.*;
+import com.binarybrain.exception.global.GlobalExceptionHandler;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -36,9 +38,11 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public CourseDto createCourse(CourseDto courseDto, String username) {
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
-            throw new UserHasNotPermissionException("Only ADMIN & TEACHER can create course!");
-        }
+        boolean isAdminOrTeacher = validateRole(userDto, List.of(ADMIN, TEACHER));
+        GlobalExceptionHandler.Thrower.throwIf(
+                !isAdminOrTeacher,
+                new UserHasNotPermissionException("Only ADMIN & TEACHER can create course!"));
+
         Long teacherId = userDto.getId();
         Course course = CourseMapper.mapToCourse(courseDto);
         course.setCreatedBy(teacherId);
@@ -62,12 +66,14 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<CourseDto> getAllCourseByAuthorId(Long id, String username) {
+    public List<CourseDto> getAllCourseByAuthorId(Long authorId, String username) {
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
-            throw new UserHasNotPermissionException("Only ADMIN & TEACHER can get corresponding courses list!");
-        }
-        List<Course> courseList = courseRepository.findByCreatedBy(id);
+        boolean isAdmin = validateRole(userDto, List.of(ADMIN));
+        GlobalExceptionHandler.Thrower.throwIf(
+                (!isAdmin && !userDto.getId().equals(authorId)),
+                new UserHasNotPermissionException("Only ADMIN & TEACHER can get corresponding courses list!"));
+
+        List<Course> courseList = courseRepository.findByCreatedBy(authorId);
         return courseList.stream()
                 .map(CourseMapper::mapToDto)
                 .toList();
@@ -76,9 +82,11 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<CourseDto> getAllCourse(String username) {
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, List.of(ADMIN))){
-            throw new UserHasNotPermissionException("Only ADMIN can get all course list!");
-        }
+        boolean isAdmin = validateRole(userDto, List.of(ADMIN));
+        GlobalExceptionHandler.Thrower.throwIf(
+                !isAdmin,
+                new UserHasNotPermissionException("Only ADMIN can get all course list!"));
+
         List<Course> courseList = courseRepository.findAll();
         return courseList.stream()
                 .map(CourseMapper::mapToDto)
@@ -90,14 +98,10 @@ public class CourseServiceImpl implements CourseService {
         Course existingCourse = getCourseById(courseId);
         validateCourseModificationPermission(existingCourse, username);
 
-        if (updatedCourseDto.getTitle() != null)
-            existingCourse.setTitle(updatedCourseDto.getTitle());
-        if (updatedCourseDto.getCode() != null)
-            existingCourse.setCode(updatedCourseDto.getCode());
-        if (updatedCourseDto.getDescription() != null)
-            existingCourse.setDescription(updatedCourseDto.getDescription());
-        if (updatedCourseDto.getStatus() != null)
-            existingCourse.setStatus(updatedCourseDto.getStatus());
+        Optional.ofNullable(updatedCourseDto.getTitle()).ifPresent(existingCourse::setTitle);
+        Optional.ofNullable(updatedCourseDto.getCode()).ifPresent(existingCourse::setCode);
+        Optional.ofNullable(updatedCourseDto.getDescription()).ifPresent(existingCourse::setDescription);
+        Optional.ofNullable(updatedCourseDto.getStatus()).ifPresent(existingCourse::setStatus);
 
         courseRepository.save(existingCourse);
         return CourseMapper.mapToDto(existingCourse);
@@ -109,12 +113,14 @@ public class CourseServiceImpl implements CourseService {
         validateCourseModificationPermission(course, username);
 
         TaskDto taskDto = taskService.getTaskById(taskId, username);
-        if(taskDto.getStatus().equals(TaskStatus.CLOSED)){
-            throw new UserHasNotPermissionException("CLOSED task can't be added! You should OPEN this first.");
-        }
-        if (course.getTaskIds().contains(taskId)) {
-            throw new AlreadyExistsException("Task is already assigned to this course.");
-        }
+
+        GlobalExceptionHandler.Thrower.throwIf(
+                taskDto.getStatus().equals(TaskStatus.CLOSED),
+                new UserHasNotPermissionException("CLOSED task can't be added! You should OPEN this first."));
+        GlobalExceptionHandler.Thrower.throwIf(
+                course.getTaskIds().contains(taskId),
+                new AlreadyExistsException("Task is already assigned to this course."));
+
         course.getTaskIds().add(taskId);
 
         courseRepository.save(course);
@@ -126,9 +132,10 @@ public class CourseServiceImpl implements CourseService {
         Course course = getCourseById(courseId);
         validateCourseModificationPermission(course, username);
 
-        if (!course.getTaskIds().remove(taskId)) {
-            throw new ResourceNotFoundException("Task not found in the course!");
-        }
+        GlobalExceptionHandler.Thrower.throwIf(
+                !course.getTaskIds().remove(taskId),
+                new ResourceNotFoundException("Task not found in the course!"));
+
         courseRepository.save(course);
         return CourseMapper.mapToDto(course);
     }
@@ -136,7 +143,6 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<TaskDto> getAllTaskFromCourse(Long courseId, String username) {
         Course course = getCourseById(courseId);
-        validateCourseModificationPermission(course, username);
 
         List<Long> courseIds = new ArrayList<>(course.getTaskIds());
         return taskService.getTasksByIds(courseIds, username);
@@ -153,12 +159,10 @@ public class CourseServiceImpl implements CourseService {
     private void validateCourseModificationPermission(Course course, String username) {
         UserDto userDto = userService.getUserProfile(username);
         boolean isAdmin = validateRole(userDto, List.of(ADMIN));
-        boolean isTeacher = validateRole(userDto, List.of(TEACHER));
 
-        if (!isAdmin && (!isTeacher || !course.getCreatedBy().equals(userDto.getId()))) {
-            throw new UserHasNotPermissionException("You do not have permission to modify this course.");
-        }
+        GlobalExceptionHandler.Thrower.throwIf((!isAdmin && !course.getCreatedBy().equals(userDto.getId())),new UserHasNotPermissionException("You do not have permission to modify this course."));
     }
+
     private Course getCourseById(Long id){
         return courseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));

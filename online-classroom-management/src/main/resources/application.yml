@@ -50,4 +50,19 @@ jwt:
 
 opencv:
   apikey: ${OPENCV_APIKEY}
-  
+
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /api/user/swagger-ui.html
+    try-it-out-enabled: true
+  api-docs:
+    path: /api/user/v3/api-docs
+  default-produces-media-type: application/json
+  show-actuator: false
+  use-management-port: false
+  remove-broken-reference-definitions: true
+  override-with-gateway-url: true
+  server:
+    url: http://localhost:5000

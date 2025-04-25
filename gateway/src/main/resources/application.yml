@@ -55,3 +55,19 @@ eureka:
 
 jwt:
   secret: ${JWT_SECRET}
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: USER-MICROSERVICE
+        url: /api/user/v3/api-docs
+      - name: CLASSROOM-MICROSERVICE
+        url: /api/v1/private/classroom/v3/api-docs
+      - name: COURSE-MICROSERVICE
+        url: /api/v1/private/course/v3/api-docs
+      - name: TASK-MICROSERVICE
+        url: /api/v1/private/task/v3/api-docs
+      - name: TASK-SUBMISSION-MICROSERVICE
+        url: /api/v1/private/submission/v3/api-docs
+  api-docs:
+    path: /v3/api-docs

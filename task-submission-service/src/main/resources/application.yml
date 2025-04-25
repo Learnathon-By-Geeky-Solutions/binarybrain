@@ -1,11 +1,6 @@
 server:
   port: 5005
 
-user-service:
-  url: http://userservice:5001/
-task-service:
-  url: http://taskservice:5004/
-
 spring:
   application:
     name: TASK-SUBMISSION-MICROSERVICE
@@ -22,8 +17,8 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 7MB
-      max-request-size: 7MB
+      max-file-size: 1MB
+      max-request-size: 1MB
 
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://${SPRING_DATASOURCE_HOSTNAME}/OCM_submission}
@@ -43,3 +38,18 @@ eureka:
     register-with-eureka: true
     serviceUrl:
       defaultZone: ${EUREKA_SERVER_URL:http://localhost:8070/eureka/}
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /api/v1/private/submission/swagger-ui.html
+    try-it-out-enabled: true
+  api-docs:
+    path: /api/v1/private/submission/v3/api-docs
+  default-produces-media-type: application/json
+  show-actuator: false
+  use-management-port: false
+  remove-broken-reference-definitions: true
+  override-with-gateway-url: true
+  server:
+    url: http://localhost:5000

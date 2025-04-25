@@ -19,6 +19,8 @@ import java.util.Optional;
 @Service
 public class TaskServiceImpl implements TaskService {
 
+    private static final String ADMIN = "ADMIN";
+    private static final String TEACHER = "TEACHER";
     private final TaskRepository taskRepository;
     private final UserService userService;
 
@@ -36,9 +38,15 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskDto createTask(TaskDto taskDto, String username) {
         LocalDateTime deadline = taskDto.getDeadline();
-        GlobalExceptionHandler.Thrower.throwIf(deadline.isBefore(LocalDateTime.now()),new IllegalArgumentException("Deadline must be in the future"));
+        GlobalExceptionHandler.Thrower.throwIf(
+                deadline.isBefore(LocalDateTime.now()),
+                new IllegalArgumentException("Deadline must be in the future"));
+
         UserDto userDto = userService.getUserProfile(username);
-        GlobalExceptionHandler.Thrower.throwIf(!validateRole(userDto, List.of("TEACHER")),new UserHasNotPermissionException("Only TEACHER can create assignment!"));
+        GlobalExceptionHandler.Thrower.throwIf(
+                !validateRole(userDto, List.of(TEACHER)),
+                new UserHasNotPermissionException("Only TEACHER can create assignment!"));
+
         Long teacherId = userDto.getId();
         Task task = TaskMapper.toTask(taskDto);
         task.setTeacherId(teacherId);
@@ -68,7 +76,11 @@ public class TaskServiceImpl implements TaskService {
     }
     @Override
     public List<TaskDto> getAllTaskByTeacherId(Long id, String username) {
-        userService.getUserProfile(username);
+        UserDto userDto = userService.getUserProfile(username);
+        boolean isAdmin = validateRole(userDto, List.of(ADMIN));
+        GlobalExceptionHandler.Thrower.throwIf(
+                (!isAdmin && !userDto.getId().equals(id)),
+                new UserHasNotPermissionException("You do not have permission to search another teacher's assignment!"));
         List<Task> taskList = taskRepository.findByTeacherId(id);
         return taskList.stream()
                 .map(TaskMapper::toTaskDto)
@@ -121,8 +133,10 @@ public class TaskServiceImpl implements TaskService {
     }
     private void validateTaskModificationPermission(TaskDto taskDto, String username) {
         UserDto userDto = userService.getUserProfile(username);
-        boolean isTeacher = validateRole(userDto, List.of("TEACHER"));
+        boolean isAdmin = validateRole(userDto, List.of(ADMIN));
 
-        GlobalExceptionHandler.Thrower.throwIf((!isTeacher || !taskDto.getTeacherId().equals(userDto.getId())),new UserHasNotPermissionException("You do not have permission to modify this task."));
+        GlobalExceptionHandler.Thrower.throwIf(
+                (!isAdmin && !taskDto.getTeacherId().equals(userDto.getId())),
+                new UserHasNotPermissionException("You do not have permission to modify this task."));
     }
 }

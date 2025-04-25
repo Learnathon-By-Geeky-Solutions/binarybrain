@@ -210,6 +210,7 @@ class SubmissionServiceImplTest {
 
     @Test
     void updateSubmissionByTaskId_ShouldUpdateSubmission() {
+        when(userService.getUserProfile("student")).thenReturn(student);
         when(submissionRepo.findByTaskIdAndSubmittedBy(1L, "student")).thenReturn(Optional.of(submission));
         when(fileHandlerService.uploadFile(file)).thenReturn("new-file.pdf");
         when(submissionRepo.save(any(Submission.class))).thenReturn(submission);
@@ -223,6 +224,7 @@ class SubmissionServiceImplTest {
 
     @Test
     void deleteFileByTaskId_ShouldRemoveFile() {
+        when(userService.getUserProfile("student")).thenReturn(student);
         when(submissionRepo.findByTaskIdAndSubmittedBy(1L, "student")).thenReturn(Optional.of(submission));
         when(submissionRepo.save(any(Submission.class))).thenReturn(submission);
 

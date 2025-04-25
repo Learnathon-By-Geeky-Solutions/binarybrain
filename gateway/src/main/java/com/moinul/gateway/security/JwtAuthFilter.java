@@ -30,7 +30,9 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
             String path = request.getPath().toString();
             if(path.equals("/api/user/login") ||
                     path.equals("/api/user/register") ||
-                    path.equals("/api/user/refresh")){
+                    path.equals("/api/user/refresh") ||
+                    path.contains("/v3/api-docs") ||
+                    path.contains("/swagger-ui")){
                 return chain.filter(exchange);
             }
 

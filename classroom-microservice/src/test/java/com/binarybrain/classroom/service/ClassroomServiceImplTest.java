@@ -1,5 +1,6 @@
 package com.binarybrain.classroom.service;
 
+import com.binarybrain.classroom.dto.ClassroomDto;
 import com.binarybrain.classroom.dto.CourseDto;
 import com.binarybrain.classroom.dto.RoleDto;
 import com.binarybrain.classroom.dto.UserDto;
@@ -40,14 +41,18 @@ class ClassroomServiceImplTest {
     private ClassroomserviceImpl classroomService;
 
     private UserDto teacher;
+
+    private UserDto teacher2;
     private UserDto admin;
     private UserDto student;
     private Classroom classroom;
+    private ClassroomDto classroomDto;
     private CourseDto course;
 
     @BeforeEach
     void setUp() {
         teacher = createUserDto(1L, "teacher", "TEACHER");
+        teacher2 = createUserDto(2L, "teacher2", "TEACHER");
         admin = createUserDto(2L, "admin", "ADMIN");
         student = createUserDto(3L, "student", "STUDENT");
 
@@ -57,6 +62,10 @@ class ClassroomServiceImplTest {
         classroom.setTeacherId(1L);
         classroom.setStudentIds(new HashSet<>());
         classroom.setCourseIds(new HashSet<>());
+
+        classroomDto = new ClassroomDto();
+        classroomDto.setTitle("Test Classroom");
+        classroomDto.setDescription("Test Classroom description");
 
         course = new CourseDto();
         course.setId(1L);
@@ -78,11 +87,10 @@ class ClassroomServiceImplTest {
     void createClassroom_WhenUserIsTeacher_ShouldCreateClassroom() {
         when(userService.getUserProfile("teacher")).thenReturn(teacher);
         when(classroomRepository.save(any(Classroom.class))).thenReturn(classroom);
-        Classroom result = classroomService.createClassroom(classroom, "teacher");
+        Classroom result = classroomService.createClassroom(classroomDto, "teacher");
 
         assertNotNull(result);
         assertEquals(1L, result.getTeacherId());
-        assertNotNull(result.getStartDate());
         verify(classroomRepository).save(any(Classroom.class));
     }
 
@@ -91,7 +99,7 @@ class ClassroomServiceImplTest {
         when(userService.getUserProfile("admin")).thenReturn(admin);
         when(classroomRepository.save(any(Classroom.class))).thenReturn(classroom);
 
-        Classroom result = classroomService.createClassroom(classroom, "admin");
+        Classroom result = classroomService.createClassroom(classroomDto, "admin");
 
         assertNotNull(result);
         verify(classroomRepository).save(any(Classroom.class));
@@ -101,12 +109,11 @@ class ClassroomServiceImplTest {
     void createClassroom_WhenUserIsStudent_ShouldThrowException() {
         when(userService.getUserProfile("student")).thenReturn(student);
 
-        assertThrows(UserHasNotPermissionException.class, () -> classroomService.createClassroom(classroom, "student"));
+        assertThrows(UserHasNotPermissionException.class, () -> classroomService.createClassroom(classroomDto, "student"));
     }
 
     @Test
-    void getClassroomById_WhenUserHasPermission_ShouldReturnClassroom() {
-        when(userService.getUserProfile("teacher")).thenReturn(teacher);
+    void getClassroomById_ShouldReturnClassroom() {
         when(classroomRepository.findById(1L)).thenReturn(Optional.of(classroom));
 
         Classroom result = classroomService.getClassroomById(1L, "teacher");
@@ -116,15 +123,7 @@ class ClassroomServiceImplTest {
     }
 
     @Test
-    void getClassroomById_WhenUserIsNotTeacherOrAdmin_ShouldThrowException() {
-        when(userService.getUserProfile("student")).thenReturn(student);
-
-        assertThrows(UserHasNotPermissionException.class, () -> classroomService.getClassroomById(3L, "student"));
-    }
-
-    @Test
     void getClassroomById_WhenClassroomNotFound_ShouldThrowException() {
-        when(userService.getUserProfile("teacher")).thenReturn(teacher);
         when(classroomRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> classroomService.getClassroomById(1L, "teacher"));
@@ -145,7 +144,19 @@ class ClassroomServiceImplTest {
     void getAllClassroomByTeacherId_WhenUserIsNotTeacherOrAdmin_ShouldThrowException() {
         when(userService.getUserProfile("student")).thenReturn(student);
 
-        assertThrows(UserHasNotPermissionException.class, () -> classroomService.getAllClassroomByTeacherId(3L, "student"));
+        assertThrows(UserHasNotPermissionException.class, () -> classroomService.getAllClassroomByTeacherId(1L, "student"));
+    }
+
+    @Test
+    void getAllClassroomByTeacherId_ShouldThrowException_WhenTeacherAccessesOtherTeachersClassroom() {
+        when(userService.getUserProfile("teacher2")).thenReturn(teacher2);
+
+        UserHasNotPermissionException exception = assertThrows(
+                UserHasNotPermissionException.class,
+                () -> classroomService.getAllClassroomByTeacherId(1L, "teacher2")
+        );
+
+        assertEquals("Only Admin or corresponding Teacher can get classroom list.", exception.getMessage());
     }
 
     @Test
@@ -301,7 +312,6 @@ class ClassroomServiceImplTest {
     @Test
     void getAllCourseInClassroom_ShouldReturnCourses() {
         classroom.getCourseIds().add(1L);
-        when(userService.getUserProfile("teacher")).thenReturn(teacher);
         when(classroomRepository.findById(1L)).thenReturn(Optional.of(classroom));
         when(courseService.getCoursesByIds(Collections.singletonList(1L), "teacher"))
                 .thenReturn(Collections.singletonList(course));
@@ -315,10 +325,10 @@ class ClassroomServiceImplTest {
     @Test
     void validateRole_ShouldReturnTrueForMatchingRole() {
         when(userService.getUserProfile("teacher")).thenReturn(teacher);
-        when(classroomRepository.findById(any())).thenReturn(Optional.of(new Classroom()));
+        when(classroomRepository.findById(1L)).thenReturn(Optional.of(classroom));
 
         assertDoesNotThrow(() -> {
-            classroomService.getClassroomById(1L, "teacher");
+            classroomService.deleteClassroom(1L, "teacher");
         });
     }
 }

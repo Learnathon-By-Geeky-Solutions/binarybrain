@@ -1,5 +1,6 @@
 package com.binarybrain.classroom.service;
 
+import com.binarybrain.classroom.dto.ClassroomDto;
 import com.binarybrain.classroom.dto.CourseDto;
 import com.binarybrain.classroom.model.Classroom;
 import org.springframework.stereotype.Service;
@@ -9,7 +10,7 @@ import java.util.List;
 @Service
 public interface ClassroomService {
 
-    Classroom createClassroom(Classroom classroom, String username);
+    Classroom createClassroom(ClassroomDto classroomDto, String username);
 
     Classroom getClassroomById(Long id, String username);
     List<Classroom> getAllClassroomByTeacherId(Long id, String username);

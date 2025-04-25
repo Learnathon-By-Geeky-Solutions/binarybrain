@@ -55,6 +55,7 @@ class SubmissionControllerTest {
 
     @MockitoBean
     private FileHandlerService fileHandlerService;
+    private UserDto userDto;
 
     /**
      * Creates a Submission object with specified parameters.
@@ -66,13 +67,14 @@ class SubmissionControllerTest {
      * @param status          the submission status
      * @return a configured Submission object
      */
-    private Submission createSubmission(Long id, Long taskId, String link, String username, SubmissionStatus status) {
+    private Submission createSubmission(Long id, Long taskId, String link, String username, SubmissionStatus status, Long studentId) {
         Submission submission = new Submission();
         submission.setId(id);
         submission.setTaskId(taskId);
         submission.setGithubLink(link);
         submission.setSubmittedBy(username);
         submission.setSubmissionStatus(status);
+        submission.setStudentId(studentId);
         return submission;
     }
 
@@ -95,7 +97,8 @@ class SubmissionControllerTest {
      */
     @BeforeEach
     void setUp() {
-        UserDto userDto = new UserDto();
+        userDto = new UserDto();
+        userDto.setId(1L);
         userDto.setUsername("moinul");
         userDto.setFirstName("Moinul");
         userDto.setLastName("Islam");
@@ -168,7 +171,7 @@ class SubmissionControllerTest {
      */
     @Test
     void testGetSubmissionById() throws Exception {
-        Submission submission = createSubmission(1L, 1L, "https://iishanto.com", "moinul", SubmissionStatus.PENDING);
+        Submission submission = createSubmission(1L, 1L, "https://iishanto.com", "moinul", SubmissionStatus.PENDING, 1L);
         when(submissionRepo.findById(1L)).thenReturn(Optional.of(submission));
 
         mockMvc.perform(get("/api/v1/private/submission/1"))
@@ -185,7 +188,7 @@ class SubmissionControllerTest {
      */
     @Test
     void testGetAllSubmissionsFromTask() throws Exception {
-        Submission submission = createSubmission(1L, 1L, "https://iishanto.com", "moinul", SubmissionStatus.PENDING);
+        Submission submission = createSubmission(1L, 1L, "https://iishanto.com", "moinul", SubmissionStatus.PENDING, 1L);
         when(submissionRepo.findByTaskId(1L)).thenReturn(java.util.List.of(submission));
 
         mockMvc.perform(get("/api/v1/private/submission/1/from-task"))
@@ -202,7 +205,7 @@ class SubmissionControllerTest {
      */
     @Test
     void testGetSubmissionByTaskIdAndUsername() throws Exception {
-        Submission submission = createSubmission(1L, 1L, "https://iishanto.com", "moinul", SubmissionStatus.PENDING);
+        Submission submission = createSubmission(1L, 1L, "https://iishanto.com", "moinul", SubmissionStatus.PENDING, 1L);
         when(submissionRepo.findByTaskIdAndSubmittedBy(1L, "moinul")).thenReturn(Optional.of(submission));
 
         mockMvc.perform(get("/api/v1/private/submission/1/user-submission")
@@ -296,7 +299,7 @@ class SubmissionControllerTest {
      */
     @Test
     void testAcceptOrRejectSubmission() throws Exception {
-        Submission submission = createSubmission(1L, 1L, "https://iishanto.com", "moinul", SubmissionStatus.PENDING);
+        Submission submission = createSubmission(1L, 1L, "https://iishanto.com", "moinul", SubmissionStatus.PENDING, 1L);
         when(submissionRepo.findById(1L)).thenReturn(Optional.of(submission));
 
         mockMvc.perform(put("/api/v1/private/submission/review/1")
@@ -314,9 +317,10 @@ class SubmissionControllerTest {
      */
     @Test
     void testUpdateSubmissionByTaskId() throws Exception {
-        Submission submission = createSubmission(1L, 1L, "https://iishanto.com", "moinul", SubmissionStatus.PENDING);
-        when(submissionRepo.findByTaskIdAndSubmittedBy(1L, "moinul")).thenReturn(Optional.of(submission));
+        Submission submission = createSubmission(1L, 1L, "https://iishanto.com", "moinul", SubmissionStatus.PENDING, 1L);
 
+        when(submissionRepo.findByTaskIdAndSubmittedBy(1L, "moinul")).thenReturn(Optional.of(submission));
+        when(userService.getUserProfile("moinul")).thenReturn(userDto);
         MockMultipartFile file = new MockMultipartFile("file", "test.pdf",
                 MediaType.APPLICATION_PDF_VALUE, "Test content".getBytes());
         when(fileHandlerService.uploadFile(file)).thenReturn("test.pdf");
@@ -344,7 +348,7 @@ class SubmissionControllerTest {
     @Test
     void testDeleteFileByTaskId() throws Exception {
         doNothing().when(fileHandlerService).deleteFile(any());
-        Submission submission = createSubmission(1L, 1L, "https://iishanto.com", "moinul", SubmissionStatus.PENDING);
+        Submission submission = createSubmission(1L, 1L, "https://iishanto.com", "moinul", SubmissionStatus.PENDING, 1L);
         when(submissionRepo.findByTaskIdAndSubmittedBy(1L, "moinul")).thenReturn(Optional.of(submission));
 
         mockMvc.perform(delete("/api/v1/private/submission/1")

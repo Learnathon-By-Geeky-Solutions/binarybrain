@@ -1,9 +1,6 @@
 server:
   port: 5004
 
-user-service:
-  url: http://userservice:5001/
-
 spring:
   application:
     name: TASK-MICROSERVICE
@@ -34,3 +31,20 @@ eureka:
 
 jwt:
   secret: ${JWT_SECRET}
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /api/v1/private/task/swagger-ui.html
+    try-it-out-enabled: true
+  api-docs:
+    path: /api/v1/private/task/v3/api-docs
+  default-produces-media-type: application/json
+  show-actuator: false
+  use-management-port: false
+  remove-broken-reference-definitions: true
+  override-with-gateway-url: true
+  server:
+    url: http://localhost:5000
+
+
