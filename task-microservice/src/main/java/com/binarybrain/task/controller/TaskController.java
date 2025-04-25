@@ -30,13 +30,13 @@ public class TaskController {
     @Operation(
             summary = "Create Assignment",
             tags = {"01 - Creation"},
-            description = "Only TEACHER and ADMIN can create Course.",
+            description = "Only TEACHER can create assignment in a course.",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Task created successfully",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = Task.class))),
                     @ApiResponse(responseCode = "401", description = "Unauthorized: Invalid or Expired JWT token.",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class))),
-                    @ApiResponse(responseCode = "403", description = "You don't have permission to create course! User with role ADMIN, TEACHER can have permission to create Task.",
+                    @ApiResponse(responseCode = "403", description = "You don't have permission to create course!",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class)))
             },
             security = @SecurityRequirement(name = "bearerToken")
@@ -73,7 +73,7 @@ public class TaskController {
     @Operation(
             summary = "Search all tasks, optionally filtered by status",
             tags = {"02 - Search Task"},
-            description = "Returns list of all tasks. If `TaskStatus` is given then return task list filtered by status. ",
+            description = "Returns list of all tasks. If `TaskStatus` is given then return task list filtered by status.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Tasks retrieved Successfully.",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = Task.class))),
@@ -135,7 +135,7 @@ public class TaskController {
 
     @Operation(
             summary = "Close Task",
-            description = "TaskStatus will be changed to `CLOSED`.",
+            description = "TaskStatus will be changed to `CLOSED`. Only Admin & corresponding Course Teacher can do this.",
             tags = {"03 - Manage Task"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Courses retrieved successfully.",

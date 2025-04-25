@@ -55,7 +55,7 @@ public class ClassroomController {
             summary = "Search Classroom by id",
             tags = {"02 - Search Classroom"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Classroom found with given id.",
+                    @ApiResponse(responseCode = "200", description = "Classroom found with given id. (ADMIN & TEACHER)",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = Classroom.class))),
                     @ApiResponse(responseCode = "401", description = "Unauthorized: Invalid or Expired JWT token.",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class))),

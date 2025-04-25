@@ -5,6 +5,7 @@ import com.binarybrain.classroom.model.Classroom;
 import com.binarybrain.classroom.repo.ClassroomRepository;
 import com.binarybrain.classroom.service.*;
 import com.binarybrain.exception.*;
+import com.binarybrain.exception.global.GlobalExceptionHandler;
 import feign.FeignException;
 import org.springframework.stereotype.Service;
 
@@ -59,12 +60,9 @@ public class ClassroomserviceImpl implements ClassroomService {
     @Override
     public List<Classroom> getAllClassroomByTeacherId(Long id, String username) {
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
-            throw new UserHasNotPermissionException("Only teacher or admin can manage classroom!");
-        }
-        if (!userDto.getId().equals(id)) {
-            throw new UserHasNotPermissionException("Only Admin or corresponding Teacher can get classroom list.");
-        }
+        boolean isAdmin = validateRole(userDto, List.of(ADMIN));
+        GlobalExceptionHandler.Thrower.throwIf((!isAdmin && !userDto.getId().equals(id)),new UserHasNotPermissionException("Only Admin or corresponding Teacher can get classroom list."));
+
         return classroomRepository.findByTeacherId(id);
     }
 
@@ -82,11 +80,11 @@ public class ClassroomserviceImpl implements ClassroomService {
         try {
             Classroom classroom = getClassroomById(classroomId, username);
             validateClassroomModificationPermission(classroom, username);
-            UserDto student = userService.getUserProfileById(studentId, username);
+            UserDto studentDto = userService.getUserProfileById(studentId, username);
 
-            if (!validateRole(student, List.of("STUDENT"))) {
-                throw new UserHasNotPermissionException("Only students can be added to the classroom!");
-            }
+            boolean isStudent = validateRole(studentDto, List.of("STUDENT"));
+            GlobalExceptionHandler.Thrower.throwIf((!isStudent),new UserHasNotPermissionException("Only students can be added to the classroom!"));
+
             if (classroom.getStudentIds().contains(studentId)) {
                 throw new AlreadyExistsException("Student is already in the classroom!");
             }
@@ -169,10 +167,7 @@ public class ClassroomserviceImpl implements ClassroomService {
     private void validateClassroomModificationPermission(Classroom classroom, String jwt) {
         UserDto userDto = userService.getUserProfile(jwt);
         boolean isAdmin = validateRole(userDto, List.of(ADMIN));
-        boolean isTeacher = validateRole(userDto, List.of(TEACHER));
 
-        if (!isAdmin && (!isTeacher || !classroom.getTeacherId().equals(userDto.getId()))) {
-            throw new UserHasNotPermissionException("You do not have permission to modify this classroom.");
-        }
+        GlobalExceptionHandler.Thrower.throwIf((!isAdmin && !classroom.getTeacherId().equals(userDto.getId())),new UserHasNotPermissionException("You do not have permission to modify this classroom."));
     }
 }

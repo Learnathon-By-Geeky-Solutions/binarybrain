@@ -6,6 +6,7 @@ import com.binarybrain.course.model.Course;
 import com.binarybrain.course.repo.CourseRepository;
 import com.binarybrain.course.service.*;
 import com.binarybrain.exception.*;
+import com.binarybrain.exception.global.GlobalExceptionHandler;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -62,15 +63,15 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<CourseDto> getAllCourseByAuthorId(Long id, String username) {
+    public List<CourseDto> getAllCourseByAuthorId(Long authorId, String username) {
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
-            throw new UserHasNotPermissionException("Only ADMIN & TEACHER can get corresponding courses list!");
-        }
-        if (!userDto.getId().equals(id)) {
+        boolean isAdmin = validateRole(userDto, List.of(ADMIN));
+        GlobalExceptionHandler.Thrower.throwIf((!isAdmin && !userDto.getId().equals(authorId)),new UserHasNotPermissionException("Only ADMIN & TEACHER can get corresponding courses list!"));
+
+        if (!userDto.getId().equals(authorId)) {
             throw new UserHasNotPermissionException("Only Admin or corresponding Teacher can get course list.");
         }
-        List<Course> courseList = courseRepository.findByCreatedBy(id);
+        List<Course> courseList = courseRepository.findByCreatedBy(authorId);
         return courseList.stream()
                 .map(CourseMapper::mapToDto)
                 .toList();
@@ -79,9 +80,9 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<CourseDto> getAllCourse(String username) {
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, List.of(ADMIN))){
-            throw new UserHasNotPermissionException("Only ADMIN can get all course list!");
-        }
+        boolean isAdmin = validateRole(userDto, List.of(ADMIN));
+        GlobalExceptionHandler.Thrower.throwIf((!isAdmin),new UserHasNotPermissionException("Only ADMIN can get all course list!"));
+
         List<Course> courseList = courseRepository.findAll();
         return courseList.stream()
                 .map(CourseMapper::mapToDto)
@@ -155,12 +156,10 @@ public class CourseServiceImpl implements CourseService {
     private void validateCourseModificationPermission(Course course, String username) {
         UserDto userDto = userService.getUserProfile(username);
         boolean isAdmin = validateRole(userDto, List.of(ADMIN));
-        boolean isTeacher = validateRole(userDto, List.of(TEACHER));
 
-        if (!isAdmin && (!isTeacher || !course.getCreatedBy().equals(userDto.getId()))) {
-            throw new UserHasNotPermissionException("You do not have permission to modify this course.");
-        }
+        GlobalExceptionHandler.Thrower.throwIf((!isAdmin && !course.getCreatedBy().equals(userDto.getId())),new UserHasNotPermissionException("You do not have permission to modify this course."));
     }
+
     private Course getCourseById(Long id){
         return courseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
