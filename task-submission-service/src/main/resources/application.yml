@@ -21,9 +21,10 @@ spring:
       max-request-size: 1MB
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/OCM_submission}
-    username: root
-    password:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://${SPRING_DATASOURCE_HOSTNAME}/OCM_submission}
+
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 file:

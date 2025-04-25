@@ -15,9 +15,9 @@ spring:
         format_sql: true
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/OCM_task}
-    username: root
-    password:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://${SPRING_DATASOURCE_HOSTNAME}/OCM_task}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 eureka:
@@ -28,6 +28,9 @@ eureka:
     register-with-eureka: true
     serviceUrl:
       defaultZone: ${EUREKA_SERVER_URL:http://localhost:8070/eureka/}
+
+jwt:
+  secret: ${JWT_SECRET}
 
 springdoc:
   swagger-ui:

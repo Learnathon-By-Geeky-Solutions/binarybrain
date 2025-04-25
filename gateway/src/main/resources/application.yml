@@ -5,8 +5,6 @@ spring:
   application:
     name: GATEWAY-SERVICE
 
-  config:
-    import: optional:classpath:secret.properties
 
   cloud:
     gateway:
@@ -55,6 +53,8 @@ eureka:
     serviceUrl:
       defaultZone: ${EUREKA_SERVER_URL:http://localhost:8070/eureka/}
 
+jwt:
+  secret: ${JWT_SECRET}
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
