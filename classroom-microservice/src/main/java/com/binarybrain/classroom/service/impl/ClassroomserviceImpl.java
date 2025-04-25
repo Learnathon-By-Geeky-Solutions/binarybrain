@@ -36,9 +36,11 @@ public class ClassroomserviceImpl implements ClassroomService {
     public Classroom createClassroom(ClassroomDto classroomDto, String username) {
 
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
-            throw new UserHasNotPermissionException("Only teacher or admin can create classroom!");
-        }
+        boolean isAdminOrTeacher = validateRole(userDto, List.of(ADMIN, TEACHER));
+        GlobalExceptionHandler.Thrower.throwIf(
+                !isAdminOrTeacher,
+                new UserHasNotPermissionException("Only teacher or admin can create classroom!"));
+
         Classroom classroom = new Classroom();
         classroom.setTitle(classroomDto.getTitle());
         classroom.setDescription(classroomDto.getDescription());
@@ -50,18 +52,17 @@ public class ClassroomserviceImpl implements ClassroomService {
 
     @Override
     public Classroom getClassroomById(Long id, String username) {
-        UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, Arrays.asList(TEACHER, ADMIN))){
-            throw new UserHasNotPermissionException("Only teacher or admin can manage classroom!");
-        }
-        return classroomRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Classroom not found with id: " + id));
+        return classroomRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Classroom not found with id: " + id));
     }
 
     @Override
     public List<Classroom> getAllClassroomByTeacherId(Long id, String username) {
         UserDto userDto = userService.getUserProfile(username);
         boolean isAdmin = validateRole(userDto, List.of(ADMIN));
-        GlobalExceptionHandler.Thrower.throwIf((!isAdmin && !userDto.getId().equals(id)),new UserHasNotPermissionException("Only Admin or corresponding Teacher can get classroom list."));
+        GlobalExceptionHandler.Thrower.throwIf(
+                (!isAdmin && !userDto.getId().equals(id)),
+                new UserHasNotPermissionException("Only Admin or corresponding Teacher can get classroom list."));
 
         return classroomRepository.findByTeacherId(id);
     }
@@ -83,11 +84,13 @@ public class ClassroomserviceImpl implements ClassroomService {
             UserDto studentDto = userService.getUserProfileById(studentId, username);
 
             boolean isStudent = validateRole(studentDto, List.of("STUDENT"));
-            GlobalExceptionHandler.Thrower.throwIf((!isStudent),new UserHasNotPermissionException("Only students can be added to the classroom!"));
+            GlobalExceptionHandler.Thrower.throwIf(
+                    !isStudent,
+                    new UserHasNotPermissionException("Only students can be added to the classroom!"));
+            GlobalExceptionHandler.Thrower.throwIf(
+                    classroom.getStudentIds().contains(studentId),
+                    new AlreadyExistsException("Student is already in the classroom!"));
 
-            if (classroom.getStudentIds().contains(studentId)) {
-                throw new AlreadyExistsException("Student is already in the classroom!");
-            }
             Set<Long> studentIds = new HashSet<>(Set.copyOf(classroom.getStudentIds()));
             studentIds.add(studentId);
             classroom.setStudentIds(studentIds);
@@ -104,9 +107,10 @@ public class ClassroomserviceImpl implements ClassroomService {
             Classroom classroom = getClassroomById(classroomId, username);
             validateClassroomModificationPermission(classroom, username);
 
-            if (!classroom.getStudentIds().contains(studentId)) {
-                throw new ResourceNotFoundException("Student not found in the classroom!");
-            }
+            GlobalExceptionHandler.Thrower.throwIf(
+                    !classroom.getStudentIds().contains(studentId),
+                    new ResourceNotFoundException("Student not found in the classroom!"));
+
             Set<Long> studentIds = new HashSet<>(Set.copyOf(classroom.getStudentIds()));
             studentIds.remove(studentId);
             classroom.setStudentIds(studentIds);
@@ -128,9 +132,10 @@ public class ClassroomserviceImpl implements ClassroomService {
         validateClassroomModificationPermission(classroom, username);
 
         courseService.getCourseById(courseId, username);
-        if (classroom.getCourseIds().contains(courseId)) {
-            throw new AlreadyExistsException("Course is already assigned to this classroom.");
-        }
+        GlobalExceptionHandler.Thrower.throwIf(
+                classroom.getCourseIds().contains(courseId),
+                new AlreadyExistsException("Course is already assigned to this classroom."));
+
         classroom.getCourseIds().add(courseId);
 
         return classroomRepository.save(classroom);
@@ -142,9 +147,10 @@ public class ClassroomserviceImpl implements ClassroomService {
             Classroom classroom = getClassroomById(classroomId, username);
             validateClassroomModificationPermission(classroom, username);
 
-            if (!classroom.getCourseIds().contains(courseId)) {
-                throw new ResourceNotFoundException("This Course is not added in this classroom!");
-            }
+            GlobalExceptionHandler.Thrower.throwIf(
+                    !classroom.getCourseIds().contains(courseId),
+                    new ResourceNotFoundException("This Course is not added in this classroom!"));
+
             Set<Long> courseIds = new HashSet<>(Set.copyOf(classroom.getCourseIds()));
             courseIds.remove(courseId);
             classroom.setCourseIds(courseIds);

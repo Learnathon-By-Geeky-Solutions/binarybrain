@@ -113,8 +113,7 @@ class ClassroomServiceImplTest {
     }
 
     @Test
-    void getClassroomById_WhenUserHasPermission_ShouldReturnClassroom() {
-        when(userService.getUserProfile("teacher")).thenReturn(teacher);
+    void getClassroomById_ShouldReturnClassroom() {
         when(classroomRepository.findById(1L)).thenReturn(Optional.of(classroom));
 
         Classroom result = classroomService.getClassroomById(1L, "teacher");
@@ -124,15 +123,7 @@ class ClassroomServiceImplTest {
     }
 
     @Test
-    void getClassroomById_WhenUserIsNotTeacherOrAdmin_ShouldThrowException() {
-        when(userService.getUserProfile("student")).thenReturn(student);
-
-        assertThrows(UserHasNotPermissionException.class, () -> classroomService.getClassroomById(3L, "student"));
-    }
-
-    @Test
     void getClassroomById_WhenClassroomNotFound_ShouldThrowException() {
-        when(userService.getUserProfile("teacher")).thenReturn(teacher);
         when(classroomRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> classroomService.getClassroomById(1L, "teacher"));
@@ -153,7 +144,7 @@ class ClassroomServiceImplTest {
     void getAllClassroomByTeacherId_WhenUserIsNotTeacherOrAdmin_ShouldThrowException() {
         when(userService.getUserProfile("student")).thenReturn(student);
 
-        assertThrows(UserHasNotPermissionException.class, () -> classroomService.getAllClassroomByTeacherId(3L, "student"));
+        assertThrows(UserHasNotPermissionException.class, () -> classroomService.getAllClassroomByTeacherId(1L, "student"));
     }
 
     @Test
@@ -321,7 +312,6 @@ class ClassroomServiceImplTest {
     @Test
     void getAllCourseInClassroom_ShouldReturnCourses() {
         classroom.getCourseIds().add(1L);
-        when(userService.getUserProfile("teacher")).thenReturn(teacher);
         when(classroomRepository.findById(1L)).thenReturn(Optional.of(classroom));
         when(courseService.getCoursesByIds(Collections.singletonList(1L), "teacher"))
                 .thenReturn(Collections.singletonList(course));
@@ -335,10 +325,10 @@ class ClassroomServiceImplTest {
     @Test
     void validateRole_ShouldReturnTrueForMatchingRole() {
         when(userService.getUserProfile("teacher")).thenReturn(teacher);
-        when(classroomRepository.findById(any())).thenReturn(Optional.of(new Classroom()));
+        when(classroomRepository.findById(1L)).thenReturn(Optional.of(classroom));
 
         assertDoesNotThrow(() -> {
-            classroomService.getClassroomById(1L, "teacher");
+            classroomService.deleteClassroom(1L, "teacher");
         });
     }
 }

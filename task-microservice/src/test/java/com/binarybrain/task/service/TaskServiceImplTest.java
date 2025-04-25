@@ -189,9 +189,7 @@ class TaskServiceImplTest {
         when(userService.getUserProfile("student")).thenReturn(student);
         when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
 
-        assertThrows(UserHasNotPermissionException.class, () -> {
-            taskService.closeTask(1L, "student");
-        });
+        assertThrows(UserHasNotPermissionException.class, () -> taskService.closeTask(1L, "student"));
     }
 
     @Test

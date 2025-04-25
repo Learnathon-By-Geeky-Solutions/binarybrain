@@ -1,6 +1,7 @@
 package com.binarybrain.submission.service.impl;
 
 import com.binarybrain.exception.*;
+import com.binarybrain.exception.global.GlobalExceptionHandler;
 import com.binarybrain.submission.dto.*;
 import com.binarybrain.submission.mapper.SubmissionMapper;
 import com.binarybrain.submission.model.*;
@@ -39,13 +40,15 @@ public class SubmissionServiceImpl implements SubmissionService {
         if("CLOSED".equals(taskDto.getStatus())){
             throw new ResourceNotFoundException("Task is not OPEN for submission!");
         }
-        UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, List.of("STUDENT")))
-            throw new UserHasNotPermissionException("Only STUDENT can submit task!");
 
-        if(submissionRepo.findByTaskIdAndSubmittedBy(taskId, username).isPresent()){
-            throw new AlreadyExistsException("You have already submitted this task. Multiple submissions are not allowed!");
-        }
+        UserDto userDto = userService.getUserProfile(username);
+        boolean isStudent = validateRole(userDto, List.of("STUDENT"));
+        GlobalExceptionHandler.Thrower.throwIf(
+                !isStudent,
+                new UserHasNotPermissionException("Only STUDENT can submit task!"));
+        GlobalExceptionHandler.Thrower.throwIf(
+                submissionRepo.findByTaskIdAndSubmittedBy(taskId, username).isPresent(),
+                new AlreadyExistsException("You have already submitted this task. Multiple submissions are not allowed!"));
 
         String fileName = fileHandlerService.uploadFile(file);
 
@@ -91,9 +94,12 @@ public class SubmissionServiceImpl implements SubmissionService {
     public SubmissionDto acceptOrRejectSubmission(Long submissionId, SubmissionStatus status, String username){
         Submission submission = submissionRepo.findById(submissionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Submission not found with id: " + submissionId));
+
         UserDto userDto = userService.getUserProfile(username);
-        if (!validateRole(userDto, List.of("TEACHER")))
-            throw new UserHasNotPermissionException("Only TEACHER can accept/reject submission!");
+        boolean isTeacher = validateRole(userDto, List.of("TEACHER"));
+        GlobalExceptionHandler.Thrower.throwIf(
+                !isTeacher,
+                new UserHasNotPermissionException("Only TEACHER can accept/reject submission!"));
 
         submission.setSubmissionStatus(status);
         submissionRepo.save(submission);
@@ -103,6 +109,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public SubmissionDto updateSubmissionByTaskId(Long taskId, MultipartFile file, String githubLink, String username) {
         Submission submission = SubmissionMapper.toSubmission(getSubmissionByTaskIdAndUsername(taskId, username));
+
         deleteFileByTaskId(taskId, username);
         String fileName = fileHandlerService.uploadFile(file);
 
@@ -115,11 +122,15 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public SubmissionDto deleteFileByTaskId(Long taskId, String username) {
         Submission submission = SubmissionMapper.toSubmission(getSubmissionByTaskIdAndUsername(taskId, username));
+        UserDto userDto = userService.getUserProfile(username);
+        GlobalExceptionHandler.Thrower.throwIf(
+                !submission.getStudentId().equals(userDto.getId()),
+                new UserHasNotPermissionException("You can't modify another student's submission!"));
+
         String fileName = submission.getFileUrl();
         fileHandlerService.deleteFile(fileName);
         submission.setFileUrl(null);
         submissionRepo.save(submission);
         return SubmissionMapper.toSubmissionDto(submission);
     }
-
 }

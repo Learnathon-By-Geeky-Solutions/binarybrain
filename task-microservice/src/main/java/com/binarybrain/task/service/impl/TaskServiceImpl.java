@@ -38,10 +38,14 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskDto createTask(TaskDto taskDto, String username) {
         LocalDateTime deadline = taskDto.getDeadline();
-        GlobalExceptionHandler.Thrower.throwIf(deadline.isBefore(LocalDateTime.now()),new IllegalArgumentException("Deadline must be in the future"));
+        GlobalExceptionHandler.Thrower.throwIf(
+                deadline.isBefore(LocalDateTime.now()),
+                new IllegalArgumentException("Deadline must be in the future"));
 
         UserDto userDto = userService.getUserProfile(username);
-        GlobalExceptionHandler.Thrower.throwIf(!validateRole(userDto, List.of(TEACHER)),new UserHasNotPermissionException("Only TEACHER can create assignment!"));
+        GlobalExceptionHandler.Thrower.throwIf(
+                !validateRole(userDto, List.of(TEACHER)),
+                new UserHasNotPermissionException("Only TEACHER can create assignment!"));
 
         Long teacherId = userDto.getId();
         Task task = TaskMapper.toTask(taskDto);
@@ -74,7 +78,9 @@ public class TaskServiceImpl implements TaskService {
     public List<TaskDto> getAllTaskByTeacherId(Long id, String username) {
         UserDto userDto = userService.getUserProfile(username);
         boolean isAdmin = validateRole(userDto, List.of(ADMIN));
-        GlobalExceptionHandler.Thrower.throwIf((!isAdmin && !userDto.getId().equals(id)),new UserHasNotPermissionException("You do not have permission to search another teacher's assignment!"));
+        GlobalExceptionHandler.Thrower.throwIf(
+                (!isAdmin && !userDto.getId().equals(id)),
+                new UserHasNotPermissionException("You do not have permission to search another teacher's assignment!"));
         List<Task> taskList = taskRepository.findByTeacherId(id);
         return taskList.stream()
                 .map(TaskMapper::toTaskDto)
@@ -129,6 +135,8 @@ public class TaskServiceImpl implements TaskService {
         UserDto userDto = userService.getUserProfile(username);
         boolean isAdmin = validateRole(userDto, List.of(ADMIN));
 
-        GlobalExceptionHandler.Thrower.throwIf((!isAdmin && !taskDto.getTeacherId().equals(userDto.getId())),new UserHasNotPermissionException("You do not have permission to modify this task."));
+        GlobalExceptionHandler.Thrower.throwIf(
+                (!isAdmin && !taskDto.getTeacherId().equals(userDto.getId())),
+                new UserHasNotPermissionException("You do not have permission to modify this task."));
     }
 }
