@@ -65,7 +65,7 @@ class ImageSearchServiceTest {
         userImage.setImageBase64(probeBase64);
         userImage.setUsername("john");
 
-        when(userRepository.findAll()).thenReturn(List.of(user));
+        when(userRepository.findAllByProfilePictureNotNull()).thenReturn(List.of(user));
         when(imageRepository.findAll()).thenReturn(List.of(userImage));
 
         JSONObject fakeJson = new JSONObject();
@@ -100,7 +100,7 @@ class ImageSearchServiceTest {
         userImage.setImageBase64(probeBase64);
         userImage.setUsername("john");
 
-        when(userRepository.findAll()).thenReturn(List.of(user));
+        when(userRepository.findAllByProfilePictureNotNull()).thenReturn(List.of(user));
         when(imageRepository.findAll()).thenReturn(List.of(userImage));
 
         JSONObject fakeJson = new JSONObject();
@@ -134,7 +134,7 @@ class ImageSearchServiceTest {
         userImage.setImageBase64(probeBase64);
         userImage.setUsername("john");
 
-        when(userRepository.findAll()).thenReturn(List.of(user));
+        when(userRepository.findAllByProfilePictureNotNull()).thenReturn(List.of(user));
         when(imageRepository.findAll()).thenReturn(List.of(userImage));
 
         JSONObject fakeJson = new JSONObject();
@@ -167,7 +167,7 @@ class ImageSearchServiceTest {
         userImage.setImageBase64(probeBase64);
         userImage.setUsername("john");
 
-        when(userRepository.findAll()).thenReturn(List.of(user));
+        when(userRepository.findAllByProfilePictureNotNull()).thenReturn(List.of(user));
         when(imageRepository.findAll()).thenReturn(List.of(userImage));
 
         JSONObject fakeJson = new JSONObject();
