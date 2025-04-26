@@ -36,12 +36,11 @@ public class ImageSearchService {
 
         HttpHeaders headers = buildHeader();
 
-        List<User> userList = userRepository.findAll().stream().toList();
+        List<User> userList = userRepository.findAllByProfilePictureNotNull();
         List<UserImage> userImageList = getAllUserImage64();
         List<User> predictPersons = new ArrayList<>();
 
         int i=0;
-
 
         for(UserImage userImage: userImageList){
             String dbImage64 = userImage.getImageBase64();
