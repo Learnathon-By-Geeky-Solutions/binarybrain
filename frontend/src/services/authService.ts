@@ -28,6 +28,15 @@ export const authService = {
         return response.data;
     },
 
+    updateProfile: async (id: number, formData: FormData): Promise<User> => {
+        const response = await api.put<User>(`/api/user/profile/${id}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    },
+
     uploadPhoto: async (userId: number, file: File): Promise<string> => {
         const formData = new FormData();
         formData.append('id', userId.toString());

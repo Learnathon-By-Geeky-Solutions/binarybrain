@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import {
@@ -12,10 +12,15 @@ import {
     Typography,
     Avatar,
     Alert,
-    CircularProgress,
+    IconButton,
+    InputAdornment,
     Paper,
 } from '@mui/material';
-import { PhotoCamera } from '@mui/icons-material';
+import {
+    PhotoCamera,
+    Visibility,
+    VisibilityOff,
+} from '@mui/icons-material';
 import { RootState } from '../store';
 import { authService } from '../services/authService';
 
@@ -32,6 +37,25 @@ const Profile: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+
+    const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files?.length) {
+            setSelectedFile(event.target.files[0]);
+        }
+    };
+
+    const updateProfile = async (formData: FormData) => {
+        try {
+            if (user) {
+                await authService.updateProfile(user.id, formData);
+            }
+        } catch (error) {
+            throw error;
+        }
+    };
 
     const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         if (!event.target.files?.length || !user) return;
@@ -115,25 +139,59 @@ const Profile: React.FC = () => {
                                     email: user.email,
                                     currentInstitute: user.currentInstitute || '',
                                     country: user.country || '',
+                                    currentPassword: '',
+                                    newPassword: '',
                                 }}
                                 validationSchema={validationSchema}
                                 onSubmit={async (values, { setSubmitting }) => {
                                     try {
+                                        const formData = new FormData();
+                                        formData.append('firstName', values.firstName);
+                                        formData.append('lastName', values.lastName);
+                                        formData.append('email', values.email);
+                                        formData.append('currentInstitute', values.currentInstitute);
+                                        formData.append('country', values.country);
+                                        if (values.currentPassword) {
+                                            formData.append('currentPassword', values.currentPassword);
+                                            formData.append('newPassword', values.newPassword);
+                                        }
+                                        if (selectedFile) {
+                                            formData.append('profilePicture', selectedFile);
+                                        }
+                                        await updateProfile(formData);
                                         setError(null);
-                                        setSuccess(null);
-                                        // TODO: Implement update profile functionality
                                         setSuccess('Profile updated successfully');
                                     } catch (err) {
+                                        setSuccess(null);
                                         setError('Failed to update profile');
-                                        console.error('Error updating profile:', err);
                                     } finally {
                                         setSubmitting(false);
                                     }
                                 }}
                             >
-                                {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
-                                    <Form onSubmit={handleSubmit}>
+                                {({ values, errors, touched, handleChange, handleBlur }) => (
+                                    <Form>
                                         <Grid container spacing={2}>
+                                            <Grid item xs={12}>
+                                                <Box display="flex" flexDirection="column" alignItems="center">
+                                                    <Avatar
+                                                        src={user.profilePicture || undefined}
+                                                        sx={{ width: 100, height: 100, mb: 2 }}
+                                                    />
+                                                    <input
+                                                        accept="image/*"
+                                                        style={{ display: 'none' }}
+                                                        id="profile-picture"
+                                                        type="file"
+                                                        onChange={handleFileSelect}
+                                                    />
+                                                    <label htmlFor="profile-picture">
+                                                        <Button variant="outlined" component="span">
+                                                            Upload Picture
+                                                        </Button>
+                                                    </label>
+                                                </Box>
+                                            </Grid>
                                             <Grid item xs={12} sm={6}>
                                                 <TextField
                                                     fullWidth
@@ -163,6 +221,7 @@ const Profile: React.FC = () => {
                                                     fullWidth
                                                     name="email"
                                                     label="Email"
+                                                    type="email"
                                                     value={values.email}
                                                     onChange={handleChange}
                                                     onBlur={handleBlur}
@@ -170,7 +229,7 @@ const Profile: React.FC = () => {
                                                     helperText={touched.email && errors.email}
                                                 />
                                             </Grid>
-                                            <Grid item xs={12}>
+                                            <Grid item xs={12} sm={6}>
                                                 <TextField
                                                     fullWidth
                                                     name="currentInstitute"
@@ -182,7 +241,7 @@ const Profile: React.FC = () => {
                                                     helperText={touched.currentInstitute && errors.currentInstitute}
                                                 />
                                             </Grid>
-                                            <Grid item xs={12}>
+                                            <Grid item xs={12} sm={6}>
                                                 <TextField
                                                     fullWidth
                                                     name="country"
@@ -195,21 +254,70 @@ const Profile: React.FC = () => {
                                                 />
                                             </Grid>
                                             <Grid item xs={12}>
-                                                <Button
-                                                    type="submit"
-                                                    variant="contained"
-                                                    disabled={isSubmitting}
-                                                    sx={{ mt: 2 }}
-                                                >
-                                                    {isSubmitting ? (
-                                                        <>
-                                                            <CircularProgress size={24} sx={{ mr: 1 }} />
-                                                            Updating...
-                                                        </>
-                                                    ) : (
-                                                        'Update Profile'
-                                                    )}
-                                                </Button>
+                                                <Typography variant="h6" gutterBottom>
+                                                    Change Password
+                                                </Typography>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    name="currentPassword"
+                                                    label="Current Password"
+                                                    type={showCurrentPassword ? 'text' : 'password'}
+                                                    value={values.currentPassword}
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                    error={touched.currentPassword && !!errors.currentPassword}
+                                                    helperText={touched.currentPassword && errors.currentPassword}
+                                                    InputProps={{
+                                                        endAdornment: (
+                                                            <InputAdornment position="end">
+                                                                <IconButton
+                                                                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                                                    edge="end"
+                                                                >
+                                                                    {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
+                                                                </IconButton>
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    name="newPassword"
+                                                    label="New Password"
+                                                    type={showNewPassword ? 'text' : 'password'}
+                                                    value={values.newPassword}
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                    error={touched.newPassword && !!errors.newPassword}
+                                                    helperText={touched.newPassword && errors.newPassword}
+                                                    InputProps={{
+                                                        endAdornment: (
+                                                            <InputAdornment position="end">
+                                                                <IconButton
+                                                                    onClick={() => setShowNewPassword(!showNewPassword)}
+                                                                    edge="end"
+                                                                >
+                                                                    {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                                                                </IconButton>
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Box display="flex" justifyContent="flex-end">
+                                                    <Button
+                                                        type="submit"
+                                                        variant="contained"
+                                                        color="primary"
+                                                    >
+                                                        Save Changes
+                                                    </Button>
+                                                </Box>
                                             </Grid>
                                         </Grid>
                                     </Form>

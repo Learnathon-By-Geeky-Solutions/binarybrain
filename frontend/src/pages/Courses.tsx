@@ -173,7 +173,7 @@ const Courses: React.FC = () => {
                         loading={loading}
                         autoHeight
                         pagination
-                        disableSelectionOnClick
+                        disableRowSelectionOnClick
                     />
                 </CardContent>
             </Card>

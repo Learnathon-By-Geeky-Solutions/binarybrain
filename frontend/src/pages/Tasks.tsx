@@ -323,7 +323,7 @@ const Tasks: React.FC = () => {
                                 loading={loading}
                                 autoHeight
                                 pagination
-                                disableSelectionOnClick
+                                disableRowSelectionOnClick
                             />
                         </CardContent>
                     </Card>
@@ -448,7 +448,7 @@ const Tasks: React.FC = () => {
                                             onChange={handleChange}
                                             onBlur={handleBlur}
                                             error={touched.courseId && !!errors.courseId}
-                                            helperText={touched.courseId && errors.courseId}
+                                            helperText={touched.courseId && errors.courseId ? String(errors.courseId) : undefined}
                                         >
                                             {courses.map((course) => (
                                                 <MenuItem key={course.id} value={course.id}>
@@ -575,7 +575,10 @@ const Tasks: React.FC = () => {
             <Dialog open={openSubmitDialog} onClose={() => setOpenSubmitDialog(false)}>
                 <DialogTitle>Submit Task</DialogTitle>
                 <Formik
-                    initialValues={{ content: '' }}
+                    initialValues={{ 
+                        content: '',
+                        taskId: selectedTask?.id || 0
+                    }}
                     validationSchema={submissionValidationSchema}
                     onSubmit={handleSubmitTask}
                 >

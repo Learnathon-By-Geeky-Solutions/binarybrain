@@ -6,13 +6,25 @@ export interface User {
     email: string;
     roles: string[];
     profilePicture?: string;
+    currentInstitute?: string;
+    country?: string;
     createdAt: string;
     updatedAt: string;
 }
 
-export interface LoginDto {
+export interface AuthRequest {
     username: string;
     password: string;
+}
+
+export interface AuthResponse {
+    jwt: string;
+    refreshToken: string;
+}
+
+export interface UserDto extends RegisterDto {
+    currentInstitute?: string;
+    country?: string;
 }
 
 export interface RegisterDto {
@@ -24,12 +36,18 @@ export interface RegisterDto {
     roles: string[];
 }
 
+export interface RefreshTokenRequest {
+    refreshToken: string;
+}
+
 export interface UpdateProfileDto {
     firstName: string;
     lastName: string;
     email: string;
     currentPassword?: string;
     newPassword?: string;
+    currentInstitute?: string;
+    country?: string;
     profilePicture?: File;
 }
 

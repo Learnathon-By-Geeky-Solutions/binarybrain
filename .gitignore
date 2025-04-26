@@ -11,3 +11,4 @@
 
 target/
 uploads/
+frontend/node_modules/
