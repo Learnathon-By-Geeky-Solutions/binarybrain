@@ -6,6 +6,7 @@ import com.binarybrain.user.model.UserImage;
 import com.binarybrain.user.repository.UserImageRepository;
 import com.binarybrain.user.repository.UserRepository;
 import com.binarybrain.user.service.UserService;
+import com.binarybrain.exception.UserHasNotPermissionException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -94,6 +95,25 @@ class UserImageServiceImplTest {
         verify(userRepository).save(any(User.class));
         verify(userImageRepository).save(any(UserImage.class));
     }
+
+    @Test
+    void uploadPhoto_shouldThrowException_whenUsernameDoesNotMatch() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setContextPath("/api");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+        String imageContent = "test image";
+        MultipartFile file = new MockMultipartFile("file", "photo.png", "image/jpeg", imageContent.getBytes());
+
+        User mockUser = new User();
+        mockUser.setId(userId);
+        mockUser.setUsername("differentUsername");
+
+        when(userService.getUserProfileById(userId, username)).thenReturn(mockUser);
+
+        assertThrows(UserHasNotPermissionException.class, () -> userImageService.uploadPhoto(userId, file, username));
+    }
+
 
 
     private void processUploadDir(boolean delete) throws Exception {

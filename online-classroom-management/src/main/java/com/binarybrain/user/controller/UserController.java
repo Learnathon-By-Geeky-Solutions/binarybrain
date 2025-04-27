@@ -226,6 +226,8 @@ public class UserController {
                     @ApiResponse(responseCode = "401", description = "Unauthorized: Invalid or Expired JWT token.",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class))),
                     @ApiResponse(responseCode = "400", description = "Image is required!",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class))),
+                    @ApiResponse(responseCode = "403", description = "This error may occur if you trying to upload image into another user's account",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class)))
             },
             security = @SecurityRequirement(name = "bearerToken")
@@ -263,7 +265,7 @@ public class UserController {
     @Operation(
             summary = "Search user by image",
             tags = {"05 - Image Search"},
-            description = "Search one image and recieve a list of matching users",
+            description = "Search one image and receive a list of matching users. You may learn more about this from here `https://us.opencv.fr/docs`. Here we integrate the OpenCV API functionality by using REST API method.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Search successful",
                             content = @Content(schema = @Schema(implementation = String.class))),

@@ -1,6 +1,7 @@
 package com.binarybrain.user.service.impl;
 
 import com.binarybrain.exception.ResourceNotFoundException;
+import com.binarybrain.exception.UserHasNotPermissionException;
 import com.binarybrain.exception.global.GlobalExceptionHandler;
 import com.binarybrain.user.model.User;
 import com.binarybrain.user.model.UserImage;
@@ -41,6 +42,8 @@ public class UserImageServiceImpl implements UserImageService {
     @Override
     public String uploadPhoto(Long id, MultipartFile file, String username) throws IOException {
         User user = userService.getUserProfileById(id, username);
+        GlobalExceptionHandler.Thrower.throwIf(!user.getUsername().equals(username), new UserHasNotPermissionException("You don't have permission to upload another person's image!"));
+
         UserImage userImage = new UserImage();
 
         String base64Image = Base64.getEncoder().encodeToString(file.getBytes());
@@ -62,7 +65,7 @@ public class UserImageServiceImpl implements UserImageService {
         try{
             Path targetDirectory = Paths.get(photoDirectory).normalize();
             Path photoPath = targetDirectory.resolve(filename).normalize();
-            GlobalExceptionHandler.Thrower.throwIf(!photoPath.startsWith(targetDirectory),new IOException("Entry is outside of the target directory"));
+            GlobalExceptionHandler.Thrower.throwIf(!photoPath.startsWith(targetDirectory), new IOException("Entry is outside of the target directory"));
             return Files.readAllBytes(photoPath);
         } catch (IOException ex){
             throw new ResourceNotFoundException("Photo download failed: "+ filename + "\n" + ex);
@@ -91,7 +94,7 @@ public class UserImageServiceImpl implements UserImageService {
             if (!Files.exists(fileStorageLocation)) {
                 Files.createDirectories(fileStorageLocation);
             }
-            GlobalExceptionHandler.Thrower.throwIf(!Files.exists(fileStorageLocation),new IOException("Entry is outside of the target directory"));
+            GlobalExceptionHandler.Thrower.throwIf(!Files.exists(fileStorageLocation), new IOException("Entry is outside of the target directory"));
             Path targetLocation = fileStorageLocation.resolve(fileName);
             Files.write(targetLocation, imageBytes);
 
