@@ -51,7 +51,6 @@ jwt:
 opencv:
   apikey: ${OPENCV_APIKEY}
 
-
 springdoc:
   swagger-ui:
     enabled: true
