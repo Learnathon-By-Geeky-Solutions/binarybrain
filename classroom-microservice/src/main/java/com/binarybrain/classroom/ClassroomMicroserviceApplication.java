@@ -9,7 +9,10 @@ import io.swagger.v3.oas.annotations.servers.Server;
 
 @OpenAPIDefinition(
 		info = @Info(title = "Classroom Microservice", version = "1.0.0"),
-		servers = @Server(url = "http://localhost:5000")
+		servers = {
+				@Server(url = "https://binarybrains.gentlesmoke-d65a2350.westus2.azurecontainerapps.io/"),
+				@Server(url = "http://localhost:5000")
+		}
 )
 @SpringBootApplication
 @EnableFeignClients

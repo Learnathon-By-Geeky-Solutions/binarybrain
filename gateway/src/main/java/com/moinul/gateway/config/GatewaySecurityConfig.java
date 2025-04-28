@@ -38,7 +38,7 @@ public class GatewaySecurityConfig {
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5000"));
+        config.setAllowedOrigins(List.of("http://localhost:5000", "https://binarybrains.gentlesmoke-d65a2350.westus2.azurecontainerapps.io/"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         config.setAllowedHeaders(List.of("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
