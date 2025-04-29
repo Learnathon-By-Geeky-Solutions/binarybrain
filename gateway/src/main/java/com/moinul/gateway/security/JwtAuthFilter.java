@@ -1,5 +1,5 @@
 package com.moinul.gateway.security;
-import io.jsonwebtoken.ExpiredJwtException;
+import com.binarybrain.exception.global.GlobalExceptionHandler;
 import io.jsonwebtoken.JwtException;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -12,6 +12,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 @Component
 public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Config> {
@@ -28,22 +29,18 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
             String path = request.getPath().toString();
-            if(path.equals("/api/user/login") ||
-                    path.equals("/api/user/register") ||
-                    path.equals("/api/user/refresh") ||
-                    path.contains("/v3/api-docs") ||
-                    path.contains("/swagger-ui")){
+            if(shouldAllowPath(path)){
                 return chain.filter(exchange);
             }
 
             String token = extractToken(exchange.getRequest());
+
             try {
-                if(token == null){
-                    throw new JwtException("Missing token!");
-                }
-                if (!jwtUtil.validateToken(token)) {
-                    throw new JwtException("Invalid token!");
-                }
+                Optional.ofNullable(token).orElseThrow(
+                        () -> new JwtException("Missing token!")
+                );
+
+                GlobalExceptionHandler.Thrower.throwIf(!jwtUtil.validateToken(token), new JwtException("Invalid token!"));
 
                 String username = jwtUtil.extractUsername(token);
                 ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
@@ -51,26 +48,36 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
                         .build();
 
                 return chain.filter(exchange.mutate().request(modifiedRequest).build());
-            } catch (ExpiredJwtException e){
-                return handleUnauthorizedResponse(exchange, "Token expired!");
-            } catch (JwtException | IllegalArgumentException e) {
-                return handleUnauthorizedResponse(exchange, "Invalid token!");
+            } catch (JwtException | IllegalArgumentException e){
+                return handleUnauthorizedResponse(exchange);
             }
         };
     }
 
+    private boolean shouldAllowPath(String path) {
+        return path.equals("/api/user/login") ||
+                path.equals("/api/user/register") ||
+                path.equals("/api/user/refresh") ||
+                path.contains("/v3/api-docs") ||
+                path.contains("/swagger-ui");
+    }
+
     private String extractToken(ServerHttpRequest request) {
         String authHeader = request.getHeaders().getFirst("Authorization");
+        return extractToken(authHeader);
+    }
+
+    private String extractToken(String authHeader) {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
         }
         return null;
     }
 
-    private Mono<Void> handleUnauthorizedResponse(ServerWebExchange exchange, String message) {
+    private Mono<Void> handleUnauthorizedResponse(ServerWebExchange exchange) {
         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
         exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
-        String errorMessage = "{\"error\": \"" + message + "\"}";
+        String errorMessage = "{\"error\": \"" + "Token expired/ invalid!" + "\"}";
         DataBuffer buffer = exchange.getResponse().bufferFactory().wrap(errorMessage.getBytes(StandardCharsets.UTF_8));
         return exchange.getResponse().writeWith(Mono.just(buffer));
     }
