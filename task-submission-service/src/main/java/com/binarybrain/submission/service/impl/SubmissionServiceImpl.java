@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SubmissionServiceImpl implements SubmissionService {
@@ -111,7 +112,7 @@ public class SubmissionServiceImpl implements SubmissionService {
         String fileName = fileHandlerService.uploadFile(file);
 
         submission.setFileUrl(fileName);
-        if(githubLink!=null) submission.setGithubLink(githubLink);
+        Optional.ofNullable(githubLink).ifPresent(submission::setGithubLink);
         submissionRepo.save(submission);
 
         return SubmissionMapper.toSubmissionDto(submission);
