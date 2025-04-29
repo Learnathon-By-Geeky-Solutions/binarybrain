@@ -37,10 +37,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public SubmissionDto submitTask(Long taskId, MultipartFile file, String githubLink, String username) {
         TaskDto taskDto = taskService.getTaskById(taskId,username);
-        if("CLOSED".equals(taskDto.getStatus())){
-            throw new ResourceNotFoundException("Task is not OPEN for submission!");
-        }
-
+        GlobalExceptionHandler.Thrower.throwIf("CLOSED".equals(taskDto.getStatus()),new ResourceNotFoundException("Task is not OPEN for submission!"));
         UserDto userDto = userService.getUserProfile(username);
         boolean isStudent = validateRole(userDto, List.of("STUDENT"));
         GlobalExceptionHandler.Thrower.throwIf(
