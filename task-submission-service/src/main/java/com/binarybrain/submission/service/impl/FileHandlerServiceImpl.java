@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -49,16 +50,11 @@ public class FileHandlerServiceImpl implements FileHandlerService {
 
     @Override
     public byte[] downloadFile(String filename) {
-        if (filename.contains("..") || filename.contains("/") || filename.contains("\\")) {
-            throw new IllegalArgumentException("Invalid filename");
-        }
+        GlobalExceptionHandler.Thrower.throwIf(filename.contains("..") || filename.contains("/") || filename.contains("\\"),new IllegalArgumentException("Invalid filename"));
         try{
             Path targetDirectory = Paths.get(fileDirectory).normalize();
             Path filePath = targetDirectory.resolve(filename).normalize();
-
-            if (!filePath.startsWith(targetDirectory)) {
-                throw new IOException("Entry is outside of the target directory");
-            }
+            GlobalExceptionHandler.Thrower.throwIf(!filePath.startsWith(targetDirectory),new IOException("Entry is outside of the target directory"));
             GlobalExceptionHandler.Thrower.throwIf(
                     !Files.exists(filePath),
                     new ResourceNotFoundException("FILE NOT FOUND: " + filename));
@@ -71,20 +67,17 @@ public class FileHandlerServiceImpl implements FileHandlerService {
 
     @Override
     public void deleteFile(String fileName) {
-        if (fileName==null) {
-            return;
-        }
-        if (fileName.contains("..") || fileName.contains("/") || fileName.contains("\\")) {
-            throw new IllegalArgumentException("Invalid filename");
-        }
-        Path filePath = Paths.get(fileDirectory).resolve(fileName).normalize();
-        try {
-            if(Files.exists(filePath)){
-                Files.delete(filePath);
+        Optional.ofNullable(fileName).ifPresent(s -> {
+            GlobalExceptionHandler.Thrower.throwIf(fileName.contains("..") || fileName.contains("/") || fileName.contains("\\"),new IllegalArgumentException("Invalid filename"));
+            Path filePath = Paths.get(fileDirectory).resolve(fileName).normalize();
+            try {
+                if(Files.exists(filePath)){
+                    Files.delete(filePath);
+                }
+            }catch (IOException ex){
+                throw new UnsupportedFileTypeException("File deletion failed! " + ex);
             }
-        }catch (IOException ex){
-            throw new UnsupportedFileTypeException("File deletion failed! " + ex);
-        }
+        });
     }
 
     private static final List<String> ALLOWED_FILE_TYPES = Arrays.asList(

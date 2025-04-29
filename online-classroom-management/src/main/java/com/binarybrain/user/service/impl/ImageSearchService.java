@@ -1,6 +1,7 @@
 package com.binarybrain.user.service.impl;
 
 import com.binarybrain.exception.ResourceNotFoundException;
+import com.binarybrain.exception.global.GlobalExceptionHandler;
 import com.binarybrain.user.model.User;
 import com.binarybrain.user.model.UserImage;
 import com.binarybrain.user.repository.UserImageRepository;
@@ -78,11 +79,9 @@ public class ImageSearchService {
         String url = "https://sg.opencv.fr/compare";
         try {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-            if (response.getStatusCode() == HttpStatus.OK) {
-                JSONObject json = new JSONObject(response.getBody());
-                return json.getDouble("score");
-            }
-            throw new IOException("Failed to search! " + response.getStatusCode());
+            GlobalExceptionHandler.Thrower.throwIf(response.getStatusCode() != HttpStatus.OK,new IOException("Failed to search! " + response.getStatusCode()));
+            JSONObject json = new JSONObject(response.getBody());
+            return json.getDouble("score");
         } catch (RestClientException e){
             throw new IOException("Failed to connect to OpenCV API: " + e.getMessage(), e);
         }

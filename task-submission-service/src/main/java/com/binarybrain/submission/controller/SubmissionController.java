@@ -206,9 +206,11 @@ public class SubmissionController {
     }
 
     private MediaType determineMediaType(String fileName) {
-        if (fileName.endsWith(".pdf")) return MediaType.APPLICATION_PDF;
-        if (fileName.endsWith(".png")) return MediaType.IMAGE_PNG;
-        if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) return MediaType.IMAGE_JPEG;
-        return MediaType.APPLICATION_OCTET_STREAM; // Default for other file types
+        return switch (fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase()) {
+            case "pdf" -> MediaType.APPLICATION_PDF;
+            case "png" -> MediaType.IMAGE_PNG;
+            case "jpg", "jpeg" -> MediaType.IMAGE_JPEG;
+            default -> MediaType.APPLICATION_OCTET_STREAM; // Default for other file types
+        };
     }
 }
