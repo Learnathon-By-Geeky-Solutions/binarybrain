@@ -65,11 +65,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<TaskDto> getAllTask(TaskStatus status, String username) {
         List<Task> taskList;
-        if(status == null)
-            taskList = taskRepository.findAll();
-        else
-            taskList = taskRepository.findByStatus(status);
-
+        taskList = status==null?taskRepository.findAll():taskRepository.findByStatus(status);
         return taskList.stream()
                 .map(TaskMapper::toTaskDto)
                 .toList();

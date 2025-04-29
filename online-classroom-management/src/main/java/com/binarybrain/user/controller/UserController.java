@@ -99,7 +99,6 @@ public class UserController {
     )
     @PostMapping("/register")
     public ResponseEntity<Object> registerUser(@Valid @RequestBody UserDto userDto, BindingResult result){
-
         if(result.hasErrors()){
             List<String> errorList = result.getAllErrors()
                     .stream()

@@ -35,9 +35,7 @@ public class FileHandlerServiceImpl implements FileHandlerService {
 
             GlobalExceptionHandler.Thrower.throwIf(!path.startsWith(targetDirectory), new IOException("Entry is outside of the target directory"));
 
-            if (!Files.exists(targetDirectory)) {
-                Files.createDirectories(targetDirectory);
-            }
+            Files.createDirectories(targetDirectory);
 
             Files.write(path, file.getBytes());
             return fileName;
@@ -69,9 +67,7 @@ public class FileHandlerServiceImpl implements FileHandlerService {
             GlobalExceptionHandler.Thrower.throwIf(fileName.contains("..") || fileName.contains("/") || fileName.contains("\\"),new IllegalArgumentException("Invalid filename"));
             Path filePath = Paths.get(fileDirectory).resolve(fileName).normalize();
             try {
-                if(Files.exists(filePath)){
-                    Files.delete(filePath);
-                }
+                Files.deleteIfExists(filePath);
             }catch (IOException ex){
                 throw new UnsupportedFileTypeException("File deletion failed! " + ex);
             }
