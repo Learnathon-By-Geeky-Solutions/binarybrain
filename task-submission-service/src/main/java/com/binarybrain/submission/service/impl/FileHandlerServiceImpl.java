@@ -33,9 +33,7 @@ public class FileHandlerServiceImpl implements FileHandlerService {
             Path targetDirectory = Paths.get(fileDirectory).normalize();
             Path path = targetDirectory.resolve(fileName).normalize();
 
-            if (!path.startsWith(targetDirectory)) {
-                throw new IOException("Entry is outside of the target directory");
-            }
+            GlobalExceptionHandler.Thrower.throwIf(!path.startsWith(targetDirectory), new IOException("Entry is outside of the target directory"));
 
             if (!Files.exists(targetDirectory)) {
                 Files.createDirectories(targetDirectory);

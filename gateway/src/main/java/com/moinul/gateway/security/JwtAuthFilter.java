@@ -54,7 +54,7 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
         };
     }
 
-    private static boolean shouldAllowPath(String path) {
+    private boolean shouldAllowPath(String path) {
         return path.equals("/api/user/login") ||
                 path.equals("/api/user/register") ||
                 path.equals("/api/user/refresh") ||
@@ -64,6 +64,10 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
 
     private String extractToken(ServerHttpRequest request) {
         String authHeader = request.getHeaders().getFirst("Authorization");
+        return extractToken(authHeader);
+    }
+
+    private String extractToken(String authHeader) {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
         }

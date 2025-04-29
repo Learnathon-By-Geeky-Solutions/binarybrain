@@ -102,6 +102,7 @@ class FileHandlerServiceImplTest {
         assertTrue(Files.exists(Paths.get(testUploadDir)));
     }
 
+
     @Test
     void downloadFile_WithValidFilename_ShouldReturnFileContent() {
         byte[] result = fileHandlerService.downloadFile(testFileName);
@@ -113,6 +114,17 @@ class FileHandlerServiceImplTest {
     void downloadFile_WithInvalidFilename_ShouldThrowException() {
         assertThrows(IllegalArgumentException.class,
                 () -> fileHandlerService.downloadFile("../invalid-file.pdf"));
+    }
+
+    @Test
+    void downloadFile_WithInvalidFilenameSlash_ShouldThrowException() {
+        assertThrows(IllegalArgumentException.class,
+                () -> fileHandlerService.downloadFile("invalid-/\\file.pdf"));
+    }
+
+    @Test
+    void downloadFile_WithPerfectName_NotFound() {
+        assertThrows(ResourceNotFoundException.class,() -> fileHandlerService.downloadFile("file.pdf"));
     }
 
     @Test
