@@ -199,12 +199,6 @@ We ensure high code quality with comprehensive test coverage, monitored via Sona
 
 [![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=Learnathon-By-Geeky-Solutions_binarybrain&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Learnathon-By-Geeky-Solutions_binarybrain)
 
----
-
-## Database Design 🗄️
-Our database schema is designed for scalability and efficiency using MySQL. View the current design here:
-
-![Database Schema](https://github.com/user-attachments/assets/107fe291-6ce0-407d-9b5a-76a18e28acc9)
 
 ---
 
