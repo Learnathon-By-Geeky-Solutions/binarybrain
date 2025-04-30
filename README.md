@@ -104,17 +104,14 @@ Our database schema is designed for scalability and efficiency using MySQL. View
 ---
 
 ## Microservice Structure 🧩
-
-![image](https://github.com/user-attachments/assets/ecdea450-c1f6-4566-a1f3-94953317135f)
-
-
 BinaryBrain is built using a microservices architecture to ensure scalability, maintainability, and modularity. Below is the structure of the microservices, each corresponding to a specific module and its responsibilities:
+![image](https://github.com/user-attachments/assets/ecdea450-c1f6-4566-a1f3-94953317135f)
 
 1. **Classroom Microservice** (`classroom-microservice`) 🏫
    - **Service**: Classroom Service
    - **Responsibility**: Manages the creation, configuration, and enrollment of classrooms.
    - **Features**:
-     - Create and manage classrooms with unique codes for student access 🔑.
+     - Create and manage classrooms with student access 🔑.
      - Handle student enrollment and classroom memberships.
      - Link classrooms to courses managed by the Course Microservice.
    - **Database**: Stores classroom metadata, enrollment records, and relationships with courses in MySQL.
