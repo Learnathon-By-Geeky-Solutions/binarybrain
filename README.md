@@ -179,7 +179,7 @@ BinaryBrain is built using a microservices architecture to ensure scalability, m
 
 ## Tech Stack 🛠️
 - **Backend**: Spring Boot, Java ☕
-- **Frontend**: Swagger for API documentation (Try our APIs at [Swagger UI](https://binarybrains.gentlesmoke-d65a2350.westus2.azurecontainerapps.io/swagger-ui/index.html));
+- **Frontend**: Swagger for API documentation (Try our APIs at [Swagger UI](https://binarybrains.gentlesmoke-d65a2350.westus2.azurecontainerapps.io/swagger-ui/index.html) (Wait some time for service's successfull startup));
 - **Database**: MySQL 🗃️
 - **Testing**: JUnit, Mockito 🧪
 - **Code Quality**: SonarCloud ✅
@@ -243,7 +243,7 @@ We ensure high code quality with comprehensive test coverage, monitored via Sona
    mvn spring-boot:run
    ```
 8. Access the application:
-   - Visit the Swagger UI to try the APIs: [https://binarybrains.gentlesmoke-d65a2350.westus2.azurecontainerapps.io/swagger-ui/index.html](https://binarybrains.gentlesmoke-d65a2350.westus2.azurecontainerapps.io/swagger-ui/index.html) 🌐.
+   - Visit the Swagger UI to try the APIs: [https://binarybrains.gentlesmoke-d65a2350.westus2.azurecontainerapps.io/swagger-ui/index.html](https://binarybrains.gentlesmoke-d65a2350.westus2.azurecontainerapps.io/swagger-ui/index.html) (Wait some time for service's successfull startup) 🌐.
    - Alternatively, access the Gateway at `http://localhost:8080` for local testing.
 
 ---
