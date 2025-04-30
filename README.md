@@ -104,6 +104,10 @@ Our database schema is designed for scalability and efficiency using MySQL. View
 ---
 
 ## Microservice Structure 🧩
+
+![image](https://github.com/user-attachments/assets/ecdea450-c1f6-4566-a1f3-94953317135f)
+
+
 BinaryBrain is built using a microservices architecture to ensure scalability, maintainability, and modularity. Below is the structure of the microservices, each corresponding to a specific module and its responsibilities:
 
 1. **Classroom Microservice** (`classroom-microservice`) 🏫
