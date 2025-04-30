@@ -1,3 +1,5 @@
+![ChatGPT Image ৩০ এপ্রি, ২০২৫, ০৩_০৬_১৭ PM](https://github.com/user-attachments/assets/046fc577-6fe8-40d9-9161-7d8e42888f20)
+
 # BinaryBrain - Online Classroom Management System 📚
 
 Welcome to **BinaryBrain** 🚀, a powerful Spring Boot-based microservices platform designed to streamline online classroom and course management for teachers and students. This application offers robust tools for task assignments, submissions, peer reviews, course material sharing, and detailed reporting.
